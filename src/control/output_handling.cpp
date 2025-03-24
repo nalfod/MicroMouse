@@ -1,6 +1,7 @@
 // Micromouse course - evosoft
 
 #include "output_handling.h"
+#include "mouse.h"
 
 void MM::post_process()
 {
@@ -9,5 +10,8 @@ void MM::post_process()
 
 void MM::update_outputs()
 {
-    // Your code comes here
+    for (int pwm = 0; pwm <= 100; pwm++) { // ramp up forward.
+        mouse.motor1.motorGoP(pwm);
+        delay(50);
+    }
 }

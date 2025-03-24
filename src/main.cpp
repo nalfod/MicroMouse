@@ -44,6 +44,9 @@ void setup()
   mouse.dbg_green.on();
   LOG_INFO("Setup Done\n");
 
+  pinMode(MM::PINS::MOTOR_DRV_EN, OUTPUT);
+  digitalWrite(MM::PINS::MOTOR_DRV_EN, true);
+
   mouse.ir_led1.on();
   mouse.ir_led2.on();
   mouse.ir_led3.on();
