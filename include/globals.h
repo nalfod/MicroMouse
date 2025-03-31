@@ -11,6 +11,9 @@ struct Globals {
     uint16_t ir_frontleft;
     uint16_t ir_frontright;
     uint16_t ir_right;
+
+    int8_t pwmPercentLeft;
+    int8_t pwmPercentRight;
 };
 
 } // namespace MM

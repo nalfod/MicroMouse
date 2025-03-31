@@ -2,16 +2,18 @@
 
 #include "output_handling.h"
 #include "mouse.h"
+#include "globals.h"
 
 void MM::post_process()
 {
-    // Your code comes here
+    g.pwmPercentLeft = g.pwmPercentLeft > 20 ? 20 : g.pwmPercentLeft;
+    g.pwmPercentLeft = g.pwmPercentLeft < 10 ? 10 : g.pwmPercentLeft;
+    g.pwmPercentRight = g.pwmPercentRight > 20 ? 20 : g.pwmPercentRight;
+    g.pwmPercentRight = g.pwmPercentRight < 10 ? 10 : g.pwmPercentRight;
 }
 
 void MM::update_outputs()
 {
-    for (int pwm = 0; pwm <= 100; pwm++) { // ramp up forward.
-        mouse.motor1.motorGoP(pwm);
-        delay(50);
-    }
+    mouse.motor1.motorGoP(g.pwmPercentRight);
+    mouse.motor2.motorGoP(-g.pwmPercentLeft);
 }

@@ -21,11 +21,11 @@ BleSerial ble;
 MM::Globals g {};
 MM::Mouse mouse {};
 
-MM::Task task_read_sensors        {MM::read_sensors, 1s};
-MM::Task task_pre_process_inputs  {MM::pre_process_inputs, 1s};
-MM::Task task_control             {MM::control, 1s};
-MM::Task task_post_process        {MM::post_process, 1s};
-MM::Task task_update_outputs      {MM::update_outputs, 1s};
+MM::Task task_read_sensors        {MM::read_sensors, 200ms};
+MM::Task task_pre_process_inputs  {MM::pre_process_inputs, 200ms};
+MM::Task task_control             {MM::control, 200ms};
+MM::Task task_post_process        {MM::post_process, 200ms};
+MM::Task task_update_outputs      {MM::update_outputs, 200ms};
 MM::Task task_debug               {debug, 500ms};
 
 
@@ -36,6 +36,9 @@ void debug()
                                                g.ir_left,
                                                g.ir_right,
                                                g.ir_frontright);
+
+  LOG_INFO("MOTOR_LEFT: %d, MOTOR_RIGHT: %d\n, ", g.pwmPercentLeft,
+                                                  g.pwmPercentRight);
 }
 
 void setup()

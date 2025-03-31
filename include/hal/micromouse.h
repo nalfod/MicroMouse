@@ -11,8 +11,10 @@ constexpr int DEBUG_LED_2 = 2;
 // Motors
 constexpr int MOTOR_DRV_EN = 41;
 constexpr int MOTOR_DRV_FAULT = 40;
+// RIGHT
 constexpr int MOTOR_1_A = 11;
 constexpr int MOTOR_1_B = 13;
+//LEFT
 constexpr int MOTOR_2_A = 12;
 constexpr int MOTOR_2_B = 14;
 
