@@ -2,6 +2,7 @@
 #pragma once
 
 #include <cstdint>
+#include <PID_v1.h>
 
 namespace MM {
 
@@ -16,6 +17,18 @@ struct Globals {
     int8_t pwmPercentRight;
 
     uint16_t currentBatteryVoltage;
+
+
+    // Straight movement
+    double errorBetweenSides = 0;
+    double targetBetweenSides = 0;
+    double output = 0;
+    bool result;
+
+    PID myStraightMovementCtrl;
+
+    Globals(): myStraightMovementCtrl(&errorBetweenSides, &output , &targetBetweenSides,
+                                      0.005, 0, 0, DIRECT) {}
 };
 
 } // namespace MM

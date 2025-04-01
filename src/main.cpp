@@ -32,15 +32,19 @@ MM::Task task_debug               {debug, 500ms};
 void debug()
 {
   mouse.dbg_red.toggle();
-  LOG_INFO("FL: %d, L: %d, R: %d, FR: %d\n, ", g.ir_frontleft,
+  /*LOG_INFO("FL: %d, L: %d, R: %d, FR: %d\n ", g.ir_frontleft,
                                                g.ir_left,
                                                g.ir_right,
                                                g.ir_frontright);
 
-  LOG_INFO("MOTOR_LEFT: %d, MOTOR_RIGHT: %d\n, ", g.pwmPercentLeft,
-                                                  g.pwmPercentRight);
+  LOG_INFO("MOTOR_LEFT: %d, MOTOR_RIGHT: %d\n ", g.pwmPercentLeft,
+                                                 g.pwmPercentRight);
 
-  LOG_INFO("BATTERY VOLTAGE: %d", g.currentBatteryVoltage);
+  LOG_INFO("BATTERY VOLTAGE: %d\n", g.currentBatteryVoltage);*/
+
+  LOG_INFO("OUTPUT: %d, errorBetweenSides: %d, result: %d\n ", static_cast<int>( g.output ),
+                                                  static_cast<int>( g.errorBetweenSides ),
+                                                  static_cast<int>( g.result ));
 }
 
 void setup()
@@ -56,6 +60,10 @@ void setup()
   mouse.ir_led2.on();
   mouse.ir_led3.on();
   mouse.ir_led4.on();
+
+  g.myStraightMovementCtrl.SetSampleTime(1);
+  g.myStraightMovementCtrl.SetMode(AUTOMATIC);
+  g.myStraightMovementCtrl.SetOutputLimits(-255,255);
 }
 
 void loop()
