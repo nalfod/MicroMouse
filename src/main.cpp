@@ -21,11 +21,11 @@ BleSerial ble;
 MM::Globals g {};
 MM::Mouse mouse {};
 
-MM::Task task_read_sensors        {MM::read_sensors, 200ms};
-MM::Task task_pre_process_inputs  {MM::pre_process_inputs, 200ms};
-MM::Task task_control             {MM::control, 200ms};
-MM::Task task_post_process        {MM::post_process, 200ms};
-MM::Task task_update_outputs      {MM::update_outputs, 200ms};
+MM::Task task_read_sensors        {MM::read_sensors, 2ms};
+MM::Task task_pre_process_inputs  {MM::pre_process_inputs, 2ms};
+MM::Task task_control             {MM::control, 2ms};
+MM::Task task_post_process        {MM::post_process, 2ms};
+MM::Task task_update_outputs      {MM::update_outputs, 2ms};
 MM::Task task_debug               {debug, 500ms};
 
 
@@ -39,6 +39,8 @@ void debug()
 
   LOG_INFO("MOTOR_LEFT: %d, MOTOR_RIGHT: %d\n, ", g.pwmPercentLeft,
                                                   g.pwmPercentRight);
+
+  LOG_INFO("BATTERY VOLTAGE: %d", g.currentBatteryVoltage);
 }
 
 void setup()

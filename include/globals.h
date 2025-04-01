@@ -14,6 +14,8 @@ struct Globals {
 
     int8_t pwmPercentLeft;
     int8_t pwmPercentRight;
+
+    uint16_t currentBatteryVoltage;
 };
 
 } // namespace MM

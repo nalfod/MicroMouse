@@ -11,6 +11,8 @@ void MM::read_sensors()
     g.ir_frontleft = analogRead(MM::PINS::IR_2);
     g.ir_frontright = analogRead(MM::PINS::IR_3);
     g.ir_right = analogRead(MM::PINS::IR_4);
+
+    g.currentBatteryVoltage = analogRead(MM::PINS::BATT);
 }
 
 void MM::pre_process_inputs()
