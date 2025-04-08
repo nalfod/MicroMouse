@@ -16,7 +16,7 @@ void controlPOfMotors()
     g.result = g.myStraightMovementCtrl.Compute();
 
     g.pwmPercentLeft = basePwm - g.output;
-    g.pwmPercentRight = basePwm + g.output;
+    g.pwmPercentRight = basePwm + g.output; 
 }
 
 void MM::control()
