@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <PID_v1.h>
+#include <ESP32Encoder.h>
 
 namespace MM {
 
@@ -23,9 +24,11 @@ struct Globals {
     double errorBetweenSides = 0;
     double targetBetweenSides = 0;
     double output = 0;
-    bool result;
 
     PID myStraightMovementCtrl;
+
+    ESP32Encoder encoder1;
+    ESP32Encoder encoder2;
 
     Globals(): myStraightMovementCtrl(&errorBetweenSides, &output , &targetBetweenSides,
                                       0.005, 0, 0, DIRECT) {}

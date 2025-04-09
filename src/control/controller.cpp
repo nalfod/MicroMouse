@@ -4,7 +4,6 @@
 #include "globals.h"
 #include <cmath>
 
-const float Kp = 0.005; // Proportional gain, adjust as needed
 const uint16_t baseVoltage = 1000; //in mV
 
 void controlPOfMotors()
@@ -13,10 +12,12 @@ void controlPOfMotors()
     uint16_t basePwm = voltageProportion * 100;
     // max: next to the wall: 4000 the other: 400
     // equal: both around 1000
-    g.result = g.myStraightMovementCtrl.Compute();
+    g.myStraightMovementCtrl.Compute();
 
-    g.pwmPercentLeft = basePwm - g.output;
-    g.pwmPercentRight = basePwm + g.output; 
+    //g.pwmPercentLeft = basePwm - g.output;
+    //g.pwmPercentRight = basePwm + g.output;
+    g.pwmPercentLeft = basePwm;
+    g.pwmPercentRight = basePwm;
 }
 
 void MM::control()

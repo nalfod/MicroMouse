@@ -40,11 +40,13 @@ void debug()
   LOG_INFO("MOTOR_LEFT: %d, MOTOR_RIGHT: %d\n ", g.pwmPercentLeft,
                                                  g.pwmPercentRight);
 
-  LOG_INFO("BATTERY VOLTAGE: %d\n", g.currentBatteryVoltage);*/
-
+  LOG_INFO("BATTERY VOLTAGE: %d\n", g.currentBatteryVoltage);
+  
   LOG_INFO("OUTPUT: %d, errorBetweenSides: %d, result: %d\n ", static_cast<int>( g.output ),
                                                   static_cast<int>( g.errorBetweenSides ),
-                                                  static_cast<int>( g.result ));
+                                                  static_cast<int>( g.result ));*/
+
+  LOG_INFO("ENCODER1              %d       ,  ENCODER2             %d      \n", static_cast<int>(g.encoder1.getCount()),  static_cast<int>(g.encoder2.getCount()));
 }
 
 void setup()
@@ -64,6 +66,13 @@ void setup()
   g.myStraightMovementCtrl.SetSampleTime(1);
   g.myStraightMovementCtrl.SetMode(AUTOMATIC);
   g.myStraightMovementCtrl.SetOutputLimits(-255,255);
+
+  ESP32Encoder::useInternalWeakPullResistors = puType::up;
+
+  g.encoder1.attachHalfQuad(MM::PINS::MOTOR_1_ENC_A, MM::PINS::MOTOR_1_ENC_B);
+  g.encoder2.attachHalfQuad(MM::PINS::MOTOR_2_ENC_A, MM::PINS::MOTOR_2_ENC_B);
+  g.encoder1.clearCount();
+  g.encoder2.clearCount();
 }
 
 void loop()
