@@ -14,9 +14,9 @@ class Motor
 
         Motor(int motorPin1, int motorPpin2): myMotor(motorPin1, motorPpin2) { }
     
-        void setVoltageAndRotation(uint16_t targetVoltage, 
+        void setVoltageAndRotation(int16_t targetVoltage, 
                                    RotationDirection rotationDirection, 
-                                   uint16_t currentBatterVoltage);
+                                   uint16_t currentBatteryVoltage);
         private:
             MX1508 myMotor;
 };

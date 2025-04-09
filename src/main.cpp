@@ -12,6 +12,9 @@
 
 using namespace std::chrono_literals;
 
+std::chrono::duration<uint32_t, std::micro> MAIN_CYCLE_TIME = 2ms;
+std::chrono::duration<uint32_t, std::micro> DEBUG_CYCLE_TIME = 500ms;
+
 void debug();
 
 #ifdef BLE_LOGGING
@@ -21,30 +24,26 @@ BleSerial ble;
 MM::Globals g {};
 MM::Mouse mouse {};
 
-MM::Task task_read_sensors        {MM::read_sensors, 2ms};
-MM::Task task_pre_process_inputs  {MM::pre_process_inputs, 2ms};
-MM::Task task_control             {MM::control, 2ms};
-MM::Task task_post_process        {MM::post_process, 2ms};
-MM::Task task_update_outputs      {MM::update_outputs, 2ms};
-MM::Task task_debug               {debug, 500ms};
+MM::Task task_read_sensors        {MM::read_sensors, MAIN_CYCLE_TIME};
+MM::Task task_pre_process_inputs  {MM::pre_process_inputs, MAIN_CYCLE_TIME};
+MM::Task task_control             {MM::control, MAIN_CYCLE_TIME};
+MM::Task task_post_process        {MM::post_process, MAIN_CYCLE_TIME};
+MM::Task task_update_outputs      {MM::update_outputs, MAIN_CYCLE_TIME};
+MM::Task task_debug               {debug, DEBUG_CYCLE_TIME};
 
 
 void debug()
 {
   mouse.dbg_red.toggle();
-  /*LOG_INFO("FL: %d, L: %d, R: %d, FR: %d\n ", g.ir_frontleft,
+  LOG_INFO("LEDS-> FL: %d, L: %d, R: %d, FR: %d\n ", g.ir_frontleft,
                                                g.ir_left,
                                                g.ir_right,
                                                g.ir_frontright);
 
-  LOG_INFO("MOTOR_LEFT: %d, MOTOR_RIGHT: %d\n ", g.pwmPercentLeft,
-                                                 g.pwmPercentRight);
+  LOG_INFO("MOTORS-> MOTOR_LEFT: %d, MOTOR_RIGHT: %d\n ", g.leftMotorVoltage,
+                                                          g.rightMotorVoltage);
 
-  LOG_INFO("BATTERY VOLTAGE: %d\n", g.currentBatteryVoltage);*/
-
-  LOG_INFO("OUTPUT: %d, errorBetweenSides: %d, result: %d\n ", static_cast<int>( g.output ),
-                                                  static_cast<int>( g.errorBetweenSides ),
-                                                  static_cast<int>( g.result ));
+  LOG_INFO("BATTERY VOLTAGE: %d\n", g.currentBatteryVoltage);
 }
 
 void setup()
@@ -53,6 +52,7 @@ void setup()
   mouse.dbg_green.on();
   LOG_INFO("Setup Done\n");
 
+  // enable motors
   pinMode(MM::PINS::MOTOR_DRV_EN, OUTPUT);
   digitalWrite(MM::PINS::MOTOR_DRV_EN, true);
 
@@ -61,9 +61,8 @@ void setup()
   mouse.ir_led3.on();
   mouse.ir_led4.on();
 
-  g.myStraightMovementCtrl.SetSampleTime(1);
-  g.myStraightMovementCtrl.SetMode(AUTOMATIC);
-  g.myStraightMovementCtrl.SetOutputLimits(-255,255);
+  g.myStraightMovementCtrl.init(1, AUTOMATIC, -1000, 1000);
+  //g.myStraightMovementCtrl.init((static_cast<int>(MAIN_CYCLE_TIME.count()) - 1), AUTOMATIC, -1000, 1000);
 }
 
 void loop()

@@ -21,3 +21,10 @@ double MM::PidWrapper::getOuput()
 {
     return output;
 }
+
+void MM::PidWrapper::init(int sampleTime, int mode, double minOutputLimit, double maxOutputLimit)
+{
+    myPidController.SetSampleTime(sampleTime);
+    myPidController.SetMode(mode);
+    myPidController.SetOutputLimits(minOutputLimit, maxOutputLimit);
+}
