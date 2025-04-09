@@ -2,9 +2,9 @@
 
 void MM::Motor::setVoltageAndRotation(uint16_t targetVoltage, 
                                       RotationDirection rotationDirection, 
-                                      uint16_t currentBatterVoltage)
+                                      uint16_t currentBatteryVoltage)
 {
-    float voltageProportion = static_cast<float>( targetVoltage ) / static_cast<float>( currentBatterVoltage );
+    float voltageProportion = static_cast<float>( targetVoltage ) / static_cast<float>( currentBatteryVoltage );
     uint16_t targetPwm = voltageProportion * 100;
 
     // triming the pr
