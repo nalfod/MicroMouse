@@ -2,7 +2,7 @@
 #pragma once
 
 #include <cstdint>
-#include <PID_v1.h>
+#include "drv/pid/pidWrapper.h"
 
 namespace MM {
 
@@ -12,23 +12,22 @@ struct Globals {
     uint16_t ir_frontleft;
     uint16_t ir_frontright;
     uint16_t ir_right;
-
-    int8_t pwmPercentLeft;
-    int8_t pwmPercentRight;
-
     uint16_t currentBatteryVoltage;
 
+// Targets =================================================
+    // the "speed" which we wants to achieve
+    uint16_t targetMotorVoltage;
 
-    // Straight movement
-    double errorBetweenSides = 0;
-    double targetBetweenSides = 0;
-    double output = 0;
-    bool result;
+// Outputs =================================================
+    // the values which should be put on the motors
+    int16_t leftMotorVoltage;
+    int16_t rightMotorVoltage;
+    
 
-    PID myStraightMovementCtrl;
+// Controllers =================================================
+    PidWrapper myStraightMovementCtrl;
 
-    Globals(): myStraightMovementCtrl(&errorBetweenSides, &output , &targetBetweenSides,
-                                      0.005, 0, 0, DIRECT) {}
+    Globals();
 };
 
 } // namespace MM

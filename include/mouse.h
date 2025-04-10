@@ -4,7 +4,7 @@
 
 #include "hal/micromouse.h"
 #include "drv/led/led.h"
-#include <FS_MX1508.h>
+#include "drv/motor/motor.h"
 
 namespace MM {
 
@@ -16,8 +16,8 @@ struct Mouse {
     LED ir_led3{PINS::IR_LED_3};
     LED ir_led4{PINS::IR_LED_4};
 
-    MX1508 motor1{PINS::MOTOR_1_A, PINS::MOTOR_1_B};
-    MX1508 motor2{PINS::MOTOR_2_A, PINS::MOTOR_2_B};
+    Motor motor1{PINS::MOTOR_1_A, PINS::MOTOR_1_B};
+    Motor motor2{PINS::MOTOR_2_A, PINS::MOTOR_2_B};
 };
 
 } // namespace MM
