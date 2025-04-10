@@ -10,6 +10,8 @@
 #include "control/input_handling.h"
 #include "control/output_handling.h"
 
+#include "commands/linear_travel_command.h"
+
 using namespace std::chrono_literals;
 
 std::chrono::duration<uint32_t, std::micro> MAIN_CYCLE_TIME = 2ms;
@@ -64,6 +66,11 @@ void setup()
   // NOTE: count() will return the value in ns!
   g.myStraightMovementCtrl.init((static_cast<int>(MAIN_CYCLE_TIME.count()) / 1000), AUTOMATIC, -1000, 1000);
   //g.myStraightMovementCtrl.init((static_cast<int>(MAIN_CYCLE_TIME.count()) - 1), AUTOMATIC, -1000, 1000);
+
+
+  int encDummy1 = 0;
+  int encDummy2 = 0;
+  MM::LinearTravelCommand newCommand = MM::LinearTravelCommand(50, 10, 1, 3, encDummy1, encDummy2, g.leftMotorVoltage, g.rightMotorVoltage);
 }
 
 void loop()
