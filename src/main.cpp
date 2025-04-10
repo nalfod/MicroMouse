@@ -61,7 +61,8 @@ void setup()
   mouse.ir_led3.on();
   mouse.ir_led4.on();
 
-  g.myStraightMovementCtrl.init(1, AUTOMATIC, -1000, 1000);
+  // NOTE: count() will return the value in ns!
+  g.myStraightMovementCtrl.init((static_cast<int>(MAIN_CYCLE_TIME.count()) / 1000), AUTOMATIC, -1000, 1000);
   //g.myStraightMovementCtrl.init((static_cast<int>(MAIN_CYCLE_TIME.count()) - 1), AUTOMATIC, -1000, 1000);
 }
 
