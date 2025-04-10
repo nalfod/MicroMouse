@@ -26,7 +26,7 @@ MM::Task task_pre_process_inputs  {MM::pre_process_inputs, 2ms};
 MM::Task task_control             {MM::control, 2ms};
 MM::Task task_post_process        {MM::post_process, 2ms};
 MM::Task task_update_outputs      {MM::update_outputs, 2ms};
-MM::Task task_debug               {debug, 500ms};
+MM::Task task_debug               {debug, 100ms};
 
 
 void debug()

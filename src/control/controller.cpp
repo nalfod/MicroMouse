@@ -4,7 +4,7 @@
 #include "globals.h"
 #include <cmath>
 
-const uint16_t baseVoltage = 1000; //in mV
+const uint16_t baseVoltage = 2500; //in mV
 
 void controlPOfMotors()
 {

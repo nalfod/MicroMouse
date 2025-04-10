@@ -20,6 +20,6 @@ void MM::post_process()
 
 void MM::update_outputs()
 {
-    mouse.motor1.motorGoP(g.pwmPercentRight);
-    mouse.motor2.motorGoP(-g.pwmPercentLeft);
+    //mouse.motor1.motorGoP(g.pwmPercentRight);
+    //mouse.motor2.motorGoP(-g.pwmPercentLeft);
 }
