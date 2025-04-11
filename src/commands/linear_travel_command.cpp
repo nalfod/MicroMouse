@@ -92,7 +92,7 @@ mLeftMotorVoltageR_mV(leftMotorVoltageR_mV),
 mRightMotorVoltageR_mV(rightMotorVoltageR_mV)
 {
     mTotalTimeOfTravel_ms = myTargetSpeedCalculator.getTotalTimeOfTravel_Ms();
-    myMovementCtrl.init(1, AUTOMATIC, -1000, 1000);
+    myMovementCtrl.init(1, AUTOMATIC, -1000, 1000); // QUESTION: should the min and the max value be bounded to the current voltage somehow??
 }
 
 
@@ -123,10 +123,10 @@ void MM::LinearTravelCommand::execute()
         mRealCurrentPosition_um += ( myEncIntegrator1.getTraveledDistanceSinceLastInvoke_Um() + myEncIntegrator2.getTraveledDistanceSinceLastInvoke_Um() ) / 2;
         mDesiredCurrentPosition_um += outputSpeed_um_per_ms * timeChange_ms; 
 
-        /*myMovementCtrl.setTarget( static_cast<double>( mDesiredCurrentPosition_um ) );
-        myMovementCtrl.compute( static_cast<double>( mRealCurrentPosition_um) );*/
+        myMovementCtrl.setTarget( static_cast<double>( mDesiredCurrentPosition_um ) );
+        myMovementCtrl.compute( static_cast<double>( mRealCurrentPosition_um) );
 
-        int16_t outputVoltage = static_cast<int16_t>(calcVoltageFromSpeed_mV(outputSpeed_um_per_ms)) /*+ static_cast<int16_t>( myMovementCtrl.getOuput() )*/;
+        int16_t outputVoltage = static_cast<int16_t>(calcVoltageFromSpeed_mV(outputSpeed_um_per_ms)) + static_cast<int16_t>( myMovementCtrl.getOuput() );
 
         mLeftMotorVoltageR_mV = outputVoltage;
         mRightMotorVoltageR_mV = outputVoltage;

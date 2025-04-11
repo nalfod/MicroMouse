@@ -50,16 +50,18 @@ void debug()
   // LOG_INFO("ENCODERS-> ENCODER LEFT: %d ENCODER RIGHT: %d\n", static_cast<int>( g.leftEncoderValue ), static_cast<int>( g.rightEncoderValue) );
   //LOG_INFO("DIR - ENCODER LEFT: %d ENCODER RIGHT: %d\n", static_cast<int>( mouse.encoder_right.getCount() ), static_cast<int>( mouse.encoder_left.getCount() ) );
 
-  LOG_INFO("MOTORS-> MOTOR_LEFT: %d ENC_LEFT: %d MOTOR_RIGHT: %d ENC_RIGHT: %d\n ", g.leftMotorVoltage, static_cast<int>( mouse.motor_left.getEncoderCount() ), 
-                                                                                    g.rightMotorVoltage, static_cast<int>( mouse.motor_right.getEncoderCount() ) );
 
-  LOG_INFO("LinearTravel-> DES_DIST: %d REAL_DIST: %d START_TIME: %d ELAPSED_TIME: %d TOTAL_TIME: %d\n ", 
-    static_cast<int> ( g.currentCommand->getDesiredCurrentPosition_um() ),
-    static_cast<int> ( g.currentCommand->getRealCurrentPosition_um() ),
-    g.currentCommand->getStartTime_ms(),
+  // Linear traveling data
+  LOG_INFO("ELAPS_T: %d TOT_T: %d DDIST: %d RDIST: %d ",
     g.currentCommand->getElapsedTime_ms(),
-    g.currentCommand->getTotalTime_ms()
+    g.currentCommand->getTotalTime_ms(), 
+    static_cast<int> ( g.currentCommand->getDesiredCurrentPosition_um() ),
+    static_cast<int> ( g.currentCommand->getRealCurrentPosition_um() )
   ); 
+
+  // Motors
+  LOG_INFO("M_LEFT: %d ENC_L: %d M_RIGHT: %d ENC_R: %d \n", g.leftMotorVoltage, static_cast<int>( mouse.motor_left.getEncoderCount() ), 
+                                                                    g.rightMotorVoltage, static_cast<int>( mouse.motor_right.getEncoderCount() ) );
 }
 
 void setup()

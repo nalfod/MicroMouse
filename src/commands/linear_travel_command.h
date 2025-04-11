@@ -32,6 +32,15 @@ private:
 
 };
 
+
+
+
+
+
+
+
+
+
 class EncoderValueIntegrator
 {
 public:
@@ -47,6 +56,14 @@ private:
     int64_t const& currentEncoderValueR;
     int64_t previousEncoderValue = 0;
 };
+
+
+
+
+
+
+
+
 
 class LinearTravelCommand
 {
@@ -72,7 +89,7 @@ private:
     TargetSpeedCalculator myTargetSpeedCalculator;
     EncoderValueIntegrator myEncIntegrator1;
     EncoderValueIntegrator myEncIntegrator2;
-    PidWrapper myMovementCtrl{0, 0, 0};
+    PidWrapper myMovementCtrl{0.01, 0, 0};
 
     // state flags
     bool mStarted{false};
