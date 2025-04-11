@@ -36,9 +36,9 @@ class EncoderValueIntegrator
 {
 public:
     EncoderValueIntegrator(int64_t const& encoderResultVarR): currentEncoderValueR(encoderResultVarR) { }
-    float getTraveledDistanceSinceLastInvoke_Um()
+    uint32_t getTraveledDistanceSinceLastInvoke_Um()
     {
-        uint32_t traveledDistance = static_cast<uint32_t>( (currentEncoderValueR - previousEncoderValue) ) / ENCODER_RESOULTION * WHEEL_DIAMETER_UM * 3.1415;
+        uint32_t traveledDistance = static_cast<float>( (currentEncoderValueR - previousEncoderValue) ) / ENCODER_RESOULTION * WHEEL_DIAMETER_UM * 3.1415;
         previousEncoderValue = currentEncoderValueR;
         return traveledDistance; // in um
     }

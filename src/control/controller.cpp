@@ -12,13 +12,12 @@ void executeStraightMovementControl()
 
 void MM::control()
 {
-    g.leftMotorVoltage = 1000;
-    g.rightMotorVoltage = 500;
+    //g.leftMotorVoltage = 1000;
+    //g.rightMotorVoltage = 500;
 
     /*g.targetMotorVoltage = 1000;
     executeStraightMovementControl();*/
 
-    /*
     if( !g.currentCommand->isFinished() )
     {
         g.currentCommand->execute();
@@ -26,5 +25,5 @@ void MM::control()
     else
     {
         //delete g.currentCommand;
-    }*/ 
+    }
 }

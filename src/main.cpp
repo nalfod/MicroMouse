@@ -15,7 +15,7 @@
 using namespace std::chrono_literals;
 
 std::chrono::duration<uint32_t, std::micro> MAIN_CYCLE_TIME = 2ms;
-std::chrono::duration<uint32_t, std::micro> DEBUG_CYCLE_TIME = 50ms;
+std::chrono::duration<uint32_t, std::micro> DEBUG_CYCLE_TIME = 100ms;
 
 void debug();
 
@@ -53,13 +53,13 @@ void debug()
   LOG_INFO("MOTORS-> MOTOR_LEFT: %d ENC_LEFT: %d MOTOR_RIGHT: %d ENC_RIGHT: %d\n ", g.leftMotorVoltage, static_cast<int>( mouse.motor_left.getEncoderCount() ), 
                                                                                     g.rightMotorVoltage, static_cast<int>( mouse.motor_right.getEncoderCount() ) );
 
-/*  LOG_INFO("LinearTravel-> DES_DIST: %d REAL_DIST: %d START_TIME: %d ELAPSED_TIME: %d TOTAL_TIME: %d\n ", 
+  LOG_INFO("LinearTravel-> DES_DIST: %d REAL_DIST: %d START_TIME: %d ELAPSED_TIME: %d TOTAL_TIME: %d\n ", 
     static_cast<int> ( g.currentCommand->getDesiredCurrentPosition_um() ),
     static_cast<int> ( g.currentCommand->getRealCurrentPosition_um() ),
     g.currentCommand->getStartTime_ms(),
     g.currentCommand->getElapsedTime_ms(),
     g.currentCommand->getTotalTime_ms()
-  ); */
+  ); 
 }
 
 void setup()
@@ -74,25 +74,27 @@ void setup()
   // enable encoders
   ESP32Encoder::useInternalWeakPullResistors = puType::up;
 
-  // enable leds
+  // turn on leds
   mouse.ir_led1.on();
   mouse.ir_led2.on();
   mouse.ir_led3.on();
   mouse.ir_led4.on();
 
+  // Initializing the balancer controller
   // NOTE: count() will return the value in ns!
   g.myStraightMovementCtrl.init((static_cast<int>(MAIN_CYCLE_TIME.count()) / 1000), AUTOMATIC, -1000, 1000);
 
-  g.currentCommand = new MM::LinearTravelCommand(1000000, 300, 1, 1, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage);
-
+  // Wait 5 sec to be able to connect with mobile!
   unsigned long start_ms = millis();
   unsigned long now_ms = start_ms;
-
-
   while( now_ms < start_ms + 5000 )
   {
       now_ms = millis();
   }
+
+  // Create a new linear travel command
+  g.currentCommand = new MM::LinearTravelCommand(1000000, 300, 1, 1, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage);
+
   LOG_INFO("Setup Done\n");
 }
 
