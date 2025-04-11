@@ -78,7 +78,6 @@ public:
     // For debug:
     int32_t getRealCurrentPosition_um() { return mRealCurrentPosition_um; }
     int32_t getDesiredCurrentPosition_um() { return mDesiredCurrentPosition_um; }
-
     unsigned long getStartTime_ms() { return mStartTime_ms; }
     unsigned long getElapsedTime_ms() { return mElapsedTime_ms; }
     unsigned long getTotalTime_ms() { return mTotalTimeOfTravel_ms; }
@@ -90,6 +89,7 @@ private:
     EncoderValueIntegrator myEncIntegrator1;
     EncoderValueIntegrator myEncIntegrator2;
     PidWrapper myMovementCtrl{0.01, 0, 0};
+    // QUESTION: How should this be fine-tuned? Should we change it durint runtime?
 
     // state flags
     bool mStarted{false};
