@@ -15,8 +15,8 @@ void MM::read_sensors()
 
     g.currentBatteryVoltage = analogRead(MM::PINS::BATT);
 
-    g.rightEncoderValue = mouse.encoder_right.getCount();
-    g.leftEncoderValue = mouse.encoder_left.getCount();
+    g.rightEncoderValue = mouse.motor_right.getEncoderCount();
+    g.leftEncoderValue =  mouse.motor_left.getEncoderCount();
 }
 
 void MM::pre_process_inputs()

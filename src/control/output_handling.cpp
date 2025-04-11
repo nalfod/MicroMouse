@@ -11,6 +11,6 @@ void MM::post_process()
 
 void MM::update_outputs()
 {
-    mouse.motor_right.setVoltageAndRotation(g.rightMotorVoltage, MM::Motor::CLOCKWISE, g.currentBatteryVoltage);
-    mouse.motor_left.setVoltageAndRotation(g.leftMotorVoltage, MM::Motor::COUNTER_CLOCKWISE, g.currentBatteryVoltage);
+    mouse.motor_right.setVoltageAndRotation(g.rightMotorVoltage, g.currentBatteryVoltage);
+    mouse.motor_left.setVoltageAndRotation(g.leftMotorVoltage, g.currentBatteryVoltage);
 }

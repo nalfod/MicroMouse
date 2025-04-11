@@ -1,5 +1,6 @@
 #pragma once
 #include <FS_MX1508.h>
+#include <ESP32Encoder.h>
 
 namespace MM {
 
@@ -12,13 +13,17 @@ class Motor
             COUNTER_CLOCKWISE = 2
         };
 
-        Motor(int motorPin1, int motorPpin2): myMotor(motorPin1, motorPpin2) { }
+        Motor(RotationDirection rotationDirection, int motorPin1, int motorPpin2, int encoderPin1, int encoderPin2);
     
         void setVoltageAndRotation(int16_t targetVoltage, 
-                                   RotationDirection rotationDirection, 
                                    uint16_t currentBatteryVoltage);
-        private:
+
+        int64_t getEncoderCount();
+
+    private:
+            RotationDirection myRotationDirection;
             MX1508 myMotor;
+            ESP32Encoder myEncoder;
 };
 
 } // namespace MM

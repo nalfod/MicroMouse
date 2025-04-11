@@ -50,31 +50,29 @@ void debug()
   // LOG_INFO("ENCODERS-> ENCODER LEFT: %d ENCODER RIGHT: %d\n", static_cast<int>( g.leftEncoderValue ), static_cast<int>( g.rightEncoderValue) );
   //LOG_INFO("DIR - ENCODER LEFT: %d ENCODER RIGHT: %d\n", static_cast<int>( mouse.encoder_right.getCount() ), static_cast<int>( mouse.encoder_left.getCount() ) );
 
-  LOG_INFO("LinearTravel-> DES_DIST: %d REAL_DIST: %d START_TIME: %d ELAPSED_TIME: %d TOTAL_TIME: %d\n ", 
+  LOG_INFO("MOTORS-> MOTOR_LEFT: %d ENC_LEFT: %d MOTOR_RIGHT: %d ENC_RIGHT: %d\n ", g.leftMotorVoltage, static_cast<int>( mouse.motor_left.getEncoderCount() ), 
+                                                                                    g.rightMotorVoltage, static_cast<int>( mouse.motor_right.getEncoderCount() ) );
+
+/*  LOG_INFO("LinearTravel-> DES_DIST: %d REAL_DIST: %d START_TIME: %d ELAPSED_TIME: %d TOTAL_TIME: %d\n ", 
     static_cast<int> ( g.currentCommand->getDesiredCurrentPosition_um() ),
     static_cast<int> ( g.currentCommand->getRealCurrentPosition_um() ),
     g.currentCommand->getStartTime_ms(),
     g.currentCommand->getElapsedTime_ms(),
     g.currentCommand->getTotalTime_ms()
-  );
+  ); */
 }
 
 void setup()
 {
   LOGGING_BEGIN();
   mouse.dbg_green.on();
-  LOG_INFO("Setup Done\n");
-
+  
   // enable motors
   pinMode(MM::PINS::MOTOR_DRV_EN, OUTPUT);
   digitalWrite(MM::PINS::MOTOR_DRV_EN, true);
 
   // enable encoders
   ESP32Encoder::useInternalWeakPullResistors = puType::up;
-  mouse.encoder_left.attachHalfQuad(MM::PINS::MOTOR_1_ENC_A, MM::PINS::MOTOR_1_ENC_B);
-  mouse.encoder_right.attachHalfQuad(MM::PINS::MOTOR_2_ENC_A, MM::PINS::MOTOR_2_ENC_B);
-  mouse.encoder_left.clearCount();
-  mouse.encoder_right.clearCount();
 
   // enable leds
   mouse.ir_led1.on();
@@ -90,11 +88,12 @@ void setup()
   unsigned long start_ms = millis();
   unsigned long now_ms = start_ms;
 
+
   while( now_ms < start_ms + 5000 )
   {
       now_ms = millis();
   }
-
+  LOG_INFO("Setup Done\n");
 }
 
 void loop()
