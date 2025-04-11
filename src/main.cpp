@@ -14,7 +14,7 @@
 
 using namespace std::chrono_literals;
 
-std::chrono::duration<uint32_t, std::micro> MAIN_CYCLE_TIME = 2ms;
+std::chrono::duration<uint32_t, std::micro> MAIN_CYCLE_TIME = 10ms;
 std::chrono::duration<uint32_t, std::micro> DEBUG_CYCLE_TIME = 500ms;
 
 void debug();
@@ -37,7 +37,7 @@ MM::Task task_debug               {debug, DEBUG_CYCLE_TIME};
 void debug()
 {
   mouse.dbg_red.toggle();
-  LOG_INFO("LEDS-> FL: %d, L: %d, R: %d, FR: %d\n ", g.ir_frontleft,
+  /*LOG_INFO("LEDS-> FL: %d, L: %d, R: %d, FR: %d\n ", g.ir_frontleft,
                                                g.ir_left,
                                                g.ir_right,
                                                g.ir_frontright);
@@ -45,7 +45,17 @@ void debug()
   LOG_INFO("MOTORS-> MOTOR_LEFT: %d, MOTOR_RIGHT: %d\n ", g.leftMotorVoltage,
                                                           g.rightMotorVoltage);
 
-  LOG_INFO("BATTERY VOLTAGE: %d\n", g.currentBatteryVoltage);
+  LOG_INFO("BATTERY VOLTAGE: %d\n", g.currentBatteryVoltage);*/
+
+  LOG_INFO("ENCODER LEFT: %d ENCODER RIGHT: %d\n", g.leftEncoderValue, g.rightEncoderValue);
+/*
+  LOG_INFO("LinearTravel-> DES_DIST: %d REAL_DIST: %d START_TIME: %d ELAPSED_TIME: %d TOTAL_TIME: %d\n ", 
+    g.currentCommand->getDesiredCurrentPosition_um() / 1000,
+    g.currentCommand->getRealCurrentPosition_um() / 1000,
+    g.currentCommand->getStartTime_ms(),
+    g.currentCommand->getElapsedTime_ms(),
+    g.currentCommand->getTotalTime_ms()
+  );*/
 }
 
 void setup()
@@ -58,6 +68,14 @@ void setup()
   pinMode(MM::PINS::MOTOR_DRV_EN, OUTPUT);
   digitalWrite(MM::PINS::MOTOR_DRV_EN, true);
 
+  // enable encoders
+  ESP32Encoder::useInternalWeakPullResistors = puType::up;
+  mouse.encoder1.attachHalfQuad(MM::PINS::MOTOR_1_ENC_A, MM::PINS::MOTOR_1_ENC_B);
+  mouse.encoder2.attachHalfQuad(MM::PINS::MOTOR_2_ENC_A, MM::PINS::MOTOR_2_ENC_B);
+  mouse.encoder1.clearCount();
+  mouse.encoder2.clearCount();
+
+  // enable leds
   mouse.ir_led1.on();
   mouse.ir_led2.on();
   mouse.ir_led3.on();
@@ -65,12 +83,17 @@ void setup()
 
   // NOTE: count() will return the value in ns!
   g.myStraightMovementCtrl.init((static_cast<int>(MAIN_CYCLE_TIME.count()) / 1000), AUTOMATIC, -1000, 1000);
-  //g.myStraightMovementCtrl.init((static_cast<int>(MAIN_CYCLE_TIME.count()) - 1), AUTOMATIC, -1000, 1000);
 
+  g.currentCommand = new MM::LinearTravelCommand(1000000, 300, 1, 1, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage);
 
-  int encDummy1 = 0;
-  int encDummy2 = 0;
-  MM::LinearTravelCommand newCommand = MM::LinearTravelCommand(50, 10, 1, 3, encDummy1, encDummy2, g.leftMotorVoltage, g.rightMotorVoltage);
+  unsigned long start_ms = millis();
+  unsigned long now_ms = start_ms;
+
+  while( now_ms < start_ms + 5000 )
+  {
+      now_ms = millis();
+  }
+
 }
 
 void loop()

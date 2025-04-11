@@ -4,6 +4,8 @@
 #include <cstdint>
 #include "drv/pid/pidWrapper.h"
 
+#include "commands/linear_travel_command.h"
+
 namespace MM {
 
 struct Globals {
@@ -13,6 +15,8 @@ struct Globals {
     uint16_t ir_frontright;
     uint16_t ir_right;
     uint16_t currentBatteryVoltage;
+    int64_t leftEncoderValue;
+    int64_t rightEncoderValue;
 
 // Targets =================================================
     // the "speed" which we wants to achieve
@@ -27,6 +31,12 @@ struct Globals {
 // Controllers =================================================
     PidWrapper myStraightMovementCtrl;
 
+// Commands =================================================
+
+    LinearTravelCommand* currentCommand; 
+
+
+// Constructor
     Globals();
 };
 

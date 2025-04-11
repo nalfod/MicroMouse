@@ -1,25 +1,97 @@
 #include "linear_travel_command.h"
 #include "Arduino.h" // for millis()
+#include "utils/logging.h"
+
+//////////////////////////////////////
+////////////// TargetSpeedCalculator
+//////////////////////////////////////
+
+MM::TargetSpeedCalculator::TargetSpeedCalculator(uint32_t dist_um, 
+                                                 uint32_t speed_um_per_ms, 
+                                                 uint32_t acc_um_per_ms2, 
+                                                 uint32_t dec_um_per_ms2):
+mDistance_um(dist_um),
+mSetSpeed_um_per_ms(speed_um_per_ms),
+mAcceleration_um_per_ms2(acc_um_per_ms2),
+mDeceleration_um_per_ms2(dec_um_per_ms2)
+{
+    while( true )
+    {
+        mAccelerationTime_ms = mSetSpeed_um_per_ms / mAcceleration_um_per_ms2;
+        mDecelerationTime_ms = mSetSpeed_um_per_ms / mDeceleration_um_per_ms2;
+        mUniformTravelTime_ms  = (mDistance_um - 0.5 * mSetSpeed_um_per_ms * mSetSpeed_um_per_ms * ( 1 / mAcceleration_um_per_ms2 + 1 / mDeceleration_um_per_ms2 ) ) / (mSetSpeed_um_per_ms);
+
+        if( mUniformTravelTime_ms > 0 )
+        {
+            break;
+        }
+        else
+        {
+            mSetSpeed_um_per_ms *= 0.9;
+        }
+    }
+
+    LOG_INFO("TargetSpeedCalculator (ctor)-> Total distance(um): %d Final speed(um/ms): %d Acc time(ms): %d Uni time(ms): %d Dec time(ms): %d\n ",
+        mDistance_um,
+        mSetSpeed_um_per_ms,
+        mAccelerationTime_ms,
+        mUniformTravelTime_ms,
+        mDecelerationTime_ms );
+}
+
+uint32_t MM::TargetSpeedCalculator::calcCurrentTargetSpeed_UmPerMs(unsigned long elapsedTime_ms)
+{
+    uint32_t targetSpeed_um_per_ms = 0;
+
+    if( elapsedTime_ms < mAccelerationTime_ms )
+    {
+        targetSpeed_um_per_ms = getSpeedInAcc_UmPerMs( elapsedTime_ms );
+    }
+    else if( elapsedTime_ms > mAccelerationTime_ms && elapsedTime_ms < ( mAccelerationTime_ms + mUniformTravelTime_ms) )
+    {
+        targetSpeed_um_per_ms = mSetSpeed_um_per_ms;
+    }
+    else if( elapsedTime_ms < (mAccelerationTime_ms + mUniformTravelTime_ms + mDecelerationTime_ms) )
+    {
+        targetSpeed_um_per_ms = getSpeedInDec_UmPerMs( elapsedTime_ms - (mAccelerationTime_ms + mUniformTravelTime_ms) );
+    }
+    else
+    {
+        targetSpeed_um_per_ms = 0;
+    }
+
+    return targetSpeed_um_per_ms;
+}
+
+uint32_t MM::TargetSpeedCalculator::getSpeedInAcc_UmPerMs(unsigned long accElapsedTime_ms)
+{
+    return accElapsedTime_ms * mAcceleration_um_per_ms2;
+}
+
+uint32_t MM::TargetSpeedCalculator::getSpeedInDec_UmPerMs(unsigned long decElapsedTime_ms)
+{
+    return mSetSpeed_um_per_ms - (decElapsedTime_ms * mDeceleration_um_per_ms2);
+}
 
 ////////////////////
 ///////   LinearTravelCommand
 ////////////////////
 
-MM::LinearTravelCommand::LinearTravelCommand(float dist, 
-                                             float speed, 
-                                             float acc, 
-                                             float dec, 
-                                             int const& encoderValue1, 
-                                             int const& encoderValue2,
-                                             int16_t& leftMotorVoltage,
-                                             int16_t& rightMotorVoltage):
-myTargetSpeedCalculator(dist, speed, acc, dec),
-myEncIntegrator1(encoderValue1),
-myEncIntegrator2(encoderValue2),
-mLeftMotorVoltage(leftMotorVoltage),
-mRightMotorVoltage(rightMotorVoltage)
+MM::LinearTravelCommand::LinearTravelCommand(uint32_t dist_um, 
+                                             uint32_t speed_um_per_ms, 
+                                             uint32_t acc_um_per_ms2, 
+                                             uint32_t dec_um_per_ms2, 
+                                             int64_t const& encoderValue1R, 
+                                             int64_t const& encoderValue2R,
+                                             int16_t& leftMotorVoltageR_mV,
+                                             int16_t& rightMotorVoltageR_mV):
+myTargetSpeedCalculator(dist_um, speed_um_per_ms, acc_um_per_ms2, dec_um_per_ms2),
+myEncIntegrator1(encoderValue1R),
+myEncIntegrator2(encoderValue2R),
+mLeftMotorVoltageR_mV(leftMotorVoltageR_mV),
+mRightMotorVoltageR_mV(rightMotorVoltageR_mV)
 {
-    mTotalTimeOfTravel = myTargetSpeedCalculator.getTotalTimeOfTravel();
+    mTotalTimeOfTravel_ms = myTargetSpeedCalculator.getTotalTimeOfTravel_Ms();
     myMovementCtrl.init(1, AUTOMATIC, -1000, 1000);
 }
 
@@ -28,104 +100,43 @@ void MM::LinearTravelCommand::execute()
 {
     if( !mStarted )
     {
-        mStartTime = millis();
+        mStartTime_ms = millis();
         mStarted = true;
     }
     
     // determining times
-    float now = millis();
-    float timeChange = now - mElapsedTime;
-    mElapsedTime = now - mStartTime;
+    unsigned long now_ms = millis();
+    unsigned long timeChange_ms = now_ms - mElapsedTime_ms;
+    mElapsedTime_ms = now_ms - mStartTime_ms;
 
-    if( mElapsedTime >= mTotalTimeOfTravel )
+    if( mElapsedTime_ms >= mTotalTimeOfTravel_ms )
     {
+        mLeftMotorVoltageR_mV = 0;
+        mRightMotorVoltageR_mV = 0;
         mFinished = true;
     }
     else
     {
-        float outputSpeed = myTargetSpeedCalculator.calcCurrentTargetSpeed( mElapsedTime );
+        uint32_t outputSpeed_um_per_ms = myTargetSpeedCalculator.calcCurrentTargetSpeed_UmPerMs( mElapsedTime_ms );
         
-        mRealCurrentPosition += ( myEncIntegrator1.getTraveledDistanceSinceLastInvoke() + myEncIntegrator2.getTraveledDistanceSinceLastInvoke() ) / 2;
-        mDesiredCurrentPosition += outputSpeed * timeChange; 
+        mRealCurrentPosition_um += ( myEncIntegrator1.getTraveledDistanceSinceLastInvoke_Um() + myEncIntegrator2.getTraveledDistanceSinceLastInvoke_Um() ) / 2;
+        mDesiredCurrentPosition_um += outputSpeed_um_per_ms * timeChange_ms; 
 
-        myMovementCtrl.setTarget( static_cast<double>( mDesiredCurrentPosition ) );
-        myMovementCtrl.compute( static_cast<double>( mRealCurrentPosition) );
+        /*myMovementCtrl.setTarget( static_cast<double>( mDesiredCurrentPosition_um ) );
+        myMovementCtrl.compute( static_cast<double>( mRealCurrentPosition_um) );*/
 
-        int16_t outputVoltage = static_cast<int16_t>(calcVoltageFromSpeed(outputSpeed)) + static_cast<int16_t>( myMovementCtrl.getOuput() );
+        int16_t outputVoltage = static_cast<int16_t>(calcVoltageFromSpeed_mV(outputSpeed_um_per_ms)) /*+ static_cast<int16_t>( myMovementCtrl.getOuput() )*/;
 
-        mLeftMotorVoltage = outputVoltage;
-        mRightMotorVoltage = mRightMotorVoltage;
+        mLeftMotorVoltageR_mV = outputVoltage;
+        mRightMotorVoltageR_mV = outputVoltage;
 
-        /* std::cout<<"Elapsed time= " << mElapsedTime << " Current speed= " << outputSpeed 
-                 << " mDesiredCurrentPosition= " << mDesiredCurrentPosition << std::endl;*/ 
+        /* std::cout<<"Elapsed time= " << mElapsedTime_ms << " Current speed= " << outputSpeed_um_per_ms 
+                 << " mDesiredCurrentPosition_um= " << mDesiredCurrentPosition_um << std::endl;*/ 
     }
 }
 
-float MM::LinearTravelCommand::calcVoltageFromSpeed( float setSpeed )
+int16_t MM::LinearTravelCommand::calcVoltageFromSpeed_mV( int16_t setSpeed_um_per_ms )
 {
-    return K_SPEED_FF * setSpeed + K_BIAS_FF;
+    return static_cast<int16_t>(K_SPEED_FF * setSpeed_um_per_ms + K_BIAS_FF);
 }
 
-//////////////////////////////////////
-////////////// TargetSpeedCalculator
-//////////////////////////////////////
-
-MM::TargetSpeedCalculator::TargetSpeedCalculator(float dist, 
-                                               float speed, 
-                                               float acc, 
-                                               float dec):
-mDistance(dist),
-mSetSpeed(speed),
-mAcceleration(acc),
-mDeceleration(dec)
-{
-    while( true )
-    {
-        mAccelerationTime = mSetSpeed / mAcceleration;
-        mDecelerationTime = mSetSpeed / mDeceleration;
-        mUniformTravelTime  = (mDistance - 0.5 * mSetSpeed * mSetSpeed * ( 1 / mAcceleration + 1 / mDeceleration ) ) / (mSetSpeed);
-
-        if( mUniformTravelTime > 0.0 )
-        {
-            break;
-        }
-        else
-        {
-            mSetSpeed *= 0.9;
-        }
-    }
-}
-
-float MM::TargetSpeedCalculator::calcCurrentTargetSpeed(float elapsedTime)
-{
-    float targetSpeed = 0.0;
-    
-    if( elapsedTime < mAccelerationTime )
-    {
-        targetSpeed = calcVelocityInAcc( elapsedTime );
-    }
-    else if( elapsedTime > mAccelerationTime && elapsedTime < ( mAccelerationTime + mUniformTravelTime) )
-    {
-        targetSpeed = mSetSpeed;
-    }
-    else if( elapsedTime < (mAccelerationTime + mUniformTravelTime + mDecelerationTime) )
-    {
-        targetSpeed = calcVelocityInDec( elapsedTime - (mAccelerationTime + mUniformTravelTime) );
-    }
-    else
-    {
-        targetSpeed = 0;
-    }
-    
-    return targetSpeed;
-}
-
-float MM::TargetSpeedCalculator::calcVelocityInAcc(float accElapsedTime)
-{
-    return accElapsedTime * mAcceleration;
-}
-
-float MM::TargetSpeedCalculator::calcVelocityInDec(float decElapsedTime)
-{
-    return mSetSpeed - (decElapsedTime * mDeceleration);
-}

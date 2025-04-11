@@ -4,6 +4,7 @@
 #include "hal/micromouse.h"
 #include <Arduino.h>
 #include "globals.h"
+#include "mouse.h"
 
 void MM::read_sensors()
 {
@@ -13,6 +14,9 @@ void MM::read_sensors()
     g.ir_right = analogRead(MM::PINS::IR_4);
 
     g.currentBatteryVoltage = analogRead(MM::PINS::BATT);
+
+    g.rightEncoderValue = mouse.encoder1.getCount();
+    g.leftEncoderValue = mouse.encoder2.getCount();
 }
 
 void MM::pre_process_inputs()

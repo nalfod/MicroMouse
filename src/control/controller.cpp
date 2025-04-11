@@ -3,7 +3,6 @@
 #include "controller.h"
 #include "globals.h"
 
-
 void executeStraightMovementControl()
 {
     g.myStraightMovementCtrl.compute( static_cast<double>( g.ir_frontleft - g.ir_frontright ) );
@@ -13,6 +12,15 @@ void executeStraightMovementControl()
 
 void MM::control()
 {
-    g.targetMotorVoltage = 1000;
-    executeStraightMovementControl();
+    /*g.targetMotorVoltage = 1000;
+    executeStraightMovementControl();*/
+
+    if( !g.currentCommand->isFinished() )
+    {
+        //g.currentCommand->execute();
+    }
+    else
+    {
+        //delete g.currentCommand;
+    } 
 }
