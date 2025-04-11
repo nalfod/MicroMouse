@@ -14,8 +14,8 @@
 
 using namespace std::chrono_literals;
 
-std::chrono::duration<uint32_t, std::micro> MAIN_CYCLE_TIME = 10ms;
-std::chrono::duration<uint32_t, std::micro> DEBUG_CYCLE_TIME = 500ms;
+std::chrono::duration<uint32_t, std::micro> MAIN_CYCLE_TIME = 2ms;
+std::chrono::duration<uint32_t, std::micro> DEBUG_CYCLE_TIME = 50ms;
 
 void debug();
 
@@ -42,20 +42,21 @@ void debug()
                                                g.ir_right,
                                                g.ir_frontright);
 
-  LOG_INFO("MOTORS-> MOTOR_LEFT: %d, MOTOR_RIGHT: %d\n ", g.leftMotorVoltage,
-                                                          g.rightMotorVoltage);
+  
 
   LOG_INFO("BATTERY VOLTAGE: %d\n", g.currentBatteryVoltage);*/
 
-  LOG_INFO("ENCODER LEFT: %d ENCODER RIGHT: %d\n", g.leftEncoderValue, g.rightEncoderValue);
-/*
+  // LOG_INFO("MOTORS->   MOTOR_LEFT:   %d   MOTOR_RIGHT: %d\n ", g.leftMotorVoltage, g.rightMotorVoltage);
+  // LOG_INFO("ENCODERS-> ENCODER LEFT: %d ENCODER RIGHT: %d\n", static_cast<int>( g.leftEncoderValue ), static_cast<int>( g.rightEncoderValue) );
+  //LOG_INFO("DIR - ENCODER LEFT: %d ENCODER RIGHT: %d\n", static_cast<int>( mouse.encoder_right.getCount() ), static_cast<int>( mouse.encoder_left.getCount() ) );
+
   LOG_INFO("LinearTravel-> DES_DIST: %d REAL_DIST: %d START_TIME: %d ELAPSED_TIME: %d TOTAL_TIME: %d\n ", 
-    g.currentCommand->getDesiredCurrentPosition_um() / 1000,
-    g.currentCommand->getRealCurrentPosition_um() / 1000,
+    static_cast<int> ( g.currentCommand->getDesiredCurrentPosition_um() ),
+    static_cast<int> ( g.currentCommand->getRealCurrentPosition_um() ),
     g.currentCommand->getStartTime_ms(),
     g.currentCommand->getElapsedTime_ms(),
     g.currentCommand->getTotalTime_ms()
-  );*/
+  );
 }
 
 void setup()
@@ -70,10 +71,10 @@ void setup()
 
   // enable encoders
   ESP32Encoder::useInternalWeakPullResistors = puType::up;
-  mouse.encoder1.attachHalfQuad(MM::PINS::MOTOR_1_ENC_A, MM::PINS::MOTOR_1_ENC_B);
-  mouse.encoder2.attachHalfQuad(MM::PINS::MOTOR_2_ENC_A, MM::PINS::MOTOR_2_ENC_B);
-  mouse.encoder1.clearCount();
-  mouse.encoder2.clearCount();
+  mouse.encoder_left.attachHalfQuad(MM::PINS::MOTOR_1_ENC_A, MM::PINS::MOTOR_1_ENC_B);
+  mouse.encoder_right.attachHalfQuad(MM::PINS::MOTOR_2_ENC_A, MM::PINS::MOTOR_2_ENC_B);
+  mouse.encoder_left.clearCount();
+  mouse.encoder_right.clearCount();
 
   // enable leds
   mouse.ir_led1.on();

@@ -17,7 +17,7 @@ void MM::control()
 
     if( !g.currentCommand->isFinished() )
     {
-        //g.currentCommand->execute();
+        g.currentCommand->execute();
     }
     else
     {

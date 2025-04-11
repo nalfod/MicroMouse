@@ -43,15 +43,15 @@ uint32_t MM::TargetSpeedCalculator::calcCurrentTargetSpeed_UmPerMs(unsigned long
 {
     uint32_t targetSpeed_um_per_ms = 0;
 
-    if( elapsedTime_ms < mAccelerationTime_ms )
+    if( elapsedTime_ms <= mAccelerationTime_ms )
     {
         targetSpeed_um_per_ms = getSpeedInAcc_UmPerMs( elapsedTime_ms );
     }
-    else if( elapsedTime_ms > mAccelerationTime_ms && elapsedTime_ms < ( mAccelerationTime_ms + mUniformTravelTime_ms) )
+    else if( elapsedTime_ms > mAccelerationTime_ms && elapsedTime_ms <= ( mAccelerationTime_ms + mUniformTravelTime_ms) )
     {
         targetSpeed_um_per_ms = mSetSpeed_um_per_ms;
     }
-    else if( elapsedTime_ms < (mAccelerationTime_ms + mUniformTravelTime_ms + mDecelerationTime_ms) )
+    else if( elapsedTime_ms <= (mAccelerationTime_ms + mUniformTravelTime_ms + mDecelerationTime_ms) )
     {
         targetSpeed_um_per_ms = getSpeedInDec_UmPerMs( elapsedTime_ms - (mAccelerationTime_ms + mUniformTravelTime_ms) );
     }
@@ -98,16 +98,17 @@ mRightMotorVoltageR_mV(rightMotorVoltageR_mV)
 
 void MM::LinearTravelCommand::execute()
 {
+    unsigned long now_ms = millis();
     if( !mStarted )
     {
-        mStartTime_ms = millis();
+        mStartTime_ms = now_ms;
         mStarted = true;
     }
     
     // determining times
-    unsigned long now_ms = millis();
-    unsigned long timeChange_ms = now_ms - mElapsedTime_ms;
+    unsigned long oldElapsedTime_ms = mElapsedTime_ms;
     mElapsedTime_ms = now_ms - mStartTime_ms;
+    unsigned long timeChange_ms = mElapsedTime_ms - oldElapsedTime_ms;
 
     if( mElapsedTime_ms >= mTotalTimeOfTravel_ms )
     {
