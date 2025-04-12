@@ -6,6 +6,7 @@ namespace MM {
 class PidWrapper
 {
     public:
+        PidWrapper();
         PidWrapper(double kp, double ki, double kd);
 
         void init(int sampleTime, int mode, double minOutputLimit, double maxOutputLimit);
@@ -13,6 +14,8 @@ class PidWrapper
         void setTarget(double newTarget);
         void compute(double newError);
         double getOuput();
+
+        void setTunings(double Kp, double Ki, double Kd);
 
     private:
         double error;

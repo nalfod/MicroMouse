@@ -1,4 +1,5 @@
 #pragma once
+#include "motion_command_if.h"
 #include <cstdint>
 #include "drv/pid/pidWrapper.h"
 
@@ -65,15 +66,15 @@ private:
 
 
 
-class LinearTravelCommand
+class LinearTravelCommand : public MotionCommandIF
 {
 public:
     LinearTravelCommand(uint32_t dist_um, uint32_t speed_um_per_ms, uint32_t acc_um_per_ms2, uint32_t dec_um_per_ms2, 
                         int64_t const& encoderValue1, int64_t const& encoderValue2, int16_t& leftMotorVoltage_mV, int16_t& rightMotorVoltage_mV);
     
-    void execute();
+    void execute() override;
     
-    bool isFinished() { return mFinished; }
+    bool isFinished() override { return mFinished; }
 
     // For debug:
     int32_t getRealCurrentPosition_um() { return mRealCurrentPosition_um; }

@@ -1,5 +1,11 @@
 #include "pidWrapper.h"
 
+MM::PidWrapper::PidWrapper():
+myPidController(&error, &output, &target, 0, 0, 0, DIRECT)
+{
+
+}
+
 MM::PidWrapper::PidWrapper(double kp, double ki, double kd):
 myPidController(&error, &output, &target, kp, kd, ki, DIRECT)
 {
@@ -27,4 +33,9 @@ void MM::PidWrapper::init(int sampleTime, int mode, double minOutputLimit, doubl
     myPidController.SetSampleTime(sampleTime);
     myPidController.SetMode(mode);
     myPidController.SetOutputLimits(minOutputLimit, maxOutputLimit);
+}
+
+void MM::PidWrapper::setTunings(double Kp, double Ki, double Kd)
+{
+    myPidController.SetTunings(Kp, Ki, Kd);
 }

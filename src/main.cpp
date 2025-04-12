@@ -11,6 +11,7 @@
 #include "control/output_handling.h"
 
 #include "commands/linear_travel_command.h"
+#include "commands/wall_centering_command.h"
 
 using namespace std::chrono_literals;
 
@@ -52,16 +53,17 @@ void debug()
 
 
   // Linear traveling data
+  MM::LinearTravelCommand* currentLinearTravelCommand = reinterpret_cast<MM::LinearTravelCommand*> ( reinterpret_cast<MM::WallCenteringCommand*>( g.currentCommand )->getWrappedObjectP() );
   LOG_INFO("ELAPS_T: %d TOT_T: %d DDIST: %d RDIST: %d ",
-    g.currentCommand->getElapsedTime_ms(),
-    g.currentCommand->getTotalTime_ms(), 
-    static_cast<int> ( g.currentCommand->getDesiredCurrentPosition_um() ),
-    static_cast<int> ( g.currentCommand->getRealCurrentPosition_um() )
+    currentLinearTravelCommand->getElapsedTime_ms(),
+    currentLinearTravelCommand->getTotalTime_ms(), 
+    static_cast<int> ( currentLinearTravelCommand->getDesiredCurrentPosition_um() ),
+    static_cast<int> ( currentLinearTravelCommand->getRealCurrentPosition_um() )
   ); 
 
   // Motors
   LOG_INFO("M_LEFT: %d ENC_L: %d M_RIGHT: %d ENC_R: %d \n", g.leftMotorVoltage, static_cast<int>( mouse.motor_left.getEncoderCount() ), 
-                                                                    g.rightMotorVoltage, static_cast<int>( mouse.motor_right.getEncoderCount() ) );
+                                                            g.rightMotorVoltage, static_cast<int>( mouse.motor_right.getEncoderCount() ) );
 }
 
 void setup()
@@ -82,10 +84,6 @@ void setup()
   mouse.ir_led3.on();
   mouse.ir_led4.on();
 
-  // Initializing the balancer controller
-  // NOTE: count() will return the value in ns!
-  g.myStraightMovementCtrl.init((static_cast<int>(MAIN_CYCLE_TIME.count()) / 1000), AUTOMATIC, -750, 750);
-
   // Wait 5 sec to be able to connect with mobile!
   unsigned long start_ms = millis();
   unsigned long now_ms = start_ms;
@@ -95,7 +93,10 @@ void setup()
   }
 
   // Create a new linear travel command
-  g.currentCommand = new MM::LinearTravelCommand(2000000, 150, 1, 1, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage);
+  MM::MotionCommandIF* linTravelCommand = new MM::LinearTravelCommand(2000000, 200, 1, 1, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage);
+  MM::MotionCommandIF* wallCenteringCommand = new MM::WallCenteringCommand(linTravelCommand, g.ir_frontleft, g.ir_frontright, g.leftMotorVoltage, g.rightMotorVoltage);
+
+  g.currentCommand = wallCenteringCommand;
 
   LOG_INFO("Setup Done\n");
 }

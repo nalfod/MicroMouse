@@ -2,9 +2,7 @@
 #pragma once
 
 #include <cstdint>
-#include "drv/pid/pidWrapper.h"
-
-#include "commands/linear_travel_command.h"
+#include "commands/motion_command_if.h"
 
 namespace MM {
 
@@ -18,26 +16,14 @@ struct Globals {
     int64_t leftEncoderValue;
     int64_t rightEncoderValue;
 
-// Targets =================================================
-    // the "speed" which we wants to achieve
-    uint16_t targetMotorVoltage;
-
 // Outputs =================================================
     // the values which should be put on the motors
     int16_t leftMotorVoltage;
     int16_t rightMotorVoltage;
-    
-
-// Controllers =================================================
-    PidWrapper myStraightMovementCtrl;
 
 // Commands =================================================
 
-    LinearTravelCommand* currentCommand; 
-
-
-// Constructor
-    Globals();
+    MotionCommandIF* currentCommand; 
 };
 
 } // namespace MM
