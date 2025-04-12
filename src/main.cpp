@@ -84,7 +84,7 @@ void setup()
 
   // Initializing the balancer controller
   // NOTE: count() will return the value in ns!
-  g.myStraightMovementCtrl.init((static_cast<int>(MAIN_CYCLE_TIME.count()) / 1000), AUTOMATIC, -1000, 1000);
+  g.myStraightMovementCtrl.init((static_cast<int>(MAIN_CYCLE_TIME.count()) / 1000), AUTOMATIC, -750, 750);
 
   // Wait 5 sec to be able to connect with mobile!
   unsigned long start_ms = millis();
@@ -95,7 +95,7 @@ void setup()
   }
 
   // Create a new linear travel command
-  g.currentCommand = new MM::LinearTravelCommand(1000000, 300, 1, 1, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage);
+  g.currentCommand = new MM::LinearTravelCommand(2000000, 150, 1, 1, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage);
 
   LOG_INFO("Setup Done\n");
 }

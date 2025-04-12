@@ -6,8 +6,8 @@
 void executeStraightMovementControl()
 {
     g.myStraightMovementCtrl.compute( static_cast<double>( g.ir_frontleft - g.ir_frontright ) );
-    g.leftMotorVoltage = g.targetMotorVoltage - g.myStraightMovementCtrl.getOuput();
-    g.rightMotorVoltage = g.targetMotorVoltage + g.myStraightMovementCtrl.getOuput();
+    g.leftMotorVoltage = g.leftMotorVoltage - g.myStraightMovementCtrl.getOuput();
+    g.rightMotorVoltage = g.rightMotorVoltage + g.myStraightMovementCtrl.getOuput();
 }
 
 void MM::control()
@@ -21,6 +21,7 @@ void MM::control()
     if( !g.currentCommand->isFinished() )
     {
         g.currentCommand->execute();
+        executeStraightMovementControl();
     }
     else
     {
