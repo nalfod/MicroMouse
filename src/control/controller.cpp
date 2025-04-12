@@ -5,8 +5,9 @@
 
 void MM::control()
 {
-    //g.leftMotorVoltage = 1000;
-    //g.rightMotorVoltage = 500;
+    /*g.leftMotorVoltage = 1000;
+    g.rightMotorVoltage = 1000;
+    g.currentCommand->execute();*/
 
     /*g.targetMotorVoltage = 1000;
     executeStraightMovementControl();*/

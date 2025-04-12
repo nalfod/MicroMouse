@@ -23,9 +23,10 @@ void MM::PidWrapper::compute(double newError)
     myPidController.Compute();
 }
 
-double MM::PidWrapper::getOuput()
+double MM::PidWrapper::getOuput() const
 {
-    return output;
+    return output; // MAYBE NO DOUBLE RETURN VALUE????? OR CAST IT????
+
 }
 
 void MM::PidWrapper::init(int sampleTime, int mode, double minOutputLimit, double maxOutputLimit)

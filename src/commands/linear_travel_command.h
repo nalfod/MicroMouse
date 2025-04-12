@@ -74,14 +74,14 @@ public:
     
     void execute() override;
     
-    bool isFinished() override { return mFinished; }
+    bool isFinished() const override { return mFinished; }
 
     // For debug:
-    int32_t getRealCurrentPosition_um() { return mRealCurrentPosition_um; }
-    int32_t getDesiredCurrentPosition_um() { return mDesiredCurrentPosition_um; }
-    unsigned long getStartTime_ms() { return mStartTime_ms; }
-    unsigned long getElapsedTime_ms() { return mElapsedTime_ms; }
-    unsigned long getTotalTime_ms() { return mTotalTimeOfTravel_ms; }
+    int32_t getRealCurrentPosition_um() const { return mRealCurrentPosition_um; }
+    int32_t getDesiredCurrentPosition_um() const { return mDesiredCurrentPosition_um; }
+    unsigned long getStartTime_ms() const { return mStartTime_ms; }
+    unsigned long getElapsedTime_ms() const { return mElapsedTime_ms; }
+    unsigned long getTotalTime_ms() const { return mTotalTimeOfTravel_ms; }
 
 private:
     int16_t calcVoltageFromSpeed_mV( int16_t setSpeed_um_per_ms );

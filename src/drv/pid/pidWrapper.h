@@ -13,7 +13,7 @@ class PidWrapper
 
         void setTarget(double newTarget);
         void compute(double newError);
-        double getOuput();
+        double getOuput() const;
 
         void setTunings(double Kp, double Ki, double Kd);
 

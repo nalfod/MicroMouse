@@ -8,18 +8,18 @@ namespace MM {
 
 struct Globals {
 // Inputs =================================================
-    uint16_t ir_left;
-    uint16_t ir_frontleft;
-    uint16_t ir_frontright;
-    uint16_t ir_right;
-    uint16_t currentBatteryVoltage;
-    int64_t leftEncoderValue;
-    int64_t rightEncoderValue;
+    uint16_t ir_left{0};
+    uint16_t ir_frontleft{0};
+    uint16_t ir_frontright{0};
+    uint16_t ir_right{0};
+    uint16_t currentBatteryVoltage{0};
+    int64_t leftEncoderValue{0};
+    int64_t rightEncoderValue{0};
 
 // Outputs =================================================
     // the values which should be put on the motors
-    int16_t leftMotorVoltage;
-    int16_t rightMotorVoltage;
+    int16_t leftMotorVoltage{0};
+    int16_t rightMotorVoltage{0};
 
 // Commands =================================================
 
