@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include "commands/motion_command_if.h"
+#include <memory>
 
 namespace MM {
 
@@ -23,7 +24,7 @@ struct Globals {
 
 // Commands =================================================
 
-    MotionCommandIF* currentCommand; 
+    std::unique_ptr<MotionCommandIF> currentCommand;
 };
 
 } // namespace MM

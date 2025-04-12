@@ -16,8 +16,4 @@ void MM::control()
     {
         g.currentCommand->execute();
     }
-    else
-    {
-        //delete g.currentCommand;
-    }
 }

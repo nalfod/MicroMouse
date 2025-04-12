@@ -49,10 +49,10 @@ void debug()
 
 
   // wall centering
-  LOG_INFO("Wall center output: %d error: %d FL: %d FR: %d\n", ( reinterpret_cast<MM::WallCenteringCommand*>( g.currentCommand )->getPidOutput() ), 
-                                                               ( reinterpret_cast<MM::WallCenteringCommand*>( g.currentCommand )->getCurrentError() ),
-                                                               ( reinterpret_cast<MM::WallCenteringCommand*>( g.currentCommand )->getFrontLeftSensor() ),
-                                                               ( reinterpret_cast<MM::WallCenteringCommand*>( g.currentCommand )->getFrontRightSensor() ) );
+  LOG_INFO("Wall center output: %d error: %d FL: %d FR: %d\n", ( reinterpret_cast<MM::WallCenteringCommand*>( g.currentCommand.get() )->getPidOutput() ), 
+                                                               ( reinterpret_cast<MM::WallCenteringCommand*>( g.currentCommand.get() )->getCurrentError() ),
+                                                               ( reinterpret_cast<MM::WallCenteringCommand*>( g.currentCommand.get() )->getFrontLeftSensor() ),
+                                                               ( reinterpret_cast<MM::WallCenteringCommand*>( g.currentCommand.get() )->getFrontRightSensor() ) );
 
 /*  // Linear traveling data
   static MM::LinearTravelCommand const * const currentLinearTravelCommand = reinterpret_cast<MM::LinearTravelCommand*> ( reinterpret_cast<MM::WallCenteringCommand*>( g.currentCommand )->getWrappedObjectP() );
@@ -95,10 +95,14 @@ void setup()
   }
 
   // Create a new linear travel command
+  /*
   MM::MotionCommandIF* linTravelCommand = new MM::LinearTravelCommand(2000000, 150, 1, 1, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage);
-  MM::MotionCommandIF* wallCenteringCommand = new MM::WallCenteringCommand( linTravelCommand, g.ir_frontleft, g.ir_frontright, g.leftMotorVoltage, g.rightMotorVoltage);
+  MM::MotionCommandIF* wallCenteringCommand = new MM::WallCenteringCommand( linTravelCommand, g.ir_frontleft, g.ir_frontright, g.leftMotorVoltage, g.rightMotorVoltage);*/
 
-  g.currentCommand = wallCenteringCommand;
+  std::unique_ptr<MM::MotionCommandIF> linTravelCommandP = std::make_unique<MM::LinearTravelCommand>( 2000000, 150, 1, 1, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage );
+  std::unique_ptr<MM::MotionCommandIF> wallCenteringCommandP = std::make_unique<MM::WallCenteringCommand>( std::move(linTravelCommandP), g.ir_frontleft, g.ir_frontright, g.leftMotorVoltage, g.rightMotorVoltage );
+
+  g.currentCommand = std::move(wallCenteringCommandP);
 
   LOG_INFO("Setup Done\n");
 }

@@ -1,8 +1,8 @@
 #include "wall_centering_command.h"
 #include "constants.h"
 
-MM::WallCenteringCommand::WallCenteringCommand(MotionCommandIF* commandToWrap, uint16_t const& ir_frontleft, uint16_t const& ir_frontright, int16_t& leftMotorVoltage_mV, int16_t& rightMotorVoltage_mV):
-myWrappedCommandP(commandToWrap),
+MM::WallCenteringCommand::WallCenteringCommand(std::unique_ptr<MotionCommandIF> commandToWrap, uint16_t const& ir_frontleft, uint16_t const& ir_frontright, int16_t& leftMotorVoltage_mV, int16_t& rightMotorVoltage_mV):
+myWrappedCommandP(std::move(commandToWrap)),
 mIrFrontLeftR(ir_frontleft),
 mIrFrontRightR(ir_frontright),
 mLeftMotorVoltageR_mV(leftMotorVoltage_mV),
@@ -48,7 +48,7 @@ bool MM::WallCenteringCommand::isFinished() const
 
 MM::MotionCommandIF* MM::WallCenteringCommand::getWrappedObjectP()
 {
-    return myWrappedCommandP;
+    return myWrappedCommandP.get();
 }
 
 int16_t MM::WallCenteringCommand::getPidOutput() const

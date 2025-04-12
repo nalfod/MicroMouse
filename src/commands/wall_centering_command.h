@@ -2,13 +2,14 @@
 #include "motion_command_if.h"
 #include <cstdint>
 #include "drv/pid/pidWrapper.h"
+#include <memory>
 
 namespace MM {
 
 class WallCenteringCommand : public MotionCommandIF
 {
 public:
-    WallCenteringCommand(MotionCommandIF* commandToWrap, uint16_t const& ir_frontleft, uint16_t const& ir_frontright, int16_t& leftMotorVoltage_mV, int16_t& rightMotorVoltage_mV);
+    WallCenteringCommand(std::unique_ptr<MotionCommandIF> commandToWrap, uint16_t const& ir_frontleft, uint16_t const& ir_frontright, int16_t& leftMotorVoltage_mV, int16_t& rightMotorVoltage_mV);
     void execute() override;
     bool isFinished() const override;
 
@@ -19,7 +20,7 @@ public:
     uint16_t getFrontLeftSensor() { return mIrFrontLeftR; }
     uint16_t getFrontRightSensor() { return mIrFrontRightR; }
 private:
-    MotionCommandIF* myWrappedCommandP;
+    std::unique_ptr<MotionCommandIF> myWrappedCommandP;
 
     // measure points (OR STORE AS UINT??)
     uint16_t const& mIrFrontLeftR;
