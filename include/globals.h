@@ -4,6 +4,7 @@
 #include <cstdint>
 #include "commands/motion_command_if.h"
 #include <memory>
+#include <queue>
 
 namespace MM {
 
@@ -24,7 +25,7 @@ struct Globals {
 
 // Commands =================================================
 
-    std::unique_ptr<MotionCommandIF> currentCommand;
+    std::queue< std::unique_ptr<MotionCommandIF> > commandBuffer;
 };
 
 } // namespace MM

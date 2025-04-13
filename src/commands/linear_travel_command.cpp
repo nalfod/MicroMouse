@@ -118,26 +118,31 @@ void MM::LinearTravelCommand::execute()
     }
     else
     {
+        // Calculating feed forward; theoretical values:
         uint32_t outputSpeed_um_per_ms = myTargetSpeedCalculator.calcCurrentTargetSpeed_UmPerMs( mElapsedTime_ms );
+        mDesiredCurrentPosition_um += outputSpeed_um_per_ms * timeChange_ms;
         
-        mRealCurrentPosition_um += ( myEncIntegrator1.getTraveledDistanceSinceLastInvoke_Um() + myEncIntegrator2.getTraveledDistanceSinceLastInvoke_Um() ) / 2;
-        mDesiredCurrentPosition_um += outputSpeed_um_per_ms * timeChange_ms; 
-
+        // Real values
+        int32_t traveledDistance_um = ( myEncIntegrator1.getTraveledDistanceSinceLastInvoke_Um() + myEncIntegrator2.getTraveledDistanceSinceLastInvoke_Um() ) / 2;
+        mRealCurrentPosition_um += traveledDistance_um;
+        if ( timeChange_ms != 0 )
+        {
+            mCurrentSpeed_UmPerMs = traveledDistance_um / static_cast<int32_t>( timeChange_ms );
+        }
+        
+        // PID controlling
         myMovementCtrl.setTarget( static_cast<double>( mDesiredCurrentPosition_um ) );
         myMovementCtrl.compute( static_cast<double>( mRealCurrentPosition_um) );
 
+        // Determining output voltage
         int16_t outputVoltage = static_cast<int16_t>(calcVoltageFromSpeed_mV(outputSpeed_um_per_ms)) + static_cast<int16_t>( myMovementCtrl.getOuput() );
-
         mLeftMotorVoltageR_mV = outputVoltage;
-        mRightMotorVoltageR_mV = outputVoltage;
-
-        /* std::cout<<"Elapsed time= " << mElapsedTime_ms << " Current speed= " << outputSpeed_um_per_ms 
-                 << " mDesiredCurrentPosition_um= " << mDesiredCurrentPosition_um << std::endl;*/ 
+        mRightMotorVoltageR_mV = outputVoltage;                 
     }
 }
 
 int16_t MM::LinearTravelCommand::calcVoltageFromSpeed_mV( int16_t setSpeed_um_per_ms )
 {
-    return static_cast<int16_t>(K_SPEED_FF * setSpeed_um_per_ms + K_BIAS_FF);
+    return static_cast<int16_t>(CONSTS::K_SPEED_FF * setSpeed_um_per_ms + CONSTS::K_BIAS_FF);
 }
 

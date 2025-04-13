@@ -1,14 +1,10 @@
 #pragma once
 #include "motion_command_if.h"
+#include "constants.h"
 #include <cstdint>
 #include "drv/pid/pidWrapper.h"
 
 namespace MM {
-
-constexpr float K_SPEED_FF = 1.540; // mV / (um/ms)
-constexpr float K_BIAS_FF = 285.190; // mV
-constexpr uint16_t ENCODER_RESOULTION = 288; // no unit
-constexpr uint16_t WHEEL_DIAMETER_UM = 43800; // um
 
 class TargetSpeedCalculator
 {
@@ -46,9 +42,10 @@ class EncoderValueIntegrator
 {
 public:
     EncoderValueIntegrator(int64_t const& encoderResultVarR): currentEncoderValueR(encoderResultVarR) { }
-    uint32_t getTraveledDistanceSinceLastInvoke_Um()
+
+    int32_t getTraveledDistanceSinceLastInvoke_Um()
     {
-        uint32_t traveledDistance = static_cast<float>( (currentEncoderValueR - previousEncoderValue) ) / ENCODER_RESOULTION * WHEEL_DIAMETER_UM * 3.1415;
+        int32_t traveledDistance = static_cast<int32_t>( static_cast<float>( (currentEncoderValueR - previousEncoderValue) ) / CONSTS::ENCODER_RESOULTION * CONSTS::WHEEL_DIAMETER_UM * 3.1415 );
         previousEncoderValue = currentEncoderValueR;
         return traveledDistance; // in um
     }
@@ -82,6 +79,7 @@ public:
     unsigned long getStartTime_ms() const { return mStartTime_ms; }
     unsigned long getElapsedTime_ms() const { return mElapsedTime_ms; }
     unsigned long getTotalTime_ms() const { return mTotalTimeOfTravel_ms; }
+    int32_t mCurrentSpeed_UmPerMs{0};
 
 private:
     int16_t calcVoltageFromSpeed_mV( int16_t setSpeed_um_per_ms );
