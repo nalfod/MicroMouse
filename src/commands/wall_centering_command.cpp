@@ -1,5 +1,6 @@
 #include "wall_centering_command.h"
 #include "constants.h"
+#include "utils/logging.h"
 
 MM::WallCenteringCommand::WallCenteringCommand(std::unique_ptr<MotionCommandIF> commandToWrap, uint16_t const& ir_frontleft, uint16_t const& ir_frontright, int16_t& leftMotorVoltage_mV, int16_t& rightMotorVoltage_mV):
 myWrappedCommandP(std::move(commandToWrap)),
@@ -15,7 +16,7 @@ myCenteringPidCtrl(0.05, 0, 0) // TODO: Maybe the tuning should be more sofistic
 
 void MM::WallCenteringCommand::execute()
 {
-    if( myWrappedCommandP != nullptr )
+    if( myWrappedCommandP.get() != nullptr )
     {
         myWrappedCommandP->execute();
         if( !( myWrappedCommandP->isFinished() ) )
@@ -35,7 +36,7 @@ void MM::WallCenteringCommand::execute()
 
 bool MM::WallCenteringCommand::isFinished() const
 {
-    if( myWrappedCommandP != nullptr )
+    if( myWrappedCommandP.get() != nullptr )
     {    
         return myWrappedCommandP->isFinished();
     }
@@ -59,4 +60,13 @@ int16_t MM::WallCenteringCommand::getPidOutput() const
 int32_t MM::WallCenteringCommand::getCurrentError() const
 {
     return mIrFrontLeftR - mIrFrontRightR;
+}
+
+void MM::WallCenteringCommand::print() const
+{
+    LOG_INFO("Wall center output: %d error: %d FL: %d FR: %d\n", static_cast<int16_t>( myCenteringPidCtrl.getOuput() ), 
+    ( mIrFrontLeftR - mIrFrontRightR ),
+    ( mIrFrontLeftR ),
+    ( mIrFrontRightR ) );
+    myWrappedCommandP->print();
 }

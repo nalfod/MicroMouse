@@ -14,6 +14,7 @@ public:
     bool isFinished() const override;
 
     // ONLY FOR DEBUG:
+    void print() const override;
     MotionCommandIF* getWrappedObjectP();
     int16_t getPidOutput() const;
     int32_t getCurrentError() const;
@@ -22,7 +23,7 @@ public:
 private:
     std::unique_ptr<MotionCommandIF> myWrappedCommandP;
 
-    // measure points (OR STORE AS UINT??)
+    // measure points
     uint16_t const& mIrFrontLeftR;
     uint16_t const& mIrFrontRightR;   
 

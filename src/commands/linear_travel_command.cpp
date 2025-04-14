@@ -146,3 +146,14 @@ int16_t MM::LinearTravelCommand::calcVoltageFromSpeed_mV( int16_t setSpeed_um_pe
     return static_cast<int16_t>(CONSTS::K_SPEED_FF * setSpeed_um_per_ms + CONSTS::K_BIAS_FF);
 }
 
+void MM::LinearTravelCommand::print() const
+{
+    LOG_INFO("TOT_T: %d ELAPS_T: %d DDIST: %d RDIST: %d CURR_SPEED: %d ",
+        mTotalTimeOfTravel_ms,
+        mElapsedTime_ms, 
+        static_cast<int> ( mDesiredCurrentPosition_um ),
+        static_cast<int> ( mRealCurrentPosition_um ),
+        static_cast<int> ( mCurrentSpeed_UmPerMs )
+      );
+}
+

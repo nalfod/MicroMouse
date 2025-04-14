@@ -74,6 +74,7 @@ public:
     bool isFinished() const override { return mFinished; }
 
     // For debug:
+    void print() const override;
     int32_t getRealCurrentPosition_um() const { return mRealCurrentPosition_um; }
     int32_t getDesiredCurrentPosition_um() const { return mDesiredCurrentPosition_um; }
     unsigned long getStartTime_ms() const { return mStartTime_ms; }
