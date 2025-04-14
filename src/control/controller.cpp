@@ -20,21 +20,20 @@ void wait2sec()
 
 void MM::control()
 {
-    if( !g.p[g.index]->isFinished() )
+    if( !g.commandArray[g.index]->isFinished() )
     {
-        g.p[g.index]->execute();
+        g.commandArray[g.index]->execute();
     }
     else
     {
-        wait2sec();
         g.index++;
-        if(g.index > 4)
+        wait2sec();
+        if( g.index > 4 )
         {
             mouse.dbg_green.off();
             g.index = 0;
         }
-    };
-
+    }
     /*
     if( !g.commandBuffer.empty() )
     {
@@ -45,11 +44,11 @@ void MM::control()
         else
         {
             g.commandBuffer.pop();
-            /*
-            if( !g.commandBuffer.empty() )
-            {
-                g.commandBuffer.front()->execute(); // immediately execute the next command to not waste an cycle
-            }*//*
+            
+            // if( !g.commandBuffer.empty() )
+            // {
+            //     g.commandBuffer.front()->execute(); // immediately execute the next command to not waste an cycle
+            // }
             wait2sec();
         }
     }

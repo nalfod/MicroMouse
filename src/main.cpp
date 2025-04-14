@@ -34,14 +34,18 @@ MM::Task task_debug               {debug, CONSTS::DEBUG_CYCLE_TIME};
 void debug()
 {
   mouse.dbg_red.toggle();
-  LOG_INFO("LEDS-> FL: %d, L: %d, R: %d, FR: %d\n ", g.ir_frontleft,
+  /*LOG_INFO("LEDS-> FL: %d, L: %d, R: %d, FR: %d ", g.ir_frontleft,
                                                     g.ir_left,
                                                     g.ir_right,
-                                                    g.ir_frontright);
+                                                    g.ir_frontright);*/
 
-  g.p[g.index]->print();
+  if( !g.commandBuffer.empty() )
+  {
+    g.commandBuffer.front()->print();
+  }
+  g.commandArray[g.index]->print();
+  LOG_INFO("\n");
 
-  
 
   //LOG_INFO("BATTERY VOLTAGE: %d\n", g.currentBatteryVoltage);
 
@@ -71,7 +75,7 @@ void debug()
                                                             g.rightMotorVoltage, static_cast<int>( mouse.motor_right.getEncoderCount() ) );*/
 
   // Command queue:
-  LOG_INFO("QUEUE SIZE: %d EMPTY?: %d \n", g.commandBuffer.size(), static_cast<int>( g.commandBuffer.empty() ) );
+  //LOG_INFO("QUEUE SIZE: %d EMPTY?: %d \n", g.commandBuffer.size(), static_cast<int>( g.commandBuffer.empty() ) );
 }
 
 void setup()
@@ -93,45 +97,25 @@ void setup()
   mouse.ir_led4.on();
 
   // Wait 5 sec to be able to connect with mobile!
-  unsigned long start_ms = millis();
-  unsigned long now_ms = start_ms;
-  while( now_ms < start_ms + 5000 )
-  {
-      now_ms = millis();
-  }
+  delay(5000);
 
   // Create a linear travel command which is wrapped into a wall centering command
-  /*
   for( int i = 0; i < 5; i++)
   {
-    g.commandBuffer.emplace( 
+    /*
+    g.commandBuffer.push( 
       std::make_unique<MM::WallCenteringCommand>( 
       std::make_unique<MM::LinearTravelCommand>( 168000, 100, 1, 1, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage ), 
       g.ir_frontleft, g.ir_frontright, g.leftMotorVoltage, g.rightMotorVoltage )
-    );
-  }*/
-  g.p[0] = std::move( std::make_unique<MM::WallCenteringCommand>( 
-    std::make_unique<MM::LinearTravelCommand>( 168000, 100, 1, 1, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage ), 
-    g.ir_frontleft, g.ir_frontright, g.leftMotorVoltage, g.rightMotorVoltage ) );
+    );*/
 
-  g.p[1] = std::move( std::make_unique<MM::WallCenteringCommand>( 
-    std::make_unique<MM::LinearTravelCommand>( 168000, 100, 1, 1, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage ), 
-    g.ir_frontleft, g.ir_frontright, g.leftMotorVoltage, g.rightMotorVoltage ) );
+    /*
+    g.commandArray[i] = new MM::WallCenteringCommand( 
+      std::make_unique<MM::LinearTravelCommand>( 168000, 100, 1, 1, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage ), 
+      g.ir_frontleft, g.ir_frontright, g.leftMotorVoltage, g.rightMotorVoltage );*/
 
-  g.p[2] = std::move( std::make_unique<MM::WallCenteringCommand>( 
-    std::make_unique<MM::LinearTravelCommand>( 168000, 100, 1, 1, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage ), 
-    g.ir_frontleft, g.ir_frontright, g.leftMotorVoltage, g.rightMotorVoltage ) );
-
-  g.p[3] = std::move( std::make_unique<MM::WallCenteringCommand>( 
-    std::make_unique<MM::LinearTravelCommand>( 168000, 100, 1, 1, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage ), 
-    g.ir_frontleft, g.ir_frontright, g.leftMotorVoltage, g.rightMotorVoltage ) );
-
-  g.p[4] = std::move( std::make_unique<MM::WallCenteringCommand>( 
-    std::make_unique<MM::LinearTravelCommand>( 168000, 100, 1, 1, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage ), 
-    g.ir_frontleft, g.ir_frontright, g.leftMotorVoltage, g.rightMotorVoltage ) );
-
-  g.index = 0;
-
+    g.commandArray[i] = new MM::LinearTravelCommand( 168000, 100, 1, 1, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage );
+  }
   LOG_INFO("Setup Done\n");
 }
 

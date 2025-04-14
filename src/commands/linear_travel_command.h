@@ -43,6 +43,8 @@ class EncoderValueIntegrator
 public:
     EncoderValueIntegrator(int64_t const& encoderResultVarR): currentEncoderValueR(encoderResultVarR) { }
 
+    void startIntegration() { previousEncoderValue = currentEncoderValueR; } // this little error costed me ~4 hours of debugging :)
+
     int32_t getTraveledDistanceSinceLastInvoke_Um()
     {
         int32_t traveledDistance = static_cast<int32_t>( static_cast<float>( (currentEncoderValueR - previousEncoderValue) ) / CONSTS::ENCODER_RESOULTION * CONSTS::WHEEL_DIAMETER_UM * 3.1415 );
@@ -52,7 +54,7 @@ public:
 
 private:
     int64_t const& currentEncoderValueR;
-    int64_t previousEncoderValue = 0;
+    int64_t previousEncoderValue;
 };
 
 

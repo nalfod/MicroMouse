@@ -98,11 +98,15 @@ mRightMotorVoltageR_mV(rightMotorVoltageR_mV)
 
 void MM::LinearTravelCommand::execute()
 {
+    if( mFinished ) { return; }
+
     unsigned long now_ms = millis();
     if( !mStarted )
     {
         mStartTime_ms = now_ms;
         mStarted = true;
+        myEncIntegrator1.startIntegration();
+        myEncIntegrator2.startIntegration();
     }
     
     // determining times
@@ -151,8 +155,8 @@ void MM::LinearTravelCommand::print() const
     LOG_INFO("TOT_T: %d ELAPS_T: %d DDIST: %d RDIST: %d CURR_SPEED: %d ",
         mTotalTimeOfTravel_ms,
         mElapsedTime_ms, 
-        static_cast<int> ( mDesiredCurrentPosition_um ),
-        static_cast<int> ( mRealCurrentPosition_um ),
+        static_cast<int> ( mDesiredCurrentPosition_um / 1000 ),
+        static_cast<int> ( mRealCurrentPosition_um / 1000 ),
         static_cast<int> ( mCurrentSpeed_UmPerMs )
       );
 }

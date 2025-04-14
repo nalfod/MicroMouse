@@ -64,7 +64,7 @@ int32_t MM::WallCenteringCommand::getCurrentError() const
 
 void MM::WallCenteringCommand::print() const
 {
-    LOG_INFO("Wall center output: %d error: %d FL: %d FR: %d\n", static_cast<int16_t>( myCenteringPidCtrl.getOuput() ), 
+    LOG_INFO("Wall center output: %d error: %d FL: %d FR: %d ", static_cast<int16_t>( myCenteringPidCtrl.getOuput() ), 
     ( mIrFrontLeftR - mIrFrontRightR ),
     ( mIrFrontLeftR ),
     ( mIrFrontRightR ) );

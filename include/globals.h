@@ -26,9 +26,8 @@ struct Globals {
 // Commands =================================================
 
     std::queue< std::unique_ptr<MotionCommandIF> > commandBuffer;
-
-    std::unique_ptr<MotionCommandIF> p[5];
-    int index{0};
+    MotionCommandIF* commandArray[5];
+    size_t index = 0;
 };
 
 } // namespace MM
