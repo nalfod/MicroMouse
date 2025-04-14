@@ -19,7 +19,7 @@ void MM::PidWrapper::setTarget(double newTarget)
 
 void MM::PidWrapper::compute(double newError)
 {
-    error = newError;
+    error = newError; // RECONSIDER NAME!!!
     myPidController.Compute();
 }
 

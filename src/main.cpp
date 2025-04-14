@@ -43,7 +43,6 @@ void debug()
   {
     g.commandBuffer.front()->print();
   }
-  g.commandArray[g.index]->print();
   LOG_INFO("\n");
 
 
@@ -99,22 +98,14 @@ void setup()
   // Wait 5 sec to be able to connect with mobile!
   delay(5000);
 
-  // Create a linear travel command which is wrapped into a wall centering command
+  // Creating initial commands
   for( int i = 0; i < 5; i++)
   {
-    /*
     g.commandBuffer.push( 
       std::make_unique<MM::WallCenteringCommand>( 
       std::make_unique<MM::LinearTravelCommand>( 168000, 100, 1, 1, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage ), 
       g.ir_frontleft, g.ir_frontright, g.leftMotorVoltage, g.rightMotorVoltage )
-    );*/
-
-
-    g.commandArray[i] = new MM::WallCenteringCommand( 
-      std::make_unique<MM::LinearTravelCommand>( 168000, 100, 1, 1, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage ), 
-      g.ir_frontleft, g.ir_frontright, g.leftMotorVoltage, g.rightMotorVoltage );
-
-    //g.commandArray[i] = new MM::LinearTravelCommand( 168000, 100, 1, 1, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage );
+    );
   }
   LOG_INFO("Setup Done\n");
 }
