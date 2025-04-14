@@ -74,13 +74,20 @@ void debug()
                                                             g.rightMotorVoltage, static_cast<int>( mouse.motor_right.getEncoderCount() ) );*/
 
   // Command queue:
-  //LOG_INFO("QUEUE SIZE: %d EMPTY?: %d \n", g.commandBuffer.size(), static_cast<int>( g.commandBuffer.empty() ) );
+  /*LOG_INFO("QUEUE SIZE: %d EMPTY?: %d \n", g.commandBuffer.size(), static_cast<int>( g.commandBuffer.empty() ) );*/
+
+  // Accelerometer:
+  LOG_INFO("RES: %d Ax: %d Ay: %d Az: %d Gx: %d Gy: %d Gz: %d \n", static_cast<int>( g.accel_result ), static_cast<int>( mouse.accelerometer.mAx ), static_cast<int>( mouse.accelerometer.mAy ), static_cast<int>( mouse.accelerometer.mAz ), 
+    static_cast<int>( mouse.accelerometer.mGx ), static_cast<int>( mouse.accelerometer.mGy ), static_cast<int>( mouse.accelerometer.mGz ) );
 }
 
 void setup()
 {
   LOGGING_BEGIN();
   mouse.dbg_green.on();
+
+  // Serial monitor setup
+  Serial.begin(38400); //Initializate Serial wo work well at 8MHz/16MHz
   
   // enable motors
   pinMode(MM::PINS::MOTOR_DRV_EN, OUTPUT);
@@ -88,6 +95,18 @@ void setup()
 
   // enable encoders
   ESP32Encoder::useInternalWeakPullResistors = puType::up;
+
+  // enable I2C
+  MM::Accelerometer::setupI2C();
+  mouse.dbg_green.off();
+
+  if( !mouse.accelerometer.init() ){
+    Serial.println("MPU6050 connection failed");
+  }
+  else{
+    Serial.println("MPU6050 connection successful");
+    mouse.dbg_green.on();
+  }
 
   // turn on leds
   mouse.ir_led1.on();

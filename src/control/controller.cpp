@@ -15,7 +15,7 @@ void MM::control()
     {
         if( !g.commandBuffer.front()->isFinished() )
         {
-            g.commandBuffer.front()->execute();
+            // g.commandBuffer.front()->execute();
         }
         else
         {

@@ -17,6 +17,8 @@ void MM::read_sensors()
 
     g.rightEncoderValue = mouse.motor_right.getEncoderCount();
     g.leftEncoderValue =  mouse.motor_left.getEncoderCount();
+
+    mouse.accelerometer.loadSensorValues();
 }
 
 void MM::pre_process_inputs()
