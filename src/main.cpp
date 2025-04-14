@@ -109,12 +109,12 @@ void setup()
       g.ir_frontleft, g.ir_frontright, g.leftMotorVoltage, g.rightMotorVoltage )
     );*/
 
-    /*
+
     g.commandArray[i] = new MM::WallCenteringCommand( 
       std::make_unique<MM::LinearTravelCommand>( 168000, 100, 1, 1, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage ), 
-      g.ir_frontleft, g.ir_frontright, g.leftMotorVoltage, g.rightMotorVoltage );*/
+      g.ir_frontleft, g.ir_frontright, g.leftMotorVoltage, g.rightMotorVoltage );
 
-    g.commandArray[i] = new MM::LinearTravelCommand( 168000, 100, 1, 1, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage );
+    //g.commandArray[i] = new MM::LinearTravelCommand( 168000, 100, 1, 1, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage );
   }
   LOG_INFO("Setup Done\n");
 }
