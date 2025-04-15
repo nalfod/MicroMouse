@@ -18,11 +18,14 @@ void MM::read_sensors()
     g.rightEncoderValue = mouse.motor_right.getEncoderCount();
     g.leftEncoderValue =  mouse.motor_left.getEncoderCount();
 
-    if( MM::Accelerometer::MPUInterrupt )
+    if( mouse.accelerometer.loadSensorValues() )
     {
-        mouse.accelerometer.loadSensorValues();
-        MM::Accelerometer::MPUInterrupt = false;
-    }   
+        mouse.accelerometer.serialPrint();
+    }
+    else
+    {
+        Serial.println("No IMU data, wierd");
+    }
 }
 
 void MM::pre_process_inputs()

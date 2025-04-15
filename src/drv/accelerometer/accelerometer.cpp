@@ -30,6 +30,7 @@ bool MM::Accelerometer::init()
     {
         Serial.println("MPU6050 connection successful");
         uint8_t devStatus = myMpu.dmpInitialize();
+        myMpu.setRate(2); // QUESTION: how to properly adjust the clock rate with this???
         // myMpu.setDMPEnabled(true);
         myMpu.setXAccelOffset(0); //Set your accelerometer offset for axis X
         myMpu.setYAccelOffset(0); //Set your accelerometer offset for axis Y
@@ -59,19 +60,35 @@ bool MM::Accelerometer::init()
     }
 }
 
-void MM::Accelerometer::loadSensorValues()
+bool MM::Accelerometer::loadSensorValues()
 {
-    if (myMpu.dmpGetCurrentFIFOPacket(myFIFOBuffer)) 
-    {
-      /* Display Euler angles in degrees */
-      myMpu.dmpGetQuaternion(&q, myFIFOBuffer);
-      myMpu.dmpGetGravity(&gravity, &q);
-      myMpu.dmpGetYawPitchRoll(ypr, &q, &gravity);
-      Serial.print("ypr\t");
-      Serial.print(ypr[0] * 180/M_PI);
-      Serial.print("\t");
-      Serial.print(ypr[1] * 180/M_PI);
-      Serial.print("\t");
-      Serial.println(ypr[2] * 180/M_PI);
-    }
+    uint8_t bufferReadResult = ( myMpu.dmpGetCurrentFIFOPacket(myFIFOBuffer) == 1 );
+    myMpu.dmpGetQuaternion(&myQuaternionCont, myFIFOBuffer);
+
+    // Determine yaw pitch roll
+    myMpu.dmpGetGravity(&myGravityVec, &myQuaternionCont);
+    myMpu.dmpGetYawPitchRoll(yawPithRoll_rad, &myQuaternionCont, &myGravityVec);
+
+    // determine acceleration values (TODO: is it needed?)
+    myMpu.dmpGetAccel(&myAccelSensorMeasurmentVec, myFIFOBuffer);
+    myMpu.dmpGetLinearAccel(&myGravFreeAccelSensorMeasurmentVec, &myAccelSensorMeasurmentVec, &myGravityVec);
+    return (bufferReadResult == 1);
+}
+
+void MM::Accelerometer::serialPrint()
+{
+    Serial.print("yawPithRoll [deg]:\t");
+    Serial.print(yawPithRoll_rad[0] * 180/M_PI);
+    Serial.print("\t");
+    Serial.print(yawPithRoll_rad[1] * 180/M_PI);
+    Serial.print("\t");
+    Serial.println(yawPithRoll_rad[2] * 180/M_PI);
+/*
+    Serial.print("Real world acceleration [m/s2]:\t");
+    Serial.print(myGravFreeAccelSensorMeasurmentVec.x);
+    Serial.print("\t");
+    Serial.print(myGravFreeAccelSensorMeasurmentVec.y);
+    Serial.print("\t");
+    Serial.println(myGravFreeAccelSensorMeasurmentVec.z);
+    */
 }

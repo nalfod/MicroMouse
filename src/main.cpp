@@ -131,10 +131,16 @@ void setup()
 
 void loop()
 {
-  task_read_sensors();
-  task_pre_process_inputs();
-  task_control();
-  task_post_process();
-  task_update_outputs();
-  task_debug();
+  if( MM::Accelerometer::MPUInterrupt )
+  {
+      Serial.print(millis());
+      Serial.print("\t");
+      task_read_sensors();
+      task_pre_process_inputs();
+      task_control();
+      task_post_process();
+      task_update_outputs();
+      task_debug();
+      MM::Accelerometer::MPUInterrupt = false;
+  }  
 }

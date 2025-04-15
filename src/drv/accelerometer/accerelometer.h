@@ -14,7 +14,9 @@ class Accelerometer
 
         static void setupI2C();
         bool init();
-        void loadSensorValues();
+        bool loadSensorValues();
+
+        void serialPrint();
 
         // Output values
         int16_t mAx{0};
@@ -27,16 +29,14 @@ class Accelerometer
         MPU6050 myMpu{};
         uint8_t myFIFOBuffer[64]; // FIFO storage buffer
         /*---Orientation/Motion Variables---*/ 
-        Quaternion q;           // [w, x, y, z]         Quaternion container
-        VectorInt16 aa;         // [x, y, z]            Accel sensor measurements
-        VectorInt16 gy;         // [x, y, z]            Gyro sensor measurements
-        VectorInt16 aaReal;     // [x, y, z]            Gravity-free accel sensor measurements
-        VectorInt16 aaWorld;    // [x, y, z]            World-frame accel sensor measurements
-        VectorFloat gravity;    // [x, y, z]            Gravity vector
-        float euler[3];         // [psi, theta, phi]    Euler angle container
-        float ypr[3];           // [yaw, pitch, roll]   Yaw/Pitch/Roll container and gravity vector
-
-
+        Quaternion myQuaternionCont;           // [w, x, y, z]         Quaternion container
+        VectorInt16 myAccelSensorMeasurmentVec;         // [x, y, z]            Accel sensor measurements
+        //VectorInt16 gy;         // [x, y, z]            Gyro sensor measurements
+        VectorInt16 myGravFreeAccelSensorMeasurmentVec;     // [x, y, z]            Gravity-free accel sensor measurements
+        //VectorInt16 aaWorld;    // [x, y, z]            World-frame accel sensor measurements
+        VectorFloat myGravityVec;    // [x, y, z]            Gravity vector
+        //float euler[3];         // [psi, theta, phi]    Euler angle container
+        float yawPithRoll_rad[3];           // [yaw, pitch, roll]   Yaw/Pitch/Roll container and gravity vector
         
 };
 
