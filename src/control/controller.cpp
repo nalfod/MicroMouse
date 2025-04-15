@@ -10,8 +10,9 @@
 
 void MM::control()
 {
-
-    if( !g.commandBuffer.empty() )
+    g.leftMotorVoltage = 500;
+    g.rightMotorVoltage = -500;
+/*    if( !g.commandBuffer.empty() )
     {
         if( !g.commandBuffer.front()->isFinished() )
         {
@@ -31,5 +32,5 @@ void MM::control()
     else
     {
         mouse.dbg_green.off();
-    }
+    }*/
 }

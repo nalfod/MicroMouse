@@ -12,8 +12,8 @@ myMotor(motorPin1, motorPpin2)
 void MM::Motor::setVoltageAndRotation(int16_t targetVoltage, 
                                       uint16_t currentBatteryVoltage)
 {
-    float voltageProportion = abs( static_cast<float>( targetVoltage ) / static_cast<float>( currentBatteryVoltage ) );
-    uint16_t targetPwm = voltageProportion * 100;
+    float voltageProportion = static_cast<float>( targetVoltage ) / static_cast<float>( currentBatteryVoltage );
+    int16_t targetPwm = voltageProportion * 100;
 
     // triming the pr
     targetPwm = targetPwm > 100 ? 100 : targetPwm;

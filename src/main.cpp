@@ -39,11 +39,11 @@ void debug()
                                                     g.ir_right,
                                                     g.ir_frontright);*/
 
-  if( !g.commandBuffer.empty() )
+/*  if( !g.commandBuffer.empty() )
   {
     g.commandBuffer.front()->print();
   }
-  LOG_INFO("\n");
+  LOG_INFO("\n");*/
 
 
   //LOG_INFO("BATTERY VOLTAGE: %d\n", g.currentBatteryVoltage);
@@ -77,8 +77,10 @@ void debug()
   /*LOG_INFO("QUEUE SIZE: %d EMPTY?: %d \n", g.commandBuffer.size(), static_cast<int>( g.commandBuffer.empty() ) );*/
 
   // Accelerometer:
-  LOG_INFO("RES: %d Ax: %d Ay: %d Az: %d Gx: %d Gy: %d Gz: %d \n", static_cast<int>( g.accel_result ), static_cast<int>( mouse.accelerometer.mAx ), static_cast<int>( mouse.accelerometer.mAy ), static_cast<int>( mouse.accelerometer.mAz ), 
-    static_cast<int>( mouse.accelerometer.mGx ), static_cast<int>( mouse.accelerometer.mGy ), static_cast<int>( mouse.accelerometer.mGz ) );
+  LOG_INFO("ANG_VEL: %d CURRANG: %d HALFCIRC: %d\n"
+    , static_cast<int>( mouse.accelerometer.myAngRotMeter.getAngularVelocity_revPerS() )
+    , static_cast<int>( mouse.accelerometer.myAngRotMeter.currentYawValueR * 57 )
+    , static_cast<int>( mouse.accelerometer.myAngRotMeter.traveledHalfCircles ) );
 }
 
 void setup()
@@ -126,6 +128,8 @@ void setup()
       g.ir_frontleft, g.ir_frontright, g.leftMotorVoltage, g.rightMotorVoltage )
     );
   }
+
+  mouse.accelerometer.myAngRotMeter.startMeasurement();
   LOG_INFO("Setup Done\n");
 }
 

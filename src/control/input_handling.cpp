@@ -21,10 +21,11 @@ void MM::read_sensors()
     if( mouse.accelerometer.loadSensorValues() )
     {
         mouse.accelerometer.serialPrint();
+        mouse.accelerometer.myAngRotMeter.refresh();
     }
     else
     {
-        Serial.println("No IMU data, wierd");
+        Serial.println("No IMU data, weird");
     }
 }
 

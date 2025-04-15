@@ -62,16 +62,20 @@ bool MM::Accelerometer::init()
 
 bool MM::Accelerometer::loadSensorValues()
 {
-    uint8_t bufferReadResult = ( myMpu.dmpGetCurrentFIFOPacket(myFIFOBuffer) == 1 );
-    myMpu.dmpGetQuaternion(&myQuaternionCont, myFIFOBuffer);
+    uint8_t bufferReadResult = myMpu.dmpGetCurrentFIFOPacket(myFIFOBuffer);
+    if(bufferReadResult == 1)
+    {
+        myMpu.dmpGetQuaternion(&myQuaternionCont, myFIFOBuffer);
 
-    // Determine yaw pitch roll
-    myMpu.dmpGetGravity(&myGravityVec, &myQuaternionCont);
-    myMpu.dmpGetYawPitchRoll(yawPithRoll_rad, &myQuaternionCont, &myGravityVec);
+        // Determine yaw pitch roll
+        myMpu.dmpGetGravity(&myGravityVec, &myQuaternionCont);
+        myMpu.dmpGetYawPitchRoll(yawPithRoll_rad, &myQuaternionCont, &myGravityVec);
+    
+        // determine acceleration values (TODO: is it needed?)
+        //myMpu.dmpGetAccel(&myAccelSensorMeasurmentVec, myFIFOBuffer);
+        //myMpu.dmpGetLinearAccel(&myGravFreeAccelSensorMeasurmentVec, &myAccelSensorMeasurmentVec, &myGravityVec);
+    }
 
-    // determine acceleration values (TODO: is it needed?)
-    myMpu.dmpGetAccel(&myAccelSensorMeasurmentVec, myFIFOBuffer);
-    myMpu.dmpGetLinearAccel(&myGravFreeAccelSensorMeasurmentVec, &myAccelSensorMeasurmentVec, &myGravityVec);
     return (bufferReadResult == 1);
 }
 
