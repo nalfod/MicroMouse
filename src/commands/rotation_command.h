@@ -1,5 +1,6 @@
 #pragma once
 #include "motion_command_if.h"
+#include "target_speed_calculator.h"
 #include <cstdint>
 #include "drv/pid/pidWrapper.h"
 
@@ -24,25 +25,31 @@ public:
     void print() const override;
 
 private:
-    PidWrapper myMovementCtrl{15, 7, 3.5};
+    int16_t calcVoltageFromSpeed_mV( int16_t setSpeed_um_per_ms );
 
-    // goal
+    TargetSpeedCalculator myTargetSpeedCalculator;
+    PidWrapper myMovementCtrl{2.5, 1, 0.2};
+    float const& myCurrentOriR_deg;
     RotationOrientation const myDircetion;
-    float const myTargetMagnitude_deg;
+
+    float myPreviousOrientation_deg{0.0}; // this has the same point as the EncoderValueIntegrator in case of linear travel
 
     // state flags
     bool mStarted{false};
     bool mFinished{false};
 
-    // Ori values
-    float myPreviousOrientation_deg{0.0};
-    float myTraveledDistance_deg{0.0};
-    float const& myCurrentOriR_deg;
+    // time variables (in ms)
+    unsigned long mElapsedTime_ms{0};
+    unsigned long mStartTime_ms{0};
+    unsigned long mTotalTimeOfTravel_ms{0};
+
+    // distance variables (in urev which is milirev!! one rev is 1000 milirev)
+    int32_t mRealCurrentPosition_urev{0};
+    int32_t mDesiredCurrentPosition_urev{0};
 
     // controlled units
     int16_t& mLeftMotorVoltageR_mV;
     int16_t& mRightMotorVoltageR_mV;
-
 };
 
 } // namespace MM
