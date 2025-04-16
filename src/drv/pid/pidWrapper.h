@@ -18,7 +18,7 @@ class PidWrapper
         void setTunings(double Kp, double Ki, double Kd);
 
     private:
-        double error{0.0};
+        double input{0.0};
         double output{0.0};
         double target{0.0};
         PID myPidController;

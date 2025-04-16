@@ -1,13 +1,13 @@
 #include "pidWrapper.h"
 
 MM::PidWrapper::PidWrapper():
-myPidController(&error, &output, &target, 0, 0, 0, DIRECT)
+myPidController(&input, &output, &target, 0, 0, 0, DIRECT)
 {
 
 }
 
 MM::PidWrapper::PidWrapper(double kp, double ki, double kd):
-myPidController(&error, &output, &target, kp, ki, kd, DIRECT)
+myPidController(&input, &output, &target, kp, ki, kd, DIRECT)
 {
 
 }
@@ -17,9 +17,9 @@ void MM::PidWrapper::setTarget(double newTarget)
     target = newTarget;
 }
 
-void MM::PidWrapper::compute(double newError)
+void MM::PidWrapper::compute(double newInput)
 {
-    error = newError; // RECONSIDER NAME!!!
+    input = newInput;
     myPidController.Compute();
 }
 
