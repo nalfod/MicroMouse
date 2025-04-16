@@ -24,14 +24,15 @@ class AngularRotationComputer
             }
         }
 
-        uint32_t getAngularVelocity_revPerS()
+        uint32_t getAngularVelocity_miliRevPerS()
         {
-            return uint32_t(traveledHalfCircles / 2) / uint32_t( ( millis() - startTime ) ) * 1000;
+            uint32_t elapsedTimeMs = static_cast<uint32_t>( millis() - startTime );
+            return (traveledHalfCircles * 500000) / elapsedTimeMs ;
         }
     
         float const& currentYawValueR;
         bool isValuePositive;
-        int traveledHalfCircles{0};
+        uint32_t traveledHalfCircles{0};
         unsigned long startTime{0};
 
 };

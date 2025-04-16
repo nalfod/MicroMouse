@@ -78,7 +78,7 @@ void debug()
 
   // Accelerometer:
   LOG_INFO("ANG_VEL: %d CURRANG: %d HALFCIRC: %d\n"
-    , static_cast<int>( mouse.accelerometer.myAngRotMeter.getAngularVelocity_revPerS() )
+    , static_cast<int>( mouse.accelerometer.myAngRotMeter.getAngularVelocity_miliRevPerS() )
     , static_cast<int>( mouse.accelerometer.myAngRotMeter.currentYawValueR * 57 )
     , static_cast<int>( mouse.accelerometer.myAngRotMeter.traveledHalfCircles ) );
 }

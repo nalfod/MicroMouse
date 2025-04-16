@@ -30,7 +30,7 @@ bool MM::Accelerometer::init()
     {
         Serial.println("MPU6050 connection successful");
         uint8_t devStatus = myMpu.dmpInitialize();
-        myMpu.setRate(2); // QUESTION: how to properly adjust the clock rate with this???
+        // myMpu.setRate(2); // DO NOT SET THIS ALONE!!! will ruin the yaw calculation!!!!
         // myMpu.setDMPEnabled(true);
         myMpu.setXAccelOffset(0); //Set your accelerometer offset for axis X
         myMpu.setYAccelOffset(0); //Set your accelerometer offset for axis Y

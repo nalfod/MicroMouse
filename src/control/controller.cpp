@@ -10,8 +10,8 @@
 
 void MM::control()
 {
-    g.leftMotorVoltage = 500;
-    g.rightMotorVoltage = -500;
+    g.leftMotorVoltage = 800;
+    g.rightMotorVoltage = -800;
 /*    if( !g.commandBuffer.empty() )
     {
         if( !g.commandBuffer.front()->isFinished() )
