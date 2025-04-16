@@ -44,9 +44,13 @@ class Accelerometer
         static volatile bool MPUInterrupt;     // Indicates whether MPU6050 interrupt pin has gone high
         static void DMPDataReady();
 
+        /*------Init functions------*/
         static void setupI2C();
         bool init();
+
+        /*------FIFO loader and getters------*/
         bool loadSensorValues();
+        float getCurrentYawValue();
 
         // for debug
         void serialPrint();
@@ -57,9 +61,9 @@ class Accelerometer
         uint8_t myFIFOBuffer[64]; // FIFO storage buffer
         /*---Orientation/Motion Variables---*/ 
         Quaternion myQuaternionCont;           // [w, x, y, z]         Quaternion container
-        VectorInt16 myAccelSensorMeasurmentVec;         // [x, y, z]            Accel sensor measurements
+        //VectorInt16 myAccelSensorMeasurmentVec;         // [x, y, z]            Accel sensor measurements
         //VectorInt16 gy;         // [x, y, z]            Gyro sensor measurements
-        VectorInt16 myGravFreeAccelSensorMeasurmentVec;     // [x, y, z]            Gravity-free accel sensor measurements
+        //VectorInt16 myGravFreeAccelSensorMeasurmentVec;     // [x, y, z]            Gravity-free accel sensor measurements
         //VectorInt16 aaWorld;    // [x, y, z]            World-frame accel sensor measurements
         VectorFloat myGravityVec;    // [x, y, z]            Gravity vector
         //float euler[3];         // [psi, theta, phi]    Euler angle container

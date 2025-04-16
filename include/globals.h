@@ -17,6 +17,7 @@ struct Globals {
     uint16_t currentBatteryVoltage{0};
     int64_t leftEncoderValue{0};
     int64_t rightEncoderValue{0};
+    float currentOrientation{0};
 
 // Outputs =================================================
     // the values which should be put on the motors

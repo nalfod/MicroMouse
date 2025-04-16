@@ -7,7 +7,7 @@ myPidController(&error, &output, &target, 0, 0, 0, DIRECT)
 }
 
 MM::PidWrapper::PidWrapper(double kp, double ki, double kd):
-myPidController(&error, &output, &target, kp, kd, ki, DIRECT)
+myPidController(&error, &output, &target, kp, ki, kd, DIRECT)
 {
 
 }

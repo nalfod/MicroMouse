@@ -79,6 +79,11 @@ bool MM::Accelerometer::loadSensorValues()
     return (bufferReadResult == 1);
 }
 
+float MM::Accelerometer::getCurrentYawValue()
+{
+    return yawPithRoll_rad[0] * 180/M_PI;
+}
+
 void MM::Accelerometer::serialPrint()
 {
     Serial.print("yawPithRoll [deg]:\t");

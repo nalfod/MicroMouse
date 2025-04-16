@@ -13,6 +13,7 @@
 
 #include "commands/linear_travel_command.h"
 #include "commands/wall_centering_command.h"
+#include "commands/rotation_command.h"
 
 void debug();
 
@@ -39,11 +40,11 @@ void debug()
                                                     g.ir_right,
                                                     g.ir_frontright);*/
 
-/*  if( !g.commandBuffer.empty() )
+  if( !g.commandBuffer.empty() )
   {
     g.commandBuffer.front()->print();
   }
-  LOG_INFO("\n");*/
+  LOG_INFO("\n");
 
 
   //LOG_INFO("BATTERY VOLTAGE: %d\n", g.currentBatteryVoltage);
@@ -76,11 +77,11 @@ void debug()
   // Command queue:
   /*LOG_INFO("QUEUE SIZE: %d EMPTY?: %d \n", g.commandBuffer.size(), static_cast<int>( g.commandBuffer.empty() ) );*/
 
-  // Accelerometer:
-  LOG_INFO("ANG_VEL: %d CURRANG: %d HALFCIRC: %d\n"
+  // Angular velocity:
+  /*LOG_INFO("ANG_VEL: %d CURRANG: %d HALFCIRC: %d\n"
     , static_cast<int>( mouse.accelerometer.myAngRotMeter.getAngularVelocity_miliRevPerS() )
     , static_cast<int>( mouse.accelerometer.myAngRotMeter.currentYawValueR * 57 )
-    , static_cast<int>( mouse.accelerometer.myAngRotMeter.traveledHalfCircles ) );
+    , static_cast<int>( mouse.accelerometer.myAngRotMeter.traveledHalfCircles ) );*/
 }
 
 void setup()
@@ -122,10 +123,14 @@ void setup()
   // Creating initial commands
   for( int i = 0; i < 5; i++)
   {
-    g.commandBuffer.push( 
+    /*g.commandBuffer.push( 
       std::make_unique<MM::WallCenteringCommand>( 
       std::make_unique<MM::LinearTravelCommand>( 180000, 100, 1, 1, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage ), 
       g.ir_frontleft, g.ir_frontright, g.leftMotorVoltage, g.rightMotorVoltage )
+    );*/
+
+    g.commandBuffer.push( 
+      std::make_unique<MM::RotationCommand>( MM::RotationCommand::CLOCKWISE, 90.0, g.currentOrientation, g.leftMotorVoltage, g.rightMotorVoltage)
     );
   }
 
