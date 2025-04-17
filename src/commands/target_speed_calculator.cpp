@@ -5,10 +5,10 @@
 ////////////// TargetSpeedCalculator
 //////////////////////////////////////
 
-MM::TargetSpeedCalculator::TargetSpeedCalculator(uint32_t dist_um, 
-                                                 uint32_t speed_um_per_ms, 
-                                                 uint32_t acc_um_per_ms2, 
-                                                 uint32_t dec_um_per_ms2):
+MM::TargetSpeedCalculator::TargetSpeedCalculator(float dist_um, 
+                                                 float speed_um_per_ms, 
+                                                 float acc_um_per_ms2, 
+                                                 float dec_um_per_ms2):
 mDistance_um(dist_um),
 mSetSpeed_um_per_ms(speed_um_per_ms),
 mAcceleration_um_per_ms2(acc_um_per_ms2),
@@ -30,17 +30,17 @@ mDeceleration_um_per_ms2(dec_um_per_ms2)
         }
     }
 
-    LOG_INFO("TargetSpeedCalculator (ctor)-> Total distance(um): %d Final speed(um/ms): %d Acc time(ms): %d Uni time(ms): %d Dec time(ms): %d\n ",
-        mDistance_um,
-        mSetSpeed_um_per_ms,
-        mAccelerationTime_ms,
-        mUniformTravelTime_ms,
-        mDecelerationTime_ms );
+    LOG_INFO("TargetSpeedCalculator (ctor)-> Total distance(m): %d Final speed(nm/ms): %d Acc time(ms): %d Uni time(ms): %d Dec time(ms): %d\n ",
+        static_cast<int>( mDistance_um ),
+        static_cast<int>( mSetSpeed_um_per_ms * 1000 ),
+        static_cast<int>( mAccelerationTime_ms ),
+        static_cast<int>( mUniformTravelTime_ms) ,
+        static_cast<int>( mDecelerationTime_ms ) );
 }
 
-uint32_t MM::TargetSpeedCalculator::calcCurrentTargetSpeed_UmPerMs(unsigned long elapsedTime_ms)
+float MM::TargetSpeedCalculator::calcCurrentTargetSpeed_UmPerMs(unsigned long elapsedTime_ms)
 {
-    uint32_t targetSpeed_um_per_ms = 0;
+    float targetSpeed_um_per_ms = 0;
 
     if( elapsedTime_ms <= mAccelerationTime_ms )
     {
@@ -62,12 +62,12 @@ uint32_t MM::TargetSpeedCalculator::calcCurrentTargetSpeed_UmPerMs(unsigned long
     return targetSpeed_um_per_ms;
 }
 
-uint32_t MM::TargetSpeedCalculator::getSpeedInAcc_UmPerMs(unsigned long accElapsedTime_ms)
+float MM::TargetSpeedCalculator::getSpeedInAcc_UmPerMs(unsigned long accElapsedTime_ms)
 {
     return accElapsedTime_ms * mAcceleration_um_per_ms2;
 }
 
-uint32_t MM::TargetSpeedCalculator::getSpeedInDec_UmPerMs(unsigned long decElapsedTime_ms)
+float MM::TargetSpeedCalculator::getSpeedInDec_UmPerMs(unsigned long decElapsedTime_ms)
 {
     return mSetSpeed_um_per_ms - (decElapsedTime_ms * mDeceleration_um_per_ms2);
 }

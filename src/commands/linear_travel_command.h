@@ -37,7 +37,7 @@ private:
 class LinearTravelCommand : public MotionCommandIF
 {
 public:
-    LinearTravelCommand(uint32_t dist_um, uint32_t speed_um_per_ms, uint32_t acc_um_per_ms2, uint32_t dec_um_per_ms2, 
+    LinearTravelCommand(float dist_um, float speed_um_per_ms, float acc_um_per_ms2, float dec_um_per_ms2, 
                         int64_t const& encoderValue1, int64_t const& encoderValue2, int16_t& leftMotorVoltage_mV, int16_t& rightMotorVoltage_mV);
     
     void execute() override;
@@ -54,7 +54,7 @@ public:
     int32_t mCurrentSpeed_UmPerMs{0};
 
 private:
-    int16_t calcVoltageFromSpeed_mV( int16_t setSpeed_um_per_ms );
+    int16_t calcVoltageFromSpeed_mV( float setSpeed_um_per_ms );
 
     TargetSpeedCalculator myTargetSpeedCalculator;
     EncoderValueIntegrator myEncIntegrator1;

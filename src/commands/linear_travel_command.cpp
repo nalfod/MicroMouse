@@ -6,10 +6,10 @@
 ///////   LinearTravelCommand
 ////////////////////
 
-MM::LinearTravelCommand::LinearTravelCommand(uint32_t dist_um, 
-                                             uint32_t speed_um_per_ms, 
-                                             uint32_t acc_um_per_ms2, 
-                                             uint32_t dec_um_per_ms2, 
+MM::LinearTravelCommand::LinearTravelCommand(float dist_um, 
+                                             float speed_um_per_ms, 
+                                             float acc_um_per_ms2, 
+                                             float dec_um_per_ms2, 
                                              int64_t const& encoderValue1R, 
                                              int64_t const& encoderValue2R,
                                              int16_t& leftMotorVoltageR_mV,
@@ -52,7 +52,7 @@ void MM::LinearTravelCommand::execute()
     else
     {
         // Calculating feed forward; theoretical values:
-        uint32_t outputSpeed_um_per_ms = myTargetSpeedCalculator.calcCurrentTargetSpeed_UmPerMs( mElapsedTime_ms );
+        float outputSpeed_um_per_ms = myTargetSpeedCalculator.calcCurrentTargetSpeed_UmPerMs( mElapsedTime_ms );
         mDesiredCurrentPosition_um += outputSpeed_um_per_ms * timeChange_ms;
         
         // Real values
@@ -74,7 +74,7 @@ void MM::LinearTravelCommand::execute()
     }
 }
 
-int16_t MM::LinearTravelCommand::calcVoltageFromSpeed_mV( int16_t setSpeed_um_per_ms )
+int16_t MM::LinearTravelCommand::calcVoltageFromSpeed_mV( float setSpeed_um_per_ms )
 {
     return static_cast<int16_t>(CONSTS::K_SPEED_FF * setSpeed_um_per_ms + CONSTS::K_BIAS_FF);
 }

@@ -5,7 +5,7 @@
 #include "constants.h"
 
 MM::RotationCommand::RotationCommand(RotationOrientation direction, float angleToRotate_deg, float const& currentOriR, int16_t& leftMotorVoltage_mV, int16_t& rightMotorVoltage_mV):
-myTargetSpeedCalculator(static_cast<uint32_t>( (angleToRotate_deg / 360) * 1000 ), 1, 1, 1), // speed: miliRev/ms, acceleration: miliRev/ms^2
+myTargetSpeedCalculator(static_cast<uint32_t>( (angleToRotate_deg / 360) * 1000 ), 0.5, 0.01, 0.01), // speed: miliRev/ms, acceleration: miliRev/ms^2
 myDircetion(direction),
 myCurrentOriR_deg(currentOriR),
 mLeftMotorVoltageR_mV(leftMotorVoltage_mV),
@@ -42,7 +42,7 @@ void MM::RotationCommand::execute()
     else
     {
         // Calculating feed forward; theoretical values:
-        uint32_t outputSpeed_urev_per_ms = myTargetSpeedCalculator.calcCurrentTargetSpeed_UmPerMs( mElapsedTime_ms );
+        float outputSpeed_urev_per_ms = myTargetSpeedCalculator.calcCurrentTargetSpeed_UmPerMs( mElapsedTime_ms );
         mDesiredCurrentPosition_urev += outputSpeed_urev_per_ms * timeChange_ms;
 
         // Real values
@@ -71,7 +71,7 @@ void MM::RotationCommand::execute()
     }
 }
 
-int16_t MM::RotationCommand::calcVoltageFromSpeed_mV( int16_t setSpeed_um_per_ms )
+int16_t MM::RotationCommand::calcVoltageFromSpeed_mV( float setSpeed_um_per_ms )
 {
     return static_cast<int16_t>(CONSTS::K_SPEED_FF_REV * setSpeed_um_per_ms + CONSTS::K_BIAS_FF_REV);
 }

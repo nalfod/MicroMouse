@@ -25,10 +25,10 @@ public:
     void print() const override;
 
 private:
-    int16_t calcVoltageFromSpeed_mV( int16_t setSpeed_um_per_ms );
+    int16_t calcVoltageFromSpeed_mV( float setSpeed_um_per_ms );
 
     TargetSpeedCalculator myTargetSpeedCalculator;
-    PidWrapper myMovementCtrl{2.5, 1, 0.2};
+    PidWrapper myMovementCtrl{2.5, 1.5, 0.018}; // tuned for 90deg rotation
     float const& myCurrentOriR_deg;
     RotationOrientation const myDircetion;
 
