@@ -16,4 +16,6 @@ constexpr uint16_t WHEEL_DIAMETER_UM = 43800; // um
 constexpr float K_SPEED_FF_REV = 644.7; // mV / (urev/ms)
 constexpr float K_BIAS_FF_REV = 94.5; // mV
 
+constexpr uint16_t WALL_DISTANCE_LIMIT_FOR_CENTERING = 200; // mV, HAS TO BE MEASURED
+
 }

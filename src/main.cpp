@@ -137,14 +137,13 @@ void setup()
   {
     g.commandBuffer.push( 
       std::make_unique<MM::WallCenteringCommand>( 
-      std::make_unique<MM::LinearTravelCommand>( 1000000, 200, 1, 1, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage), 
-      g.ir_frontleft, g.ir_frontright, g.leftMotorVoltage, g.rightMotorVoltage )
+      std::make_unique<MM::LinearTravelCommand>( 1800000, 100, 1, 1, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage ), 
+      g.ir_frontleft, g.ir_frontright, g.currentOrientation, g.leftMotorVoltage, g.rightMotorVoltage )
     );
-  }
-  for(int i = 0; i < 1; i++) {
-    g.commandBuffer.push( 
-      std::make_unique<MM::RotationCommand>( MM::RotationCommand::COUNTER_CLOCKWISE, 90.0, g.currentOrientation, g.leftMotorVoltage, g.rightMotorVoltage)
-    );
+
+    /*g.commandBuffer.push( 
+      std::make_unique<MM::RotationCommand>( MM::RotationCommand::CLOCKWISE, 90.0, g.currentOrientation, g.leftMotorVoltage, g.rightMotorVoltage)
+    );*/
   }
   
   for( int i = 0; i < 1; i++)
