@@ -21,6 +21,8 @@ public:
     uint16_t getFrontLeftSensor() { return mIrFrontLeftR; }
     uint16_t getFrontRightSensor() { return mIrFrontRightR; }
 private:
+    void executeWallCenteringControl();
+
     std::unique_ptr<MotionCommandIF> myWrappedCommandP;
 
     // measure points

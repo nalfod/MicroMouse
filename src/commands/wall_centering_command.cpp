@@ -14,6 +14,13 @@ myCenteringPidCtrl(0.05, 0, 0) // TODO: Maybe the tuning should be more sofistic
     myCenteringPidCtrl.init( (static_cast<int>(CONSTS::MAIN_CYCLE_TIME.count()) / 1000) , AUTOMATIC, -750.0, 750.0); // TODO: Maybe the tuning should be more sofisticated!!
 }
 
+void MM::WallCenteringCommand::executeWallCenteringControl()
+{
+    myCenteringPidCtrl.compute( static_cast<double>( mIrFrontLeftR - mIrFrontRightR ) );
+    mLeftMotorVoltageR_mV  -= static_cast<int16_t>( myCenteringPidCtrl.getOuput() );
+    mRightMotorVoltageR_mV += static_cast<int16_t>( myCenteringPidCtrl.getOuput() );
+}
+
 void MM::WallCenteringCommand::execute()
 {
     if( myWrappedCommandP.get() != nullptr )
@@ -21,16 +28,13 @@ void MM::WallCenteringCommand::execute()
         myWrappedCommandP->execute();
         if( !( myWrappedCommandP->isFinished() ) )
         {
-            myCenteringPidCtrl.compute( static_cast<double>( mIrFrontLeftR - mIrFrontRightR ) );
-            mLeftMotorVoltageR_mV  -= static_cast<int16_t>( myCenteringPidCtrl.getOuput() );
-            mRightMotorVoltageR_mV += static_cast<int16_t>( myCenteringPidCtrl.getOuput() );
+            executeWallCenteringControl();
         }
     }
     else
     {
-        myCenteringPidCtrl.compute( static_cast<double>( mIrFrontLeftR - mIrFrontRightR ) );
-        mLeftMotorVoltageR_mV  -= static_cast<int16_t>( myCenteringPidCtrl.getOuput() );
-        mRightMotorVoltageR_mV += static_cast<int16_t>( myCenteringPidCtrl.getOuput() );
+        // without wrapped command runs forever
+        executeWallCenteringControl();
     }
 }
 
