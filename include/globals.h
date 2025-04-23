@@ -27,8 +27,7 @@ struct Globals {
 // Commands =================================================
 
     std::queue< std::unique_ptr<MotionCommandIF> > commandBuffer;
-
-    bool isFrontWayBlocked = false;
+    
     bool accel_result = false;
 };
 

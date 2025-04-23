@@ -13,14 +13,12 @@ MM::LinearTravelCommand::LinearTravelCommand(float dist_um,
                                              int64_t const& encoderValue1R, 
                                              int64_t const& encoderValue2R,
                                              int16_t& leftMotorVoltageR_mV,
-                                             int16_t& rightMotorVoltageR_mV,
-                                             bool& isFrontWayBlocked):
+                                             int16_t& rightMotorVoltageR_mV):
 myTargetSpeedCalculator(dist_um, speed_um_per_ms, acc_um_per_ms2, dec_um_per_ms2),
 myEncIntegrator1(encoderValue1R),
 myEncIntegrator2(encoderValue2R),
 mLeftMotorVoltageR_mV(leftMotorVoltageR_mV),
-mRightMotorVoltageR_mV(rightMotorVoltageR_mV),
-mIsFrontWayBlocked(isFrontWayBlocked)
+mRightMotorVoltageR_mV(rightMotorVoltageR_mV)
 {
     mTotalTimeOfTravel_ms = myTargetSpeedCalculator.getTotalTimeOfTravel_Ms();
     myMovementCtrl.init(1, AUTOMATIC, -1000, 1000); // QUESTION: should the min and the max value be bounded to the current voltage somehow??
@@ -29,12 +27,6 @@ mIsFrontWayBlocked(isFrontWayBlocked)
 
 void MM::LinearTravelCommand::execute()
 {
-    // prechecks
-    if( mIsFrontWayBlocked ) { 
-        mLeftMotorVoltageR_mV = 0;
-        mRightMotorVoltageR_mV = 0;
-        mFinished = true; 
-    }
     if( mFinished ) { return; }
 
     unsigned long now_ms = millis();

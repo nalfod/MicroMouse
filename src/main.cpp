@@ -11,6 +11,7 @@
 #include "control/input_handling.h"
 #include "control/output_handling.h"
 
+#include "commands/collision_avoidance_command.h"
 #include "commands/linear_travel_command.h"
 #include "commands/wall_centering_command.h"
 #include "commands/rotation_command.h"
@@ -123,12 +124,20 @@ void setup()
   // Wait 5 sec to be able to connect with mobile!
   delay(5000);
 
+  g.commandBuffer.push( 
+    std::make_unique<MM::CollisionAvoidanceCommand>( 
+    std::make_unique<MM::WallCenteringCommand>( 
+    std::make_unique<MM::LinearTravelCommand>( 1000000, 200, 1, 1, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage), 
+    g.ir_frontleft, g.ir_frontright, g.leftMotorVoltage, g.rightMotorVoltage ),
+    g.ir_left, g.ir_right, g.leftMotorVoltage, g.rightMotorVoltage)
+  );
+  /*
   // Creating initial commands
   for( int i = 0; i < 1; i++)
   {
     g.commandBuffer.push( 
       std::make_unique<MM::WallCenteringCommand>( 
-      std::make_unique<MM::LinearTravelCommand>( 1000000, 200, 1, 1, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage, g.isFrontWayBlocked ), 
+      std::make_unique<MM::LinearTravelCommand>( 1000000, 200, 1, 1, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage), 
       g.ir_frontleft, g.ir_frontright, g.leftMotorVoltage, g.rightMotorVoltage )
     );
   }
@@ -142,7 +151,7 @@ void setup()
   {
     g.commandBuffer.push( 
       std::make_unique<MM::WallCenteringCommand>( 
-      std::make_unique<MM::LinearTravelCommand>( 1000000, 200, 1, 1, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage, g.isFrontWayBlocked ), 
+      std::make_unique<MM::LinearTravelCommand>( 1000000, 200, 1, 1, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage), 
       g.ir_frontleft, g.ir_frontright, g.leftMotorVoltage, g.rightMotorVoltage )
     );
   }
@@ -155,11 +164,11 @@ void setup()
   {
     g.commandBuffer.push( 
       std::make_unique<MM::WallCenteringCommand>( 
-      std::make_unique<MM::LinearTravelCommand>( 1000000, 200, 1, 1, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage, g.isFrontWayBlocked ), 
+      std::make_unique<MM::LinearTravelCommand>( 1000000, 200, 1, 1, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage), 
       g.ir_frontleft, g.ir_frontright, g.leftMotorVoltage, g.rightMotorVoltage )
     );
   }
-
+  */
   mouse.accelerometer.myAngRotMeter.startMeasurement();
   LOG_INFO("Setup Done\n");
 }

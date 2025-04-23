@@ -18,15 +18,6 @@ void MM::read_sensors()
     g.rightEncoderValue = mouse.motor_right.getEncoderCount();
     g.leftEncoderValue =  mouse.motor_left.getEncoderCount();
 
-    if((g.ir_left > 1300) || (g.ir_right > 1000)) 
-    {
-        g.isFrontWayBlocked = true;
-    } 
-    else 
-    {
-        g.isFrontWayBlocked = false;
-    }
-
     if( mouse.accelerometer.loadSensorValues() )
     {
         // mouse.accelerometer.serialPrint();
