@@ -37,7 +37,7 @@ void MM::WallCenteringCommand::execute()
 bool MM::WallCenteringCommand::isFinished() const
 {
     if( myWrappedCommandP.get() != nullptr )
-    {    
+    {   
         return myWrappedCommandP->isFinished();
     }
     else

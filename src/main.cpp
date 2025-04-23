@@ -35,21 +35,24 @@ MM::Task task_debug               {debug, CONSTS::DEBUG_CYCLE_TIME};
 void debug()
 {
   mouse.dbg_red.toggle();
-  /*LOG_INFO("LEDS-> FL: %d, L: %d, R: %d, FR: %d ", g.ir_frontleft,
+  LOG_INFO("LEDS-> FL: %d, L: %d, R: %d, FR: %d \n", g.ir_frontleft,
                                                     g.ir_left,
                                                     g.ir_right,
-                                                    g.ir_frontright);*/
+                                                    g.ir_frontright);
 
-  if( !g.commandBuffer.empty() )
+  //LOG_INFO("WAYBLOCKED: %d\n", static_cast<int>(g.isFrontWayBlocked));                                                  
+
+  //LOG_INFO("ORI: %d\n",static_cast<int>(g.currentOrientation));
+  /*if( !g.commandBuffer.empty() )
   {
     g.commandBuffer.front()->print();
   }
-  LOG_INFO("\n");
+  LOG_INFO("\n");*/
 
 
   //LOG_INFO("BATTERY VOLTAGE: %d\n", g.currentBatteryVoltage);
 
-  // LOG_INFO("MOTORS->   MOTOR_LEFT:   %d   MOTOR_RIGHT: %d\n ", g.leftMotorVoltage, g.rightMotorVoltage);
+  //LOG_INFO("MOTORS->   MOTOR_LEFT:   %d   MOTOR_RIGHT: %d\n ", g.leftMotorVoltage, g.rightMotorVoltage);
   // LOG_INFO("ENCODERS-> ENCODER LEFT: %d ENCODER RIGHT: %d\n", static_cast<int>( g.leftEncoderValue ), static_cast<int>( g.rightEncoderValue) );
   //LOG_INFO("DIR - ENCODER LEFT: %d ENCODER RIGHT: %d\n", static_cast<int>( mouse.encoder_right.getCount() ), static_cast<int>( mouse.encoder_left.getCount() ) );
 
@@ -121,16 +124,39 @@ void setup()
   delay(5000);
 
   // Creating initial commands
-  for( int i = 0; i < 5; i++)
+  for( int i = 0; i < 1; i++)
   {
     g.commandBuffer.push( 
       std::make_unique<MM::WallCenteringCommand>( 
-      std::make_unique<MM::LinearTravelCommand>( 180000, 100, 1, 1, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage ), 
+      std::make_unique<MM::LinearTravelCommand>( 1000000, 200, 1, 1, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage, g.isFrontWayBlocked ), 
       g.ir_frontleft, g.ir_frontright, g.leftMotorVoltage, g.rightMotorVoltage )
     );
-
+  }
+  for(int i = 0; i < 1; i++) {
     g.commandBuffer.push( 
-      std::make_unique<MM::RotationCommand>( MM::RotationCommand::CLOCKWISE, 90.0, g.currentOrientation, g.leftMotorVoltage, g.rightMotorVoltage)
+      std::make_unique<MM::RotationCommand>( MM::RotationCommand::COUNTER_CLOCKWISE, 90.0, g.currentOrientation, g.leftMotorVoltage, g.rightMotorVoltage)
+    );
+  }
+  
+  for( int i = 0; i < 1; i++)
+  {
+    g.commandBuffer.push( 
+      std::make_unique<MM::WallCenteringCommand>( 
+      std::make_unique<MM::LinearTravelCommand>( 1000000, 200, 1, 1, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage, g.isFrontWayBlocked ), 
+      g.ir_frontleft, g.ir_frontright, g.leftMotorVoltage, g.rightMotorVoltage )
+    );
+  }
+  for(int i = 0; i < 1; i++) {
+    g.commandBuffer.push( 
+      std::make_unique<MM::RotationCommand>( MM::RotationCommand::COUNTER_CLOCKWISE, 90.0, g.currentOrientation, g.leftMotorVoltage, g.rightMotorVoltage)
+    );
+  }
+  for( int i = 0; i < 1; i++)
+  {
+    g.commandBuffer.push( 
+      std::make_unique<MM::WallCenteringCommand>( 
+      std::make_unique<MM::LinearTravelCommand>( 1000000, 200, 1, 1, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage, g.isFrontWayBlocked ), 
+      g.ir_frontleft, g.ir_frontright, g.leftMotorVoltage, g.rightMotorVoltage )
     );
   }
 

@@ -19,7 +19,6 @@ void MM::control()
         else
         {
             g.commandBuffer.pop();
-            
             // if( !g.commandBuffer.empty() )
             // {
             //     g.commandBuffer.front()->execute(); // immediately execute the next command to not waste an cycle

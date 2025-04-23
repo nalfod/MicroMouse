@@ -34,6 +34,8 @@ void MM::RotationCommand::execute()
 
     if( mElapsedTime_ms >= mTotalTimeOfTravel_ms )
     {
+        LOG_INFO("FINISHED ROTATE\n");
+        print();
         // TODO: maybe the final motor voltage adjustment should be the responsibility of the caller
         mLeftMotorVoltageR_mV = 0;
         mRightMotorVoltageR_mV = 0;
@@ -56,7 +58,7 @@ void MM::RotationCommand::execute()
         myMovementCtrl.compute( static_cast<double>( mRealCurrentPosition_urev) );
 
         // Determining output voltage
-        int16_t outputVoltage = static_cast<int16_t>(calcVoltageFromSpeed_mV(outputSpeed_urev_per_ms)) + static_cast<int16_t>( myMovementCtrl.getOuput() );
+        int16_t outputVoltage = static_cast<int16_t>(calcVoltageFromSpeed_mV(outputSpeed_urev_per_ms)) + (static_cast<int16_t>(myMovementCtrl.getOuput()) );
 
         if( myDircetion == CLOCKWISE )
         {
@@ -78,10 +80,11 @@ int16_t MM::RotationCommand::calcVoltageFromSpeed_mV( float setSpeed_um_per_ms )
 
 void MM::RotationCommand::print() const
 {
-    LOG_INFO("TOT_T: %d ELAPS_T: %d DDIST(urev): %d RDIST(urev): %d ",
+    LOG_INFO("TOT_T: %d ELAPS_T: %d DDIST(urev): %d RDIST(urev): %d PID: %d",
         mTotalTimeOfTravel_ms,
         mElapsedTime_ms, 
         static_cast<int> ( mDesiredCurrentPosition_urev),
-        static_cast<int> ( mRealCurrentPosition_urev )
+        static_cast<int> ( mRealCurrentPosition_urev ),
+        static_cast<int> (myMovementCtrl.getOuput())
       );
 }
