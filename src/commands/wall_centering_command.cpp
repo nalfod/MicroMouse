@@ -10,7 +10,7 @@ myCurrentOriR_deg(currentOriR),
 mLeftMotorVoltageR_mV(leftMotorVoltage_mV),
 mRightMotorVoltageR_mV(rightMotorVoltage_mV),
 myCenteringPidForWalls(0.05, 0, 0), // TODO: Maybe the tuning should be more sophisticated!!
-myCenteringPidForOrientation(2, 0.2, 0) // TODO: Maybe the tuning should be more sophisticated!!
+myCenteringPidForOrientation(10, 0, 0) // TODO: Maybe the tuning should be more sophisticated!!
 {
     myCenteringPidForWalls.setTarget( 0.0 );
     myCenteringPidForWalls.init( (static_cast<int>(CONSTS::MAIN_CYCLE_TIME.count()) / 1000) , AUTOMATIC, -750.0, 750.0); // TODO: Maybe the tuning should be more sofisticated!!
@@ -64,7 +64,7 @@ void MM::WallCenteringCommand::executeWallCenteringControl()
     if( isCenteringWithWallsPossible() )
     {
         executeCenteringUsingWallDistance();
-        myCenteringPidForOrientation.setTarget( myCurrentOriR_deg ); // setting target for later
+        myCenteringPidForOrientation.setTarget( myCurrentOriR_deg ); // saving target for a time when there is no two sidewalls
     }
     else
     {
@@ -81,11 +81,29 @@ void MM::WallCenteringCommand::executeCenteringUsingWallDistance()
 
 void MM::WallCenteringCommand::executeCenteringUsingOrientation()
 {
-    myCenteringPidForOrientation.compute( myCurrentOriR_deg );
+    float currentOriShifetd = shiftOrientationValueRespectedToTarget( myCurrentOriR_deg );
+    myCenteringPidForOrientation.compute( currentOriShifetd );
     mLeftMotorVoltageR_mV  += static_cast<int16_t>( myCenteringPidForOrientation.getOuput() );
     mRightMotorVoltageR_mV -= static_cast<int16_t>( myCenteringPidForOrientation.getOuput() );
 }
 
+// for cases, when target orientation is close to +180° or -180°, overflow prevention
+double MM::WallCenteringCommand::shiftOrientationValueRespectedToTarget(float currentOrientation)
+{
+    double retVal = static_cast<double>( currentOrientation );
+    double target = myCenteringPidForOrientation.getTarget();
+    if( target - retVal < -180.0 )
+    {
+        retVal -= 360.0;
+    }
+    else if( target - retVal > 180.0 )
+    {
+        retVal += 360.0;
+    }
+    return retVal;
+}
+
+// FOR DEBUG
 MM::MotionCommandIF* MM::WallCenteringCommand::getWrappedObjectP()
 {
     return myWrappedCommandP.get();

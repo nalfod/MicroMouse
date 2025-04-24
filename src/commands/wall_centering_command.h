@@ -25,6 +25,7 @@ private:
     void executeCenteringUsingWallDistance();
     void executeCenteringUsingOrientation();
     bool isCenteringWithWallsPossible() const;
+    double shiftOrientationValueRespectedToTarget(float currentOrientation);
 
     std::unique_ptr<MotionCommandIF> myWrappedCommandP;
 
