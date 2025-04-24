@@ -14,6 +14,8 @@ class PidWrapper
         void setTarget(double newTarget);
         void compute(double newError);
         double getOuput() const;
+        double getInput() const;
+        double getTarget() const;
 
         void setTunings(double Kp, double Ki, double Kd);
 

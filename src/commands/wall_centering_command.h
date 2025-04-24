@@ -24,7 +24,7 @@ private:
     void executeWallCenteringControl();
     void executeCenteringUsingWallDistance();
     void executeCenteringUsingOrientation();
-    bool isCenteringWithWallsPossible();
+    bool isCenteringWithWallsPossible() const;
 
     std::unique_ptr<MotionCommandIF> myWrappedCommandP;
 
@@ -40,7 +40,8 @@ private:
     PidWrapper myCenteringPidForWalls;
     PidWrapper myCenteringPidForOrientation;
 
-
+    // state flags
+    bool mStarted{false};
 };
 
 } // namespace MM

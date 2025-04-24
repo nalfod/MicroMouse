@@ -15,12 +15,17 @@ myCenteringPidForOrientation(2, 0.2, 0) // TODO: Maybe the tuning should be more
     myCenteringPidForWalls.setTarget( 0.0 );
     myCenteringPidForWalls.init( (static_cast<int>(CONSTS::MAIN_CYCLE_TIME.count()) / 1000) , AUTOMATIC, -750.0, 750.0); // TODO: Maybe the tuning should be more sofisticated!!
     
-    myCenteringPidForOrientation.setTarget( myCurrentOriR_deg );
     myCenteringPidForOrientation.init( (static_cast<int>(CONSTS::MAIN_CYCLE_TIME.count()) / 1000) , AUTOMATIC, -750.0, 750.0); // TODO: Maybe the tuning should be more sofisticated!!
 }
 
 void MM::WallCenteringCommand::execute()
 {
+    if( !mStarted )
+    {
+        myCenteringPidForOrientation.setTarget( myCurrentOriR_deg );
+        mStarted = true;
+    }
+
     if( myWrappedCommandP.get() != nullptr )
     {
         myWrappedCommandP->execute();
@@ -49,7 +54,7 @@ bool MM::WallCenteringCommand::isFinished() const
     }
 }
 
-bool MM::WallCenteringCommand::isCenteringWithWallsPossible()
+bool MM::WallCenteringCommand::isCenteringWithWallsPossible() const
 {
     return ( mIrFrontLeftR > CONSTS::WALL_DISTANCE_LIMIT_FOR_CENTERING && mIrFrontRightR > CONSTS::WALL_DISTANCE_LIMIT_FOR_CENTERING );
 }
@@ -77,8 +82,8 @@ void MM::WallCenteringCommand::executeCenteringUsingWallDistance()
 void MM::WallCenteringCommand::executeCenteringUsingOrientation()
 {
     myCenteringPidForOrientation.compute( myCurrentOriR_deg );
-    mLeftMotorVoltageR_mV  -= static_cast<int16_t>( myCenteringPidForOrientation.getOuput() );
-    mRightMotorVoltageR_mV += static_cast<int16_t>( myCenteringPidForOrientation.getOuput() );
+    mLeftMotorVoltageR_mV  += static_cast<int16_t>( myCenteringPidForOrientation.getOuput() );
+    mRightMotorVoltageR_mV -= static_cast<int16_t>( myCenteringPidForOrientation.getOuput() );
 }
 
 MM::MotionCommandIF* MM::WallCenteringCommand::getWrappedObjectP()
@@ -98,9 +103,27 @@ int32_t MM::WallCenteringCommand::getCurrentError() const
 
 void MM::WallCenteringCommand::print() const
 {
-    LOG_INFO("Wall center output: %d error: %d FL: %d FR: %d ", static_cast<int16_t>( myCenteringPidForWalls.getOuput() ), 
-    ( mIrFrontLeftR - mIrFrontRightR ),
-    ( mIrFrontLeftR ),
-    ( mIrFrontRightR ) );
-    myWrappedCommandP->print();
+    LOG_INFO("WALL_CENT_CMD");
+    if( isCenteringWithWallsPossible() )
+    {
+        LOG_INFO("LED MODE - output: %d error: %d FL: %d FR: %d ", 
+            static_cast<int16_t>( myCenteringPidForWalls.getOuput() ), 
+            ( mIrFrontLeftR - mIrFrontRightR ),
+            ( mIrFrontLeftR ),
+            ( mIrFrontRightR ) );
+    }
+    else
+    {
+        LOG_INFO("IMU MODE - output: %d target: %d input: %d current_ori: %d ", 
+            static_cast<int16_t>( myCenteringPidForOrientation.getOuput() ), 
+            static_cast<int16_t>( myCenteringPidForOrientation.getTarget() ),
+            static_cast<int16_t>( myCenteringPidForOrientation.getInput() ),
+            static_cast<int16_t>( myCurrentOriR_deg ) );
+    }
+    LOG_INFO("\t");
+
+    if( myWrappedCommandP.get() != nullptr )
+    {  
+        myWrappedCommandP->print();
+    }
 }

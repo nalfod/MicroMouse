@@ -29,6 +29,18 @@ double MM::PidWrapper::getOuput() const
 
 }
 
+double MM::PidWrapper::getInput() const
+{
+    return input; // MAYBE NO DOUBLE RETURN VALUE????? OR CAST IT????
+
+}
+
+double MM::PidWrapper::getTarget() const
+{
+    return target; // MAYBE NO DOUBLE RETURN VALUE????? OR CAST IT????
+
+}
+
 void MM::PidWrapper::init(int sampleTime, int mode, double minOutputLimit, double maxOutputLimit)
 {
     myPidController.SetSampleTime(sampleTime);
