@@ -23,4 +23,17 @@ constexpr float K_BIAS_PID_REV = K_BIAS_FF * 1.3;
 
 constexpr uint16_t WALL_DISTANCE_LIMIT_FOR_CENTERING = 200; // mV, HAS TO BE MEASURED
 
+// MODE SELECTION
+constexpr enum MODES
+{
+    IDLE = 0,
+    SPEED_RUN = 1,
+    DISCOVERY = 2,
+    MEASUREMENT = 3,
+    MEASUREMENT_SNAPSHOT = 4
+};
+
+constexpr uint16_t MODE_SIGNAL_THRESHOLD_MV = 3000;
+constexpr uint16_t MODE_SIGNAL_HOLD_TIME_MS = 2000;
+
 }

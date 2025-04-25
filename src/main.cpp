@@ -1,5 +1,4 @@
 // Micromouse course - evosoft
-
 #include <Arduino.h>
 #include "utils/logging.h"
 #include "utils/task.h"
