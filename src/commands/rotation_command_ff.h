@@ -6,17 +6,12 @@
 
 namespace MM {
 
+// NOTE: This is a legacy commend, use the only PID variant instead, it is more reliable and cleaner!
 // This is done by using feed forward, the downfall is that the exit criteria is to measure the elapsed time so it is not the precise
-class RotationCommand : public MotionCommandIF
+class RotationCommandFF : public MotionCommandIF
 {
 public:
-    enum RotationOrientation
-    {
-        CLOCKWISE = 1,
-        COUNTER_CLOCKWISE = 2
-    };
-
-    RotationCommand(RotationOrientation direction, float angleToRotate_deg, float const& currentOriR, int16_t& leftMotorVoltage_mV, int16_t& rightMotorVoltage_mV);
+    RotationCommandFF(float angleToRotate_deg, float const& currentOriR, int16_t& leftMotorVoltage_mV, int16_t& rightMotorVoltage_mV);
 
     void execute() override;
         
@@ -26,12 +21,18 @@ public:
     void print() const override;
 
 private:
+    enum RotationOrientation
+    {
+        CLOCKWISE = 1,
+        COUNTER_CLOCKWISE = 2
+    };
+
     int16_t calcVoltageFromSpeed_mV( float setSpeed_um_per_ms );
 
     TargetSpeedCalculator myTargetSpeedCalculator;
     PidWrapper myMovementCtrl{2.5, 1.5, 0.018}; // tuned for 90deg rotation
     float const& myCurrentOriR_deg;
-    RotationOrientation const myDircetion;
+    RotationOrientation myDircetion;
 
     float myPreviousOrientation_deg{0.0}; // this has the same point as the EncoderValueIntegrator in case of linear travel
 

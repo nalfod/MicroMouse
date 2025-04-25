@@ -14,7 +14,7 @@
 #include "commands/collision_avoidance_command.h"
 #include "commands/linear_travel_command.h"
 #include "commands/wall_centering_command.h"
-#include "commands/rotation_command.h"
+#include "commands/rotation_command_ff.h"
 #include "commands/rotation_command_pid.h"
 
 void debug();

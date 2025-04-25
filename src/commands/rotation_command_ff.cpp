@@ -1,21 +1,28 @@
-#include "rotation_command.h"
+#include "rotation_command_ff.h"
 #include "Arduino.h" // for millis()
 #include <cstdlib>
 #include "utils/logging.h"
 #include "constants.h"
 
-MM::RotationCommand::RotationCommand(RotationOrientation direction, float angleToRotate_deg, float const& currentOriR, int16_t& leftMotorVoltage_mV, int16_t& rightMotorVoltage_mV):
-myTargetSpeedCalculator(static_cast<uint32_t>( (angleToRotate_deg / 360) * 1000 ), 0.5, 0.01, 0.01), // speed: miliRev/ms, acceleration: miliRev/ms^2
-myDircetion(direction),
+MM::RotationCommandFF::RotationCommandFF(float angleToRotate_deg, float const& currentOriR, int16_t& leftMotorVoltage_mV, int16_t& rightMotorVoltage_mV):
+myTargetSpeedCalculator(static_cast<uint32_t>( (std::abs(angleToRotate_deg) / 360) * 1000 ), 0.5, 0.01, 0.01), // speed: miliRev/ms, acceleration: miliRev/ms^2
 myCurrentOriR_deg(currentOriR),
 mLeftMotorVoltageR_mV(leftMotorVoltage_mV),
 mRightMotorVoltageR_mV(rightMotorVoltage_mV)
 {
+    if( angleToRotate_deg > 0 )
+    {
+        myDircetion = CLOCKWISE;
+    }
+    else
+    {
+        myDircetion = COUNTER_CLOCKWISE;
+    }
     mTotalTimeOfTravel_ms = myTargetSpeedCalculator.getTotalTimeOfTravel_Ms();
     myMovementCtrl.init(1, AUTOMATIC, 0 , 1400); // QUESTION: should the min and the max value be bounded to the current voltage somehow??
 }
 
-void MM::RotationCommand::execute()
+void MM::RotationCommandFF::execute()
 {
     if( mFinished ) { return; }
 
@@ -73,12 +80,12 @@ void MM::RotationCommand::execute()
     }
 }
 
-int16_t MM::RotationCommand::calcVoltageFromSpeed_mV( float setSpeed_um_per_ms )
+int16_t MM::RotationCommandFF::calcVoltageFromSpeed_mV( float setSpeed_um_per_ms )
 {
     return static_cast<int16_t>(CONSTS::K_SPEED_FF_REV * setSpeed_um_per_ms + CONSTS::K_BIAS_FF_REV);
 }
 
-void MM::RotationCommand::print() const
+void MM::RotationCommandFF::print() const
 {
     LOG_INFO("TOT_T: %d ELAPS_T: %d DDIST(urev): %d RDIST(urev): %d PID: %d",
         mTotalTimeOfTravel_ms,
