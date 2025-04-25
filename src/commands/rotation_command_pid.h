@@ -8,13 +8,7 @@ namespace MM {
 class RotationCommandPid : public MotionCommandIF
 {
 public:
-    enum RotationOrientation
-    {
-        CLOCKWISE = 1,
-        COUNTER_CLOCKWISE = 2
-    };
-
-    RotationCommandPid(RotationOrientation direction, float angleToRotate_deg, float const& currentOriR, int16_t& leftMotorVoltage_mV, int16_t& rightMotorVoltage_mV);
+    RotationCommandPid(float angleToRotate_deg, float const& currentOriR, int16_t& leftMotorVoltage_mV, int16_t& rightMotorVoltage_mV);
 
     void execute() override;
         
@@ -24,11 +18,12 @@ public:
     void print() const override;
 
 private:
-    PidWrapper myMovementCtrl{15, 7, 3.5};
+    float shiftOrientationValue(float orientationValue);
+
+    PidWrapper myMovementCtrl{10, 2, 0.08}; // tuned for 90 deg, but works fine for 180 def too!
 
     // goal
-    RotationOrientation const myDircetion;
-    float const myTargetMagnitude_deg;
+    float const myTargetMagnitude_deg; // +: clockwise, -: counterclockwise
 
     // state flags
     bool mStarted{false};

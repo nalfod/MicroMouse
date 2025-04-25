@@ -143,8 +143,9 @@ void setup()
       )
     );
 
-    g.commandBuffer.push( 
-      std::make_unique<MM::RotationCommandPid>( MM::RotationCommandPid::CLOCKWISE, 90.0, g.currentOrientation, g.leftMotorVoltage, g.rightMotorVoltage)
+    g.commandBuffer.push
+    ( 
+      std::make_unique<MM::RotationCommandPid>( 90, g.currentOrientation, g.leftMotorVoltage, g.rightMotorVoltage)
     );
   }
 

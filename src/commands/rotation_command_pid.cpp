@@ -4,8 +4,7 @@
 #include "constants.h"
 
 // DONT USE IT TO TURN MORE THAN 180 (it doesnt make any sense anyway)
-MM::RotationCommandPid::RotationCommandPid(RotationOrientation direction, float angleToRotate_deg, float const& currentOriR, int16_t& leftMotorVoltage_mV, int16_t& rightMotorVoltage_mV):
-myDircetion(direction),
+MM::RotationCommandPid::RotationCommandPid(float angleToRotate_deg, float const& currentOriR, int16_t& leftMotorVoltage_mV, int16_t& rightMotorVoltage_mV):
 myTargetMagnitude_deg(angleToRotate_deg),
 myCurrentOriR_deg(currentOriR),
 mLeftMotorVoltageR_mV(leftMotorVoltage_mV),
@@ -21,26 +20,15 @@ void MM::RotationCommandPid::execute()
 
     if( !mStarted )
     {
-        if( myDircetion == CLOCKWISE )
-        {
-            myTargetOrientation_deg = myCurrentOriR_deg + myTargetMagnitude_deg;
-            if( myTargetOrientation_deg > 180.0 )
-            {
-                myTargetOrientation_deg -= 360;
-            }
-        }
-        else
-        {
-            myTargetOrientation_deg = myCurrentOriR_deg - myTargetMagnitude_deg;
-            if( myTargetOrientation_deg < -180.0 )
-            {
-                myTargetOrientation_deg += 360;
-            }
-        }
+        myTargetOrientation_deg = myCurrentOriR_deg + myTargetMagnitude_deg;
+        myTargetOrientation_deg = shiftOrientationValue(myTargetOrientation_deg);
         mStarted = true;
     }
 
-    if( std::abs(myTargetOrientation_deg - myCurrentOriR_deg) < 1.0 )
+    float orientationDifference_deg = myTargetOrientation_deg - myCurrentOriR_deg;
+    orientationDifference_deg = shiftOrientationValue(orientationDifference_deg);
+
+    if( std::abs( orientationDifference_deg ) < 0.5 )
     {
         // TODO: maybe the final motor voltage adjustment should be the responsibility of the caller
         mLeftMotorVoltageR_mV = 0;
@@ -49,39 +37,35 @@ void MM::RotationCommandPid::execute()
     }
     else
     {
-        double orientationDifference_deg = myTargetOrientation_deg - myCurrentOriR_deg;
-        if( orientationDifference_deg < -180 )
-        {
-            orientationDifference_deg += 360;
-        }
-        else if( orientationDifference_deg > 180 )
-        {
-            orientationDifference_deg -= 360;
-        }
-
-        myMovementCtrl.compute( orientationDifference_deg );
+        myMovementCtrl.compute( static_cast<double>( orientationDifference_deg ) );
         int16_t voltage_mV = static_cast<int16_t>( myMovementCtrl.getOuput() );
 
-        if( voltage_mV > 0 && voltage_mV < CONSTS::K_BIAS_FF )
+        if( voltage_mV > 0 && voltage_mV < CONSTS::K_BIAS_PID_REV )
         {
-            voltage_mV = CONSTS::K_BIAS_FF;
+            voltage_mV = CONSTS::K_BIAS_PID_REV;
         }
-        else if ( voltage_mV <= 0 && voltage_mV > -CONSTS::K_BIAS_FF )
+        else if ( voltage_mV <= 0 && voltage_mV > -( CONSTS::K_BIAS_PID_REV ) )
         {
-            voltage_mV = -CONSTS::K_BIAS_FF;
+            voltage_mV = -( CONSTS::K_BIAS_PID_REV );
         }
 
-        if( myDircetion == CLOCKWISE )
-        {
-            mLeftMotorVoltageR_mV = voltage_mV;
-            mRightMotorVoltageR_mV = -voltage_mV;
-        }
-        else
-        {
-            mLeftMotorVoltageR_mV = -voltage_mV;
-            mRightMotorVoltageR_mV = voltage_mV;
-        }
+        mLeftMotorVoltageR_mV = -voltage_mV;
+        mRightMotorVoltageR_mV = voltage_mV;
     }
+}
+
+float MM::RotationCommandPid::shiftOrientationValue(float orientationValue)
+{
+    float retVal = orientationValue;
+    if( retVal > 180.0 )
+    {
+        retVal -= 360;
+    }
+    else if( retVal < -180.0 )
+    {
+        retVal += 360;
+    }
+    return retVal;
 }
 
 void MM::RotationCommandPid::print() const
