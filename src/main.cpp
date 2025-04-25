@@ -15,6 +15,7 @@
 #include "commands/linear_travel_command.h"
 #include "commands/wall_centering_command.h"
 #include "commands/rotation_command.h"
+#include "commands/rotation_command_pid.h"
 
 void debug();
 
@@ -36,19 +37,19 @@ MM::Task task_debug               {debug, CONSTS::DEBUG_CYCLE_TIME};
 void debug()
 {
   mouse.dbg_red.toggle();
-  LOG_INFO("LEDS-> FL: %d, L: %d, R: %d, FR: %d \n", g.ir_frontleft,
+  /*LOG_INFO("LEDS-> FL: %d, L: %d, R: %d, FR: %d \n", g.ir_frontleft,
                                                     g.ir_left,
                                                     g.ir_right,
-                                                    g.ir_frontright);
+                                                    g.ir_frontright);*/
 
   //LOG_INFO("WAYBLOCKED: %d\n", static_cast<int>(g.isFrontWayBlocked));                                                  
 
   //LOG_INFO("ORI: %d\n",static_cast<int>(g.currentOrientation));
-  /*if( !g.commandBuffer.empty() )
+  if( !g.commandBuffer.empty() )
   {
     g.commandBuffer.front()->print();
   }
-  LOG_INFO("\n");*/
+  LOG_INFO("\n");
 
 
   //LOG_INFO("BATTERY VOLTAGE: %d\n", g.currentBatteryVoltage);
@@ -143,7 +144,7 @@ void setup()
     );
 
     g.commandBuffer.push( 
-      std::make_unique<MM::RotationCommand>( MM::RotationCommand::CLOCKWISE, 90.0, g.currentOrientation, g.leftMotorVoltage, g.rightMotorVoltage)
+      std::make_unique<MM::RotationCommandPid>( MM::RotationCommandPid::CLOCKWISE, 90.0, g.currentOrientation, g.leftMotorVoltage, g.rightMotorVoltage)
     );
   }
 

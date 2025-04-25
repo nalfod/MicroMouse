@@ -6,6 +6,7 @@
 
 namespace MM {
 
+// This is done by using feed forward, the downfall is that the exit criteria is to measure the elapsed time so it is not the precise
 class RotationCommand : public MotionCommandIF
 {
 public:

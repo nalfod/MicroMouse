@@ -35,8 +35,7 @@ private:
     bool mFinished{false};
 
     // Ori values
-    float myPreviousOrientation_deg{0.0};
-    float myTraveledDistance_deg{0.0};
+    float myTargetOrientation_deg{0.0};
     float const& myCurrentOriR_deg;
 
     // controlled units

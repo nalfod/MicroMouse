@@ -63,7 +63,7 @@ void MM::RotationCommand::execute()
         if( myDircetion == CLOCKWISE )
         {
             mLeftMotorVoltageR_mV = outputVoltage;
-            mRightMotorVoltageR_mV = -outputVoltage;
+            mRightMotorVoltageR_mV = -outputVoltage; // TODO: make it automatic if the voltage is below the permissible minimum, it jumps to the permissible minimum ( K_BIAS_FF ) automatically
         }
         else
         {
