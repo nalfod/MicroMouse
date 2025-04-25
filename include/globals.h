@@ -27,8 +27,6 @@ struct Globals {
 // Commands =================================================
 
     std::queue< std::unique_ptr<MotionCommandIF> > commandBuffer;
-    
-    bool accel_result = false;
 };
 
 } // namespace MM
