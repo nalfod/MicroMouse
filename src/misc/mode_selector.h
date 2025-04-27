@@ -17,7 +17,7 @@ class SignalValue
 class ModeSelector
 {
     public:
-        ModeSelector(uint16_t const& ir_left, uint16_t const& ir_frontleft, uint16_t const& ir_frontright, uint16_t const& ir_right);
+        ModeSelector(uint16_t const& ir_left, uint16_t const& ir_frontleft, uint16_t const& ir_frontright, uint16_t const& ir_right, CONSTS::MODES init_mode = CONSTS::MODES::IDLE);
 
         CONSTS::MODES get_current_mode();
         bool is_mode_just_changed();
@@ -29,7 +29,7 @@ class ModeSelector
         SignalValue _front_right_signal;
         SignalValue _right_signal;
 
-        CONSTS::MODES _current_mode{CONSTS::MODES::IDLE};
+        CONSTS::MODES _current_mode;
 
         bool _is_ready_for_new_mode{false};
         bool _is_mode_just_changed{false};

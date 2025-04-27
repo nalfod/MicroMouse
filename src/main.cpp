@@ -47,8 +47,19 @@ std::vector<MM::Task> task_signal_current_mode = {
 void debug()
 {
   mouse.dbg_red.toggle();
-  // MM::log_current_led_values();
-  MM::log_mode_selector();
+  if( g.mode_selector.get_current_mode() != CONSTS::MODES::MEASUREMENT && g.mode_selector.get_current_mode() != CONSTS::MODES::MEASUREMENT_SNAPSHOT  )
+  {
+    // MM::log_current_led_values();
+    MM::log_mode_selector();
+  }
+  else
+  {
+    if( g.mode_selector.get_current_mode() == CONSTS::MODES::MEASUREMENT_SNAPSHOT )
+    {
+      MM::log_current_led_values();
+    }
+  }
+
 }
 
 void setup()
