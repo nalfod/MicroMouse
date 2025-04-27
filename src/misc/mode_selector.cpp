@@ -80,6 +80,7 @@ void MM::ModeSelector::update()
                 break;
     
             case CONSTS::MODES::MEASUREMENT:
+                // This is not working very well, since the second condition will come always sooener than the first one :(
                 if( left_signal && right_signal ) { _current_mode = CONSTS::MODES::IDLE; _is_ready_for_new_mode = false; }
                 else if( left_signal || front_left_signal || front_right_signal || right_signal ) { _current_mode = CONSTS::MODES::MEASUREMENT_SNAPSHOT; _is_ready_for_new_mode = false; }
                 break;

@@ -18,6 +18,8 @@
 
 #include "misc/debug_functions.h"
 
+#include <vector>
+
 void debug();
 
 #ifdef BLE_LOGGING
@@ -34,6 +36,13 @@ MM::Task task_post_process        {MM::post_process, CONSTS::MAIN_CYCLE_TIME};
 MM::Task task_update_outputs      {MM::update_outputs, CONSTS::MAIN_CYCLE_TIME};
 MM::Task task_debug               {debug, CONSTS::DEBUG_CYCLE_TIME};
 
+std::vector<MM::Task> task_signal_current_mode = {
+  {[]() { mouse.dbg_green.toggle(); }, CONSTS::IDLE_BLINK_TIME},
+  {[]() { mouse.dbg_green.toggle(); }, CONSTS::SPEED_RUN_BLINK_TIME},
+  {[]() { mouse.dbg_green.toggle(); }, CONSTS::DISCOVERY_BLINK_TIME},
+  {[]() { mouse.dbg_green.toggle(); }, CONSTS::MEASUREMENT_BLINK_TIME},
+  {[]() { mouse.dbg_green.toggle(); }, CONSTS::MEASUREMENT_BLINK_TIME}
+};
 
 void debug()
 {
@@ -110,14 +119,16 @@ void loop()
 {
   if( MM::Accelerometer::MPUInterrupt )
   {
-      Serial.print(millis());
-      Serial.print("\t");
+      // for debugging the cycle time
+      //Serial.print(millis());
+      //Serial.print("\t");
       task_read_sensors();
       task_pre_process_inputs();
       task_control();
       task_post_process();
       task_update_outputs();
       task_debug();
+      task_signal_current_mode[ g.mode_selector.get_current_mode() ]();
       MM::Accelerometer::MPUInterrupt = false;
   }  
 }

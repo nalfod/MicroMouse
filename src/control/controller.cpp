@@ -10,20 +10,8 @@
 
 void MM::control()
 {
-    // refreshing mode
-    g.mode_selector.update();
-    if( g.mode_selector.is_mode_just_changed() )
-    {
-        mouse.dbg_green.toggle();
-        delay(100);
-        mouse.dbg_green.toggle();
-        delay(100);
-        mouse.dbg_green.toggle();
-        delay(100);
-        mouse.dbg_green.toggle();
-    }
-
-
+    check_mode_selector();
+    
     if( g.mode_selector.get_current_mode() == CONSTS::MODES::SPEED_RUN )
     {
         if( !g.commandBuffer.empty() )
@@ -49,3 +37,21 @@ void MM::control()
     }
 
 }
+
+
+void MM::check_mode_selector()
+{
+    // refreshing mode
+    g.mode_selector.update();/*
+    if( g.mode_selector.is_mode_just_changed() )
+    {
+        mouse.dbg_green.toggle();
+        delay(100);
+        mouse.dbg_green.toggle();
+        delay(100);
+        mouse.dbg_green.toggle();
+        delay(100);
+        mouse.dbg_green.toggle();
+    }*/
+}
+

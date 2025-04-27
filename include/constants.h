@@ -8,6 +8,11 @@ namespace CONSTS {
 constexpr std::chrono::duration<uint32_t, std::micro> MAIN_CYCLE_TIME = 1ms;
 constexpr std::chrono::duration<uint32_t, std::micro> DEBUG_CYCLE_TIME = 100ms;
 
+constexpr std::chrono::duration<uint32_t, std::micro> IDLE_BLINK_TIME = 1000ms;
+constexpr std::chrono::duration<uint32_t, std::micro> SPEED_RUN_BLINK_TIME = 100ms;
+constexpr std::chrono::duration<uint32_t, std::micro> DISCOVERY_BLINK_TIME = 500ms;
+constexpr std::chrono::duration<uint32_t, std::micro> MEASUREMENT_BLINK_TIME = 750ms;
+
 // Encoder and wheel data
 constexpr uint16_t ENCODER_RESOULTION = 288; // no unit
 constexpr uint16_t WHEEL_DIAMETER_UM = 43800; // um
