@@ -10,24 +10,42 @@
 
 void MM::control()
 {
-    if( !g.commandBuffer.empty() )
+    // refreshing mode
+    g.mode_selector.update();
+    if( g.mode_selector.is_mode_just_changed() )
     {
-        if( !g.commandBuffer.front()->isFinished() )
+        mouse.dbg_green.toggle();
+        delay(100);
+        mouse.dbg_green.toggle();
+        delay(100);
+        mouse.dbg_green.toggle();
+        delay(100);
+        mouse.dbg_green.toggle();
+    }
+
+
+    if( g.mode_selector.get_current_mode() == CONSTS::MODES::SPEED_RUN )
+    {
+        if( !g.commandBuffer.empty() )
         {
-            g.commandBuffer.front()->execute();
+            if( !g.commandBuffer.front()->isFinished() )
+            {
+                g.commandBuffer.front()->execute();
+            }
+            else
+            {
+                g.commandBuffer.pop();
+                // if( !g.commandBuffer.empty() )
+                // {
+                //     g.commandBuffer.front()->execute(); // immediately execute the next command to not waste an cycle
+                // }
+                delay(2000);
+            }
         }
         else
         {
-            g.commandBuffer.pop();
-            // if( !g.commandBuffer.empty() )
-            // {
-            //     g.commandBuffer.front()->execute(); // immediately execute the next command to not waste an cycle
-            // }
-            delay(2000);
+            mouse.dbg_green.off();
         }
     }
-    else
-    {
-        mouse.dbg_green.off();
-    }
+
 }

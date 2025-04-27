@@ -20,6 +20,7 @@ class ModeSelector
         ModeSelector(uint16_t const& ir_left, uint16_t const& ir_frontleft, uint16_t const& ir_frontright, uint16_t const& ir_right);
 
         CONSTS::MODES get_current_mode();
+        bool is_mode_just_changed();
         void update();
 
     private:
@@ -29,6 +30,9 @@ class ModeSelector
         SignalValue _right_signal;
 
         CONSTS::MODES _current_mode{CONSTS::MODES::IDLE};
+
+        bool _is_ready_for_new_mode{false};
+        bool _is_mode_just_changed{false};
 };
 
 } // namespace MM    

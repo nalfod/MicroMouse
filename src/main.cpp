@@ -38,7 +38,8 @@ MM::Task task_debug               {debug, CONSTS::DEBUG_CYCLE_TIME};
 void debug()
 {
   mouse.dbg_red.toggle();
-  MM::log_current_led_values();
+  // MM::log_current_led_values();
+  MM::log_mode_selector();
 }
 
 void setup()

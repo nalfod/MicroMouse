@@ -5,6 +5,7 @@
 #include "commands/motion_command_if.h"
 #include <memory>
 #include <queue>
+#include "misc/mode_selector.h"
 
 namespace MM {
 
@@ -20,13 +21,14 @@ struct Globals {
     float currentOrientation{0};
 
 // Outputs =================================================
-    // the values which should be put on the motors
     int16_t leftMotorVoltage{0};
     int16_t rightMotorVoltage{0};
 
 // Commands =================================================
-
     std::queue< std::unique_ptr<MotionCommandIF> > commandBuffer;
+
+// Mode selector =================================================
+    ModeSelector mode_selector{ir_left, ir_frontleft, ir_frontright, ir_right};
 };
 
 } // namespace MM

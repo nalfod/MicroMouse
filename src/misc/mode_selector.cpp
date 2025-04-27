@@ -40,44 +40,64 @@ _right_signal(ir_right)
 
 }
 
-inline
 CONSTS::MODES MM::ModeSelector::get_current_mode()
 {
     return _current_mode;
 }
 
+bool MM::ModeSelector::is_mode_just_changed()
+{
+    return _is_mode_just_changed;
+}
+
 void MM::ModeSelector::update()
 {
+    _is_mode_just_changed = false;
     bool left_signal = _left_signal.get_value();
     bool front_left_signal = _front_left_signal.get_value();
     bool front_right_signal = _front_right_signal.get_value();
     bool right_signal = _right_signal.get_value();
 
-    switch (_current_mode)
+    if( !left_signal && !front_left_signal && !front_right_signal && !right_signal )
     {
-        case CONSTS::MODES::IDLE:
-            if( left_signal )            _current_mode = CONSTS::MODES::SPEED_RUN;
-            else if( right_signal )      _current_mode = CONSTS::MODES::DISCOVERY;
-            else if( front_left_signal ) _current_mode = CONSTS::MODES::MEASUREMENT;
-            else                         _current_mode = CONSTS::MODES::IDLE;
-            break;
+        _is_ready_for_new_mode = true;
+    }
 
-        case CONSTS::MODES::SPEED_RUN:
-        case CONSTS::MODES::DISCOVERY:
-            if( front_left_signal && front_right_signal ) _current_mode = CONSTS::MODES::IDLE;
-            break;
+    if( _is_ready_for_new_mode || _current_mode == CONSTS::MODES::MEASUREMENT_SNAPSHOT )
+    {
+        switch (_current_mode)
+        {
+            case CONSTS::MODES::IDLE:
+                if( left_signal && !right_signal && !front_left_signal && !front_right_signal )      { _current_mode = CONSTS::MODES::SPEED_RUN; _is_ready_for_new_mode = false; }
+                else if( !left_signal && right_signal && !front_left_signal && !front_right_signal ) { _current_mode = CONSTS::MODES::DISCOVERY; _is_ready_for_new_mode = false; }
+                else if( !left_signal && !right_signal && front_left_signal && !front_right_signal ) { _current_mode = CONSTS::MODES::MEASUREMENT; _is_ready_for_new_mode = false; }
+                else  _current_mode = CONSTS::MODES::IDLE;
+                break;
+    
+            case CONSTS::MODES::SPEED_RUN:
+            case CONSTS::MODES::DISCOVERY:
+                if( left_signal && right_signal ) { _current_mode = CONSTS::MODES::IDLE; _is_ready_for_new_mode = false; }
+                break;
+    
+            case CONSTS::MODES::MEASUREMENT:
+                if( left_signal && right_signal ) { _current_mode = CONSTS::MODES::IDLE; _is_ready_for_new_mode = false; }
+                else if( left_signal || front_left_signal || front_right_signal || right_signal ) { _current_mode = CONSTS::MODES::MEASUREMENT_SNAPSHOT; _is_ready_for_new_mode = false; }
+                break;
+    
+            case CONSTS::MODES::MEASUREMENT_SNAPSHOT:
+                _current_mode = CONSTS::MODES::MEASUREMENT; 
+                _is_ready_for_new_mode = false;
+                // if( !(left_signal || front_left_signal || front_right_signal || right_signal) ) { _current_mode = CONSTS::MODES::MEASUREMENT; _is_ready_for_new_mode = true; }
+                break;
+            
+            default:
+                break;
+        }
 
-        case CONSTS::MODES::MEASUREMENT:
-            if( front_left_signal && front_right_signal ) _current_mode = CONSTS::MODES::IDLE;
-            else if( left_signal || front_left_signal || front_right_signal || right_signal ) _current_mode = CONSTS::MODES::MEASUREMENT_SNAPSHOT;
-            break;
-
-        case CONSTS::MODES::MEASUREMENT_SNAPSHOT:
-            if( !(left_signal || front_left_signal || front_right_signal || right_signal) ) _current_mode = CONSTS::MODES::MEASUREMENT;
-            break;
-        
-        default:
-            break;
+        if(!_is_ready_for_new_mode )
+        {
+            _is_mode_just_changed = true;
+        }
     }
 }
 

@@ -53,6 +53,11 @@ void log_angular_velocity_values()
         , static_cast<int>( mouse.accelerometer.myAngRotMeter.traveledHalfCircles ) );
 }
 
+void log_mode_selector()
+{
+    LOG_INFO("CURRENT_MODE: %d \n", static_cast<int>( g.mode_selector.get_current_mode() ) );
+}
+
 
 
 } // namespace MM
