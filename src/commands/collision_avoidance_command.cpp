@@ -14,6 +14,7 @@ void MM::CollisionAvoidanceCommand::execute()
 {
     if( myWrappedCommandP.get() != nullptr )
     {
+        // FIXME: this interfere with the mode selector logic now, mode selection will automatically kills the first command!
         if(mIrLeftR > 1300 || mIrRightR > 1000)
         {
             // avoid collision with wall in front
