@@ -8,10 +8,10 @@
 
 void MM::read_sensors()
 {
-    g.ir_left = analogRead(MM::PINS::IR_1);
-    g.ir_frontleft = analogRead(MM::PINS::IR_2);
-    g.ir_frontright = analogRead(MM::PINS::IR_3);
-    g.ir_right = analogRead(MM::PINS::IR_4);
+    g.ir_left = mouse.left_dist_measure.get_current_phototransistor_value_mV();
+    g.ir_frontleft = mouse.frontleft_dist_measure.get_current_phototransistor_value_mV();
+    g.ir_frontright = mouse.frontright_dist_measure.get_current_phototransistor_value_mV();
+    g.ir_right = mouse.right_dist_measure.get_current_phototransistor_value_mV();
 
     g.currentBatteryVoltage = analogRead(MM::PINS::BATT);
 
@@ -23,8 +23,8 @@ void MM::read_sensors()
         // mouse.accelerometer.serialPrint();
         // mouse.accelerometer.myAngRotMeter.refresh();
         g.currentOrientation = mouse.accelerometer.getCurrentYawValue();
-        Serial.print("Current orientation: ");
-        Serial.println(g.currentOrientation);
+        //Serial.print("Current orientation: ");
+        //Serial.println(g.currentOrientation);
     }
     else
     {

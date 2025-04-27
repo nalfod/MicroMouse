@@ -100,10 +100,10 @@ void setup()
   }
 
   // turn on leds
-  mouse.ir_led_left.on();
-  mouse.ir_led_frontleft.on();
-  mouse.ir_led_frontright.on();
-  mouse.ir_led_right.on();
+  mouse.left_dist_measure.turn_on_led();
+  mouse.frontleft_dist_measure.turn_on_led();
+  mouse.frontright_dist_measure.turn_on_led();
+  mouse.right_dist_measure.turn_on_led();
 
   // Wait 5 sec to be able to connect with mobile!
   delay(5000);
