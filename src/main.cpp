@@ -54,9 +54,19 @@ void debug()
   }
   else
   {
+    static bool new_snapshot = false;
     if( g.mode_selector.get_current_mode() == CONSTS::MODES::MEASUREMENT_SNAPSHOT )
     {
+      if( !new_snapshot )
+      {
+        new_snapshot = true;
+        LOG_INFO("NEXT SNAPSHOTS-->\n");
+      }
       MM::log_current_led_values();
+    }
+    else
+    {
+      new_snapshot = false;
     }
   }
 
@@ -90,10 +100,10 @@ void setup()
   }
 
   // turn on leds
-  mouse.ir_led1.on();
-  mouse.ir_led2.on();
-  mouse.ir_led3.on();
-  mouse.ir_led4.on();
+  mouse.ir_led_left.on();
+  mouse.ir_led_frontleft.on();
+  mouse.ir_led_frontright.on();
+  mouse.ir_led_right.on();
 
   // Wait 5 sec to be able to connect with mobile!
   delay(5000);
