@@ -49,7 +49,7 @@ void debug()
   mouse.dbg_red.toggle();
   if( g.mode_selector.get_current_mode() != CONSTS::MODES::MEASUREMENT && g.mode_selector.get_current_mode() != CONSTS::MODES::MEASUREMENT_SNAPSHOT  )
   {
-    MM::log_current_led_values();
+    MM::log_current_mm_values();
     // MM::log_mode_selector();
   }
   else
@@ -62,7 +62,7 @@ void debug()
         new_snapshot = true;
         LOG_INFO("NEXT SNAPSHOTS-->\n");
       }
-      MM::log_current_led_values();
+      MM::log_current_mm_values();
     }
     else
     {
@@ -127,12 +127,11 @@ void setup()
   }*/
   //mouse.accelerometer.myAngRotMeter.startMeasurement();
   LOG_INFO("Setup Done\n");
-  mouse.left_dist_measure.turn_on_led();
 }
 
 void loop()
 {
-  //if( MM::Accelerometer::MPUInterrupt )
+  if( MM::Accelerometer::MPUInterrupt )
   {
       // for debugging the cycle time
       //Serial.print("Current time: ");

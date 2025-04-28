@@ -23,6 +23,14 @@ void log_current_led_values()
                                                        g.ir_frontright);
 }
 
+void log_current_mm_values()
+{
+    LOG_INFO("DIST-> FL: %d, L: %d, R: %d, FR: %d \n", g.mm_frontleft,
+                                                       g.mm_left,
+                                                       g.mm_right,
+                                                       g.mm_frontright);
+}
+
 void log_current_orientation()
 {
     LOG_INFO("ORI: %d\n",static_cast<int>(g.currentOrientation));
