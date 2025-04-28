@@ -28,7 +28,7 @@ struct Globals {
     std::queue< std::unique_ptr<MotionCommandIF> > commandBuffer;
 
 // Mode selector =================================================
-    ModeSelector mode_selector{ir_left, ir_frontleft, ir_frontright, ir_right, CONSTS::MODES::MEASUREMENT};
+    ModeSelector mode_selector{ir_left, ir_frontleft, ir_frontright, ir_right, CONSTS::MODES::IDLE};
 };
 
 } // namespace MM

@@ -49,8 +49,8 @@ void debug()
   mouse.dbg_red.toggle();
   if( g.mode_selector.get_current_mode() != CONSTS::MODES::MEASUREMENT && g.mode_selector.get_current_mode() != CONSTS::MODES::MEASUREMENT_SNAPSHOT  )
   {
-    // MM::log_current_led_values();
-    MM::log_mode_selector();
+    MM::log_current_led_values();
+    // MM::log_mode_selector();
   }
   else
   {
@@ -98,12 +98,6 @@ void setup()
     Serial.println("MPU6050 connection successful");
     mouse.dbg_green.on();
   }
-
-  // turn on leds
-  mouse.left_dist_measure.turn_on_led();
-  mouse.frontleft_dist_measure.turn_on_led();
-  mouse.frontright_dist_measure.turn_on_led();
-  mouse.right_dist_measure.turn_on_led();
 
   // Wait 5 sec to be able to connect with mobile!
   delay(5000);
