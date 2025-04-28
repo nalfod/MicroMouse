@@ -8,7 +8,21 @@
 
 void MM::read_sensors()
 {
-    measure_distances_alternately();
+    g.ir_left = 0;
+    unsigned long start = millis();
+    mouse.left_dist_measure.turn_on_led();
+    Serial.print("Start time: ");
+    Serial.print(start);
+    Serial.print("\t");
+    while( g.ir_left < 1400 )
+    {
+        g.ir_left = mouse.left_dist_measure.get_current_phototransistor_value_mV();
+    }
+    Serial.print("End time: ");
+    Serial.print(millis());
+    Serial.println();
+    //measure_distances_alternately();
+    mouse.left_dist_measure.turn_off_led();
 
     g.currentBatteryVoltage = analogRead(MM::PINS::BATT);
 
@@ -25,7 +39,7 @@ void MM::read_sensors()
     }
     else
     {
-        Serial.println("No IMU data, weird");
+        // Serial.println("No IMU data, weird");
     }
 }
 

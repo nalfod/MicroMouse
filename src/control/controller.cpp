@@ -12,7 +12,7 @@ void MM::control()
 {
     check_mode_selector();
     
-    if( g.mode_selector.get_current_mode() == CONSTS::MODES::SPEED_RUN )
+    //if( g.mode_selector.get_current_mode() == CONSTS::MODES::SPEED_RUN )
     {
         if( !g.commandBuffer.empty() )
         {

@@ -103,7 +103,7 @@ void setup()
   delay(5000);
 
   // Creating initial commands
-  for( int i = 0; i < 5; i++)
+  /*for( int i = 0; i < 10; i++)
   {
     g.commandBuffer.push( 
       std::make_unique<MM::CollisionAvoidanceCommand>
@@ -112,7 +112,7 @@ void setup()
         ( 
           std::make_unique<MM::LinearTravelCommand>
           ( 
-            180000, 100, 1, 1, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage
+            1800000, 100, 1, 1, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage
           ), 
           g.ir_frontleft, g.ir_frontright, g.currentOrientation, g.leftMotorVoltage, g.rightMotorVoltage 
         ),
@@ -124,17 +124,18 @@ void setup()
     ( 
       std::make_unique<MM::RotationCommandPid>( 90, g.currentOrientation, g.leftMotorVoltage, g.rightMotorVoltage)
     );
-  }
-
+  }*/
   //mouse.accelerometer.myAngRotMeter.startMeasurement();
   LOG_INFO("Setup Done\n");
+  mouse.left_dist_measure.turn_on_led();
 }
 
 void loop()
 {
-  if( MM::Accelerometer::MPUInterrupt )
+  //if( MM::Accelerometer::MPUInterrupt )
   {
       // for debugging the cycle time
+      //Serial.print("Current time: ");
       //Serial.print(millis());
       //Serial.print("\t");
       task_read_sensors();
