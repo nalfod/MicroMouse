@@ -25,10 +25,10 @@ void log_current_led_values()
 
 void log_current_mm_values()
 {
-    LOG_INFO("DIST-> FL: %d, L: %d, R: %d, FR: %d \n", g.mm_frontleft,
-                                                       g.mm_left,
-                                                       g.mm_right,
-                                                       g.mm_frontright);
+    LOG_INFO("DIST-> FL: %d, L: %d, R: %d, FR: %d \n", g.dist_frontleft_mm,
+                                                       g.dist_left_mm,
+                                                       g.dist_right_mm,
+                                                       g.dist_frontright_mm);
 }
 
 void log_current_orientation()

@@ -9,7 +9,7 @@ namespace MM {
 class WallCenteringCommand : public MotionCommandIF
 {
 public:
-    WallCenteringCommand(std::unique_ptr<MotionCommandIF> commandToWrap, uint16_t const& ir_frontleft, uint16_t const& ir_frontright, float const& currentOriR, int16_t& leftMotorVoltage_mV, int16_t& rightMotorVoltage_mV);
+    WallCenteringCommand(std::unique_ptr<MotionCommandIF> commandToWrap, uint16_t const& dist_frontleft, uint16_t const& dist_frontright, float const& currentOriR, int16_t& leftMotorVoltage_mV, int16_t& rightMotorVoltage_mV);
     void execute() override;
     bool isFinished() const override;
 
@@ -18,8 +18,8 @@ public:
     MotionCommandIF* getWrappedObjectP();
     int16_t getPidOutput() const;
     int32_t getCurrentError() const;
-    uint16_t getFrontLeftSensor() { return mIrFrontLeftR; }
-    uint16_t getFrontRightSensor() { return mIrFrontRightR; }
+    uint16_t getFrontLeftSensor() { return mDistFrontLeftR_mm; }
+    uint16_t getFrontRightSensor() { return mDistFrontRightR_mm; }
 private:
     void executeWallCenteringControl();
     void executeCenteringUsingWallDistance();
@@ -30,8 +30,8 @@ private:
     std::unique_ptr<MotionCommandIF> myWrappedCommandP;
 
     // measure points
-    uint16_t const& mIrFrontLeftR;
-    uint16_t const& mIrFrontRightR;
+    uint16_t const& mDistFrontLeftR_mm;
+    uint16_t const& mDistFrontRightR_mm;
     float const& myCurrentOriR_deg;
 
     // controlled units

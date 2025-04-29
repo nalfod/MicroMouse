@@ -40,9 +40,9 @@ void MM::measure_distances_alternately()
     if( phase_changer )
     {
         g.ir_left = mouse.left_dist_measure.get_current_phototransistor_value_mV();
-        g.mm_left = mouse.left_dist_measure.get_current_distance_mm();
+        g.dist_left_mm = mouse.left_dist_measure.get_current_distance_mm();
         g.ir_right = mouse.right_dist_measure.get_current_phototransistor_value_mV();
-        g.mm_right = mouse.right_dist_measure.get_current_distance_mm();
+        g.dist_right_mm = mouse.right_dist_measure.get_current_distance_mm();
         
         mouse.left_dist_measure.turn_off_led();
         mouse.right_dist_measure.turn_off_led();
@@ -53,9 +53,9 @@ void MM::measure_distances_alternately()
     else
     {
         g.ir_frontleft = mouse.frontleft_dist_measure.get_current_phototransistor_value_mV();
-        g.mm_frontleft = mouse.frontleft_dist_measure.get_current_distance_mm();
+        g.dist_frontleft_mm = mouse.frontleft_dist_measure.get_current_distance_mm();
         g.ir_frontright = mouse.frontright_dist_measure.get_current_phototransistor_value_mV();
-        g.mm_frontright = mouse.frontright_dist_measure.get_current_distance_mm();
+        g.dist_frontright_mm = mouse.frontright_dist_measure.get_current_distance_mm();
 
         mouse.frontleft_dist_measure.turn_off_led();
         mouse.frontright_dist_measure.turn_off_led();

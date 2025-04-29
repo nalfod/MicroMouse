@@ -27,7 +27,7 @@ void MM::control()
                 // {
                 //     g.commandBuffer.front()->execute(); // immediately execute the next command to not waste an cycle
                 // }
-                delay(2000);
+                //delay(2000);
             }
         }
         else

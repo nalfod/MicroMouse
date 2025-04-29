@@ -2,14 +2,14 @@
 #include "constants.h"
 #include "utils/logging.h"
 
-MM::WallCenteringCommand::WallCenteringCommand(std::unique_ptr<MotionCommandIF> commandToWrap, uint16_t const& ir_frontleft, uint16_t const& ir_frontright, float const& currentOriR, int16_t& leftMotorVoltage_mV, int16_t& rightMotorVoltage_mV):
+MM::WallCenteringCommand::WallCenteringCommand(std::unique_ptr<MotionCommandIF> commandToWrap, uint16_t const& dist_frontleft, uint16_t const& dist_frontright, float const& currentOriR, int16_t& leftMotorVoltage_mV, int16_t& rightMotorVoltage_mV):
 myWrappedCommandP(std::move(commandToWrap)),
-mIrFrontLeftR(ir_frontleft),
-mIrFrontRightR(ir_frontright),
+mDistFrontLeftR_mm(dist_frontleft),
+mDistFrontRightR_mm(dist_frontright),
 myCurrentOriR_deg(currentOriR),
 mLeftMotorVoltageR_mV(leftMotorVoltage_mV),
 mRightMotorVoltageR_mV(rightMotorVoltage_mV),
-myCenteringPidForWalls(0.05, 0, 0), // TODO: Maybe the tuning should be more sophisticated!!
+myCenteringPidForWalls(8, 0, 0), // TODO: Maybe the tuning should be more sophisticated!!
 myCenteringPidForOrientation(10, 0, 0) // TODO: Maybe the tuning should be more sophisticated!!
 {
     myCenteringPidForWalls.setTarget( 0.0 );
@@ -56,7 +56,7 @@ bool MM::WallCenteringCommand::isFinished() const
 
 bool MM::WallCenteringCommand::isCenteringWithWallsPossible() const
 {
-    return ( mIrFrontLeftR > CONSTS::WALL_DISTANCE_LIMIT_FOR_CENTERING && mIrFrontRightR > CONSTS::WALL_DISTANCE_LIMIT_FOR_CENTERING );
+    return ( mDistFrontLeftR_mm < CONSTS::WALL_DISTANCE_LIMIT_FOR_CENTERING_MM && mDistFrontRightR_mm < CONSTS::WALL_DISTANCE_LIMIT_FOR_CENTERING_MM );
 }
 
 void MM::WallCenteringCommand::executeWallCenteringControl()
@@ -74,9 +74,9 @@ void MM::WallCenteringCommand::executeWallCenteringControl()
 
 void MM::WallCenteringCommand::executeCenteringUsingWallDistance()
 {
-    myCenteringPidForWalls.compute( static_cast<double>( mIrFrontLeftR - mIrFrontRightR ) );
-    mLeftMotorVoltageR_mV  -= static_cast<int16_t>( myCenteringPidForWalls.getOuput() );
-    mRightMotorVoltageR_mV += static_cast<int16_t>( myCenteringPidForWalls.getOuput() );
+    myCenteringPidForWalls.compute( static_cast<double>( mDistFrontLeftR_mm - mDistFrontRightR_mm ) );
+    mLeftMotorVoltageR_mV  += static_cast<int16_t>( myCenteringPidForWalls.getOuput() );
+    mRightMotorVoltageR_mV -= static_cast<int16_t>( myCenteringPidForWalls.getOuput() );
 }
 
 void MM::WallCenteringCommand::executeCenteringUsingOrientation()
@@ -116,7 +116,7 @@ int16_t MM::WallCenteringCommand::getPidOutput() const
 
 int32_t MM::WallCenteringCommand::getCurrentError() const
 {
-    return mIrFrontLeftR - mIrFrontRightR;
+    return mDistFrontLeftR_mm - mDistFrontRightR_mm;
 }
 
 void MM::WallCenteringCommand::print() const
@@ -126,9 +126,9 @@ void MM::WallCenteringCommand::print() const
     {
         LOG_INFO("LED MODE - output: %d error: %d FL: %d FR: %d ", 
             static_cast<int16_t>( myCenteringPidForWalls.getOuput() ), 
-            ( mIrFrontLeftR - mIrFrontRightR ),
-            ( mIrFrontLeftR ),
-            ( mIrFrontRightR ) );
+            ( mDistFrontLeftR_mm - mDistFrontRightR_mm ),
+            ( mDistFrontLeftR_mm ),
+            ( mDistFrontRightR_mm ) );
     }
     else
     {

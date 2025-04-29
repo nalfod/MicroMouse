@@ -103,7 +103,7 @@ void setup()
   delay(5000);
 
   // Creating initial commands
-  /*for( int i = 0; i < 10; i++)
+  for( int i = 0; i < 10; i++)
   {
     g.commandBuffer.push( 
       std::make_unique<MM::CollisionAvoidanceCommand>
@@ -114,9 +114,9 @@ void setup()
           ( 
             1800000, 100, 1, 1, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage
           ), 
-          g.ir_frontleft, g.ir_frontright, g.currentOrientation, g.leftMotorVoltage, g.rightMotorVoltage 
+          g.dist_frontleft_mm, g.dist_frontright_mm, g.currentOrientation, g.leftMotorVoltage, g.rightMotorVoltage 
         ),
-        g.ir_left, g.ir_right, g.leftMotorVoltage, g.rightMotorVoltage
+        g.dist_left_mm, g.dist_right_mm, g.leftMotorVoltage, g.rightMotorVoltage
       )
     );
 
@@ -124,7 +124,7 @@ void setup()
     ( 
       std::make_unique<MM::RotationCommandPid>( 90, g.currentOrientation, g.leftMotorVoltage, g.rightMotorVoltage)
     );
-  }*/
+  }
   //mouse.accelerometer.myAngRotMeter.startMeasurement();
   LOG_INFO("Setup Done\n");
 }

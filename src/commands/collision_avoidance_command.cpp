@@ -2,10 +2,10 @@
 #include "constants.h"
 #include "utils/logging.h"
 
-MM::CollisionAvoidanceCommand::CollisionAvoidanceCommand(std::unique_ptr<MotionCommandIF> commandToWrap, uint16_t const& ir_left, uint16_t const& ir_right, int16_t& leftMotorVoltage_mV, int16_t& rightMotorVoltage_mV):
+MM::CollisionAvoidanceCommand::CollisionAvoidanceCommand(std::unique_ptr<MotionCommandIF> commandToWrap, uint16_t const& dist_left, uint16_t const& dist_right, int16_t& leftMotorVoltage_mV, int16_t& rightMotorVoltage_mV):
 myWrappedCommandP(std::move(commandToWrap)),
-mIrLeftR(ir_left),
-mIrRightR(ir_right),
+mDistLeftR_mm(dist_left),
+mDistRightR_mm(dist_right),
 mLeftMotorVoltageR_mV(leftMotorVoltage_mV),
 mRightMotorVoltageR_mV(rightMotorVoltage_mV)
 {}
@@ -15,7 +15,8 @@ void MM::CollisionAvoidanceCommand::execute()
     if( myWrappedCommandP.get() != nullptr )
     {
         // FIXME: this interfere with the mode selector logic now, mode selection will automatically kills the first command!
-        if(mIrLeftR > 1300 || mIrRightR > 1000)
+        if( mDistLeftR_mm < CONSTS::COLLISION_AVOIDANCE_DIST_MM || 
+            mDistRightR_mm < CONSTS::COLLISION_AVOIDANCE_DIST_MM )
         {
             // avoid collision with wall in front
             mFinished = true;
