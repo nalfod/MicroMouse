@@ -75,6 +75,7 @@ void MM::WallCenteringCommand::executeWallCenteringControl()
 void MM::WallCenteringCommand::executeCenteringUsingWallDistance()
 {
     myCenteringPidForWalls.compute( static_cast<double>( mDistFrontLeftR_mm - mDistFrontRightR_mm ) );
+    // TODO: this is odd, try to understand why this works? From gut feeling the signs should be reserved, no?
     mLeftMotorVoltageR_mV  += static_cast<int16_t>( myCenteringPidForWalls.getOuput() );
     mRightMotorVoltageR_mV -= static_cast<int16_t>( myCenteringPidForWalls.getOuput() );
 }
