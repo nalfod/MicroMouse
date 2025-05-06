@@ -8,14 +8,13 @@ class Maze {
     public:
         Maze(int mazeSize);
 
-        void printMaze();
         void updateCellWallMask(int x, int y, int wall);
 
         Direction simpleMove(int currx, int curry);
         void updateMazeValues(int x, int y);
 
-        void initMaze(int rowNum);
     private:
+        void initMaze();
 
         int calcBaseVal(int x, int y);
 

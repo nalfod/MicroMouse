@@ -2,7 +2,7 @@
 
 #include "direction.h"
 #include "maze.h"
-#include "wall_simulator.h"
+
 #include <map>
 
 class LocationController{
@@ -12,15 +12,12 @@ class LocationController{
         void initMaze(int mazeSize);
 
         void updateDirection(float rotDeg);
-        void moveInDirection(int numOfCells);
+        void moveInDirection(int numOfCells = 1);
         void updateWalls();
 
         Direction getCurrDirection() const { return mCurrentDirection; }
-        float getNextMovement();
+        float calcNextMovement();
     private:
-        //SIMULATION
-        WallSimulator ws;
-
         Maze maze;
         Direction mCurrentDirection;
 

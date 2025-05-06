@@ -10,14 +10,11 @@ LocationController::LocationController(int mazeSize, Direction startDirection, u
     mDistFrRight(distFrRight),
     mCurrentDirection(startDirection),
     maze(mazeSize)
-{
-}
+{}
 
 void LocationController::updateDirection(float rotDeg)
 {
-    //LOG_INFO("UPDATEDIR1, next commnad: %d ---  %d\n",static_cast<int>(mCurrentDirection), static_cast<int>(rotDeg));
     mCurrentDirection = toDirection[mCurrentDirection][rotDeg];
-    //LOG_INFO("UPDATEDIR2, next commnad: %d ---  %d\n",static_cast<int>(mCurrentDirection), static_cast<int>(rotDeg));
 }
 
 void LocationController::moveInDirection(int numOfCells)
@@ -25,18 +22,19 @@ void LocationController::moveInDirection(int numOfCells)
     switch (mCurrentDirection)
     {
     case Direction::NORTH:
-        mPosX++;
+        mPosX += numOfCells;
         break;
     case Direction::EAST:
-        mPosY++;
+        mPosY += numOfCells;
         break;
     case Direction::SOUTH:
-        mPosX--;
+        mPosX -= numOfCells;
         break;
     case Direction::WEST:
-        mPosY--;
+        mPosY -= numOfCells;
         break;
     default:
+        // Nope
         break;
     }
 }
@@ -58,27 +56,22 @@ void LocationController::updateWalls()
     {
         newWallMask = (newWallMask | mCurrentDirection);
     }
-    //////// SIMULATOR
-    //newWallMask = ws.getData(mPosX,mPosY);
-    ////////////
 
     maze.updateCellWallMask(mPosX, mPosY, newWallMask);
 }
 
-float LocationController::getNextMovement()
+float LocationController::calcNextMovement()
 {
     Direction moveDir = maze.simpleMove(mPosX, mPosY);
     if( moveDir == Direction::UNKNOWN ) {
         maze.updateMazeValues(mPosX, mPosY);
         moveDir = maze.simpleMove(mPosX, mPosY);
     }
-    //LOG_INFO("LOCCONTROL, MOVING: %d ---  %d, DIR: %d\n",mPosX, mPosY, moveDir );
     if( moveDir == mCurrentDirection) {
-        return 0.0;
+        return 0;
     } else {
         for (auto toDirEntry : toDirection[mCurrentDirection])
         {
-            //LOG_INFO("GO ENTRIES: %d ---  %d ||| %d\n", mCurrentDirection, static_cast<int>(toDirEntry.second),static_cast<int>(toDirEntry.first));
             if(static_cast<int>(toDirEntry.second) == moveDir) {
                 return static_cast<int>(toDirEntry.first);
             }

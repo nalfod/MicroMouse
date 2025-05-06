@@ -5,7 +5,7 @@ namespace MM {
 
 void check_mode_selector();
 
-void getNextCommand();
+void generateNextCommand();
 
 void control();
 

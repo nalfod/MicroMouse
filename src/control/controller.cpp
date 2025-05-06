@@ -40,17 +40,17 @@ void MM::control()
         else
         {
             LOG_INFO("COMMAND EMPTY:\n" );
-            getNextCommand();
+            generateNextCommand();
             mouse.dbg_green.off();
         }
     }
 
 }
 
-void MM::getNextCommand() 
+void MM::generateNextCommand() 
 {
-    float nextCommand = g.locController.getNextMovement();
-    LOG_INFO("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! NEXT COMMAND: %d\n",static_cast<int>(nextCommand)); 
+    float nextCommand = g.locController.calcNextMovement();
+
     if (nextCommand == 0.0f)
     {
         g.commandBuffer.push( 
@@ -60,7 +60,7 @@ void MM::getNextCommand()
               ( 
                 std::make_unique<MM::LinearTravelCommand>
                 ( 
-                  169500, 100, 1, 1, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage, g.locController
+                  170000, 100, 1, 1, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage, g.locController
                 ), 
                 g.dist_frontleft_mm, g.dist_frontright_mm, g.currentOrientation, g.leftMotorVoltage, g.rightMotorVoltage 
               ),
@@ -70,20 +70,6 @@ void MM::getNextCommand()
     }
     else if(nextCommand >= -180.0f && nextCommand <= 180.0f) 
     {
-        g.commandBuffer.push( 
-            std::make_unique<MM::CollisionAvoidanceCommand>
-            ( 
-              std::make_unique<MM::WallCenteringCommand>
-              ( 
-                std::make_unique<MM::LinearTravelCommand>
-                ( 
-                  169500, 100, 1, 1, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage, g.locController
-                ), 
-                g.dist_frontleft_mm, g.dist_frontright_mm, g.currentOrientation, g.leftMotorVoltage, g.rightMotorVoltage 
-              ),
-              g.dist_left_mm, g.dist_right_mm, g.leftMotorVoltage, g.rightMotorVoltage
-            )
-          );
         g.commandBuffer.push
         ( 
           std::make_unique<MM::RotationCommandPid>( nextCommand, g.currentOrientation, g.leftMotorVoltage, g.rightMotorVoltage, g.locController)

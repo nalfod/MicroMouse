@@ -96,7 +96,7 @@ void MM::LinearTravelCommand::finishCommand()
 {
     if(mStarted)
     {
-        mLocController.moveInDirection(1);
+        mLocController.moveInDirection();
         mLocController.updateWalls();
     }
 }
