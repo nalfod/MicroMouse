@@ -4,11 +4,12 @@
 #include "constants.h"
 
 // DONT USE IT TO TURN MORE THAN 180 (it doesnt make any sense anyway)
-MM::RotationCommandPid::RotationCommandPid(float angleToRotate_deg, float const& currentOriR, int16_t& leftMotorVoltage_mV, int16_t& rightMotorVoltage_mV):
+MM::RotationCommandPid::RotationCommandPid(float angleToRotate_deg, float const& currentOriR, int16_t& leftMotorVoltage_mV, int16_t& rightMotorVoltage_mV, LocationController& locController):
 myTargetMagnitude_deg(angleToRotate_deg),
 myCurrentOriR_deg(currentOriR),
 mLeftMotorVoltageR_mV(leftMotorVoltage_mV),
-mRightMotorVoltageR_mV(rightMotorVoltage_mV)
+mRightMotorVoltageR_mV(rightMotorVoltage_mV),
+mLocController(locController)
 {
     myMovementCtrl.init(1, AUTOMATIC, -1400 , 1400);
     myMovementCtrl.setTarget( 0 ); // target is the difference between the goal and the actual value
@@ -76,4 +77,9 @@ void MM::RotationCommandPid::print() const
         static_cast<int> ( myCurrentOriR_deg ), 
         static_cast<int> ( myMovementCtrl.getOuput() )
     );
+}
+
+void MM::RotationCommandPid::finishCommand()
+{
+    mLocController.updateDirection(myTargetMagnitude_deg);
 }

@@ -43,6 +43,7 @@ void MM::WallCenteringCommand::execute()
 
 bool MM::WallCenteringCommand::isFinished() const
 {
+    //print();
     if( myWrappedCommandP.get() != nullptr )
     {   
         return myWrappedCommandP->isFinished();
@@ -56,7 +57,8 @@ bool MM::WallCenteringCommand::isFinished() const
 
 bool MM::WallCenteringCommand::isCenteringWithWallsPossible() const
 {
-    return ( mDistFrontLeftR_mm < CONSTS::WALL_DISTANCE_LIMIT_FOR_CENTERING_MM && mDistFrontRightR_mm < CONSTS::WALL_DISTANCE_LIMIT_FOR_CENTERING_MM );
+    //LOG_INFO("CENTERING POSSIBLE:: |%d      %d|\n",mDistFrontLeftR_mm, mDistFrontRightR_mm);
+    return ( mDistFrontLeftR_mm < CONSTS::WALL_DISTANCE_LIMIT_FOR_CENTERING_MM || mDistFrontRightR_mm < CONSTS::WALL_DISTANCE_LIMIT_FOR_CENTERING_MM );
 }
 
 void MM::WallCenteringCommand::executeWallCenteringControl()
@@ -74,9 +76,29 @@ void MM::WallCenteringCommand::executeWallCenteringControl()
 
 void MM::WallCenteringCommand::executeCenteringUsingWallDistance()
 {
-    myCenteringPidForWalls.compute( static_cast<double>( mDistFrontLeftR_mm - mDistFrontRightR_mm ) );
-    mLeftMotorVoltageR_mV  += static_cast<int16_t>( myCenteringPidForWalls.getOuput() );
-    mRightMotorVoltageR_mV -= static_cast<int16_t>( myCenteringPidForWalls.getOuput() );
+    if( !(mDistFrontLeftR_mm < CONSTS::WALL_DISTANCE_LIMIT_FOR_CENTERING_MM && mDistFrontRightR_mm < CONSTS::WALL_DISTANCE_LIMIT_FOR_CENTERING_MM))
+    {
+        if (mDistFrontLeftR_mm < CONSTS::WALL_DISTANCE_LIMIT_FOR_CENTERING_MM)
+        {
+            //LOG_INFO("ONLY LEFT WALL\n");
+            myCenteringPidForWalls.compute( static_cast<double>( 67 - mDistFrontLeftR_mm ) );
+            mLeftMotorVoltageR_mV  -= static_cast<int16_t>( myCenteringPidForWalls.getOuput() );
+            mRightMotorVoltageR_mV += static_cast<int16_t>( myCenteringPidForWalls.getOuput() );
+        }
+        else
+        {
+            //LOG_INFO("ONLY RIGHT WALL\n");
+            myCenteringPidForWalls.compute( static_cast<double>( 67 - mDistFrontRightR_mm ) );
+            mLeftMotorVoltageR_mV  += static_cast<int16_t>( myCenteringPidForWalls.getOuput() );
+            mRightMotorVoltageR_mV -= static_cast<int16_t>( myCenteringPidForWalls.getOuput() );
+        }
+    }
+    else
+    {
+        myCenteringPidForWalls.compute( static_cast<double>( mDistFrontLeftR_mm - mDistFrontRightR_mm ) );
+        mLeftMotorVoltageR_mV  += static_cast<int16_t>( myCenteringPidForWalls.getOuput() );
+        mRightMotorVoltageR_mV -= static_cast<int16_t>( myCenteringPidForWalls.getOuput() );
+    }
 }
 
 void MM::WallCenteringCommand::executeCenteringUsingOrientation()
@@ -143,5 +165,13 @@ void MM::WallCenteringCommand::print() const
     if( myWrappedCommandP.get() != nullptr )
     {  
         myWrappedCommandP->print();
+    }
+}
+
+void MM::WallCenteringCommand::finishCommand()
+{
+    if(myWrappedCommandP)
+    {
+        myWrappedCommandP->finishCommand();
     }
 }
