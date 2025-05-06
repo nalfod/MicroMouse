@@ -70,6 +70,21 @@ void MM::generateNextCommand()
     }
     else if(nextCommand >= -180.0f && nextCommand <= 180.0f) 
     {
+      g.commandBuffer.push( 
+        std::make_unique<MM::CollisionAvoidanceCommand>
+        ( 
+          std::make_unique<MM::WallCenteringCommand>
+          ( 
+            std::make_unique<MM::LinearTravelCommand>
+            ( 
+              170000, 100, 1, 1, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage, g.locController, true
+            ), 
+            g.dist_frontleft_mm, g.dist_frontright_mm, g.currentOrientation, g.leftMotorVoltage, g.rightMotorVoltage 
+          ),
+          g.dist_left_mm, g.dist_right_mm, g.leftMotorVoltage, g.rightMotorVoltage
+        )
+      );
+
         g.commandBuffer.push
         ( 
           std::make_unique<MM::RotationCommandPid>( nextCommand, g.currentOrientation, g.leftMotorVoltage, g.rightMotorVoltage, g.locController)

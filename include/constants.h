@@ -29,6 +29,7 @@ constexpr float K_BIAS_PID_REV = K_BIAS_FF * 1.5;
 // FIXME: this is quite small beacuse otherwise the wall in front of would cause to trigger the wall centering too
 // somehow avoid it maybe? by passing the left and right sensors to the wall centering class as well?
 constexpr uint16_t WALL_DISTANCE_LIMIT_FOR_CENTERING_MM = 90;
+constexpr uint16_t WALL_DISTANCE_MID_FOR_CENTERING_MM = 67;
 
 // MODE SELECTION
 enum MODES
