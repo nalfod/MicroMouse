@@ -39,6 +39,7 @@ void MM::control()
         }
         else
         {
+            //delay(2000);
             LOG_INFO("COMMAND EMPTY:\n" );
             generateNextCommand();
             mouse.dbg_green.off();
@@ -85,9 +86,26 @@ void MM::generateNextCommand()
         )
       );
 
+      //int dist = ((nextCommand == -180.0f) || (nextCommand == 180.0f))? 170000 : 155000;
+
         g.commandBuffer.push
         ( 
           std::make_unique<MM::RotationCommandPid>( nextCommand, g.currentOrientation, g.leftMotorVoltage, g.rightMotorVoltage, g.locController)
+        );
+
+        g.commandBuffer.push( 
+          std::make_unique<MM::CollisionAvoidanceCommand>
+          ( 
+            std::make_unique<MM::WallCenteringCommand>
+            ( 
+              std::make_unique<MM::LinearTravelCommand>
+              ( 
+                135000, 100, 1, 1, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage, g.locController
+              ), 
+              g.dist_frontleft_mm, g.dist_frontright_mm, g.currentOrientation, g.leftMotorVoltage, g.rightMotorVoltage 
+            ),
+            g.dist_left_mm, g.dist_right_mm, g.leftMotorVoltage, g.rightMotorVoltage
+          )
         );
     }
     else

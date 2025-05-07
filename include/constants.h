@@ -44,6 +44,6 @@ enum MODES
 constexpr uint16_t MODE_SIGNAL_THRESHOLD_MV = 3900;
 constexpr uint16_t MODE_SIGNAL_HOLD_TIME_MS = 2000;
 
-constexpr uint16_t COLLISION_AVOIDANCE_DIST_MM = 57;
+constexpr uint16_t COLLISION_AVOIDANCE_DIST_MM = 50;
 
 }

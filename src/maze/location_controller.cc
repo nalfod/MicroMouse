@@ -41,8 +41,8 @@ void LocationController::moveInDirection(int numOfCells)
 
 void LocationController::updateWalls()
 {
-    int newWallMask = 0;
     // TODO FIX
+    int newWallMask = 0;
     LOG_INFO("UPDATE WALLS: %d ---  %d, ---- %d, ----  %d\n",mDistFrLeft, mDistFrRight, mDistLeft, mDistRight );
     if( mDistFrLeft < 90 )
     {
