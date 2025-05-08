@@ -14,6 +14,8 @@ class LocationController{
         void updateDirection(float rotDeg);
         void moveInDirection(int numOfCells = 1);
         void updateWalls();
+        
+        bool isFrontWayBlocked();
 
         Direction getCurrDirection() const { return mCurrentDirection; }
         float calcNextMovement();

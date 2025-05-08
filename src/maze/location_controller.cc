@@ -1,5 +1,5 @@
 #include "location_controller.h"
-
+#include "Arduino.h"
 #include "utils/logging.h"
 #include "constants.h"
 
@@ -14,7 +14,9 @@ LocationController::LocationController(int mazeSize, Direction startDirection, u
 
 void LocationController::updateDirection(float rotDeg)
 {
-    mCurrentDirection = toDirection[mCurrentDirection][rotDeg];
+    Direction newDir = toDirection[mCurrentDirection][rotDeg];
+    LOG_INFO("CHANGE DIR:  %d   %d\n", static_cast<int>(mCurrentDirection), static_cast<int>(newDir));
+    mCurrentDirection = newDir;
 }
 
 void LocationController::moveInDirection(int numOfCells)
@@ -44,6 +46,7 @@ void LocationController::updateWalls()
     // TODO FIX
     int newWallMask = 0;
     LOG_INFO("UPDATE WALLS: %d ---  %d, ---- %d, ----  %d\n",mDistFrLeft, mDistFrRight, mDistLeft, mDistRight );
+
     if( mDistFrLeft < 90 )
     {
         newWallMask = (newWallMask | toDirection[mCurrentDirection][-90.0f]);
@@ -63,6 +66,7 @@ void LocationController::updateWalls()
 float LocationController::calcNextMovement()
 {
     Direction moveDir = maze.simpleMove(mPosX, mPosY);
+    LOG_INFO("LOCCONTROL:  %d   %d\n", static_cast<int>(moveDir), static_cast<int>(mCurrentDirection));
     if( moveDir == Direction::UNKNOWN ) {
         maze.updateMazeValues(mPosX, mPosY);
         moveDir = maze.simpleMove(mPosX, mPosY);
@@ -78,4 +82,9 @@ float LocationController::calcNextMovement()
         }
     }
     return -1;
+}
+
+bool LocationController::isFrontWayBlocked()
+{
+    return maze.isCellDirectionBlocked(mPosX, mPosY, mCurrentDirection);
 }

@@ -39,7 +39,7 @@ void MM::control()
         }
         else
         {
-            //delay(2000);
+           // delay(1000);
             LOG_INFO("COMMAND EMPTY:\n" );
             generateNextCommand();
             mouse.dbg_green.off();
@@ -71,20 +71,22 @@ void MM::generateNextCommand()
     }
     else if(nextCommand >= -180.0f && nextCommand <= 180.0f) 
     {
-      g.commandBuffer.push( 
-        std::make_unique<MM::CollisionAvoidanceCommand>
-        ( 
-          std::make_unique<MM::WallCenteringCommand>
-          ( 
-            std::make_unique<MM::LinearTravelCommand>
+      if (g.locController.isFrontWayBlocked()) {
+          g.commandBuffer.push( 
+            std::make_unique<MM::CollisionAvoidanceCommand>
             ( 
-              170000, 100, 1, 1, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage, g.locController, true
-            ), 
-            g.dist_frontleft_mm, g.dist_frontright_mm, g.currentOrientation, g.leftMotorVoltage, g.rightMotorVoltage 
-          ),
-          g.dist_left_mm, g.dist_right_mm, g.leftMotorVoltage, g.rightMotorVoltage
-        )
-      );
+              std::make_unique<MM::WallCenteringCommand>
+              ( 
+                std::make_unique<MM::LinearTravelCommand>
+                ( 
+                  170000, 100, 1, 1, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage, g.locController, true
+                ), 
+                g.dist_frontleft_mm, g.dist_frontright_mm, g.currentOrientation, g.leftMotorVoltage, g.rightMotorVoltage 
+              ),
+              g.dist_left_mm, g.dist_right_mm, g.leftMotorVoltage, g.rightMotorVoltage
+            )
+          );
+    }
 
       //int dist = ((nextCommand == -180.0f) || (nextCommand == 180.0f))? 170000 : 155000;
 
@@ -100,7 +102,7 @@ void MM::generateNextCommand()
             ( 
               std::make_unique<MM::LinearTravelCommand>
               ( 
-                135000, 100, 1, 1, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage, g.locController
+                138000, 100, 1, 1, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage, g.locController
               ), 
               g.dist_frontleft_mm, g.dist_frontright_mm, g.currentOrientation, g.leftMotorVoltage, g.rightMotorVoltage 
             ),

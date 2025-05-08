@@ -13,6 +13,8 @@ class Maze {
         Direction simpleMove(int currx, int curry);
         void updateMazeValues(int x, int y);
 
+        bool isCellDirectionBlocked(int currx, int curry, Direction dir);
+
     private:
         void initMaze();
 

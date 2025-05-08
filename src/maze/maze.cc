@@ -55,12 +55,12 @@ int Maze::calcBaseVal(int x, int y) {
 
 void Maze::updateCellWallMask(int x, int y, int wall) {
     // PRINT MAZE
-    for(int i = 6; i >= 0; i--) {
+    /*for(int i = 6; i >= 0; i--) {
         for(int j = 0; j < 7; j++ ) {
             LOG_INFO(" %d ", cells[i][j].getValue());
         }
         LOG_INFO("\n");
-    }
+    }*/
 
     LOG_INFO("UPDATEWALL MASK: %d    %d    %d\n",x, y, wall );
     cells[x][y].setWallMask(wall);
@@ -171,4 +171,9 @@ void Maze::CheckCellandNeighbours() {
         if(cW != 0) { updateQueue.push(cW);}
     }
     updateQueue.pop();
+}
+
+bool Maze::isCellDirectionBlocked(int currx, int curry, Direction dir)
+{
+    return (0 != (cells[currx][curry].getWallMask() & dir));
 }
