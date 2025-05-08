@@ -2,15 +2,17 @@
 #include "motion_command_if.h"
 #include <cstdint>
 #include "drv/pid/pidWrapper.h"
+#include "maze/location_controller.h"
 
 namespace MM {
 
 class RotationCommandPid : public MotionCommandIF
 {
 public:
-    RotationCommandPid(float angleToRotate_deg, float const& currentOriR, int16_t& leftMotorVoltage_mV, int16_t& rightMotorVoltage_mV);
+    RotationCommandPid(float angleToRotate_deg, float const& currentOriR, int16_t& leftMotorVoltage_mV, int16_t& rightMotorVoltage_mV, LocationController& locController);
 
     void execute() override;
+    void finishCommand() override;
         
     bool isFinished() const override { return mFinished; }
 
@@ -32,6 +34,8 @@ private:
     // Ori values
     float myTargetOrientation_deg{0.0};
     float const& myCurrentOriR_deg;
+
+    LocationController& mLocController;
 
     // controlled units
     int16_t& mLeftMotorVoltageR_mV;

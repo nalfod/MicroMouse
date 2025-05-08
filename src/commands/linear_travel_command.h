@@ -4,6 +4,7 @@
 #include "constants.h"
 #include <cstdint>
 #include "drv/pid/pidWrapper.h"
+#include "maze/location_controller.h"
 
 namespace MM {
 
@@ -38,9 +39,11 @@ class LinearTravelCommand : public MotionCommandIF
 {
 public:
     LinearTravelCommand(float dist_um, float speed_um_per_ms, float acc_um_per_ms2, float dec_um_per_ms2, 
-                        int64_t const& encoderValue1, int64_t const& encoderValue2, int16_t& leftMotorVoltage_mV, int16_t& rightMotorVoltage_mV);
+                        int64_t const& encoderValue1, int64_t const& encoderValue2, int16_t& leftMotorVoltage_mV, int16_t& rightMotorVoltage_mV,
+                        LocationController& locController, bool isDummy = false);
     
     void execute() override;
+    void finishCommand() override;
     
     bool isFinished() const override { return mFinished; }
 
@@ -75,9 +78,14 @@ private:
     int32_t mRealCurrentPosition_um{0}; // will be read from the encoders
     int32_t mDesiredCurrentPosition_um{0};
 
+    LocationController& mLocController;
+
     // controlled units
     int16_t& mLeftMotorVoltageR_mV;
     int16_t& mRightMotorVoltageR_mV;
+
+    //
+    bool mDummy{false};
 };
 
 } // namespace MM

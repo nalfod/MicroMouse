@@ -41,8 +41,6 @@ void MM::RotationCommandFF::execute()
 
     if( mElapsedTime_ms >= mTotalTimeOfTravel_ms )
     {
-        LOG_INFO("FINISHED ROTATE\n");
-        print();
         // TODO: maybe the final motor voltage adjustment should be the responsibility of the caller
         mLeftMotorVoltageR_mV = 0;
         mRightMotorVoltageR_mV = 0;

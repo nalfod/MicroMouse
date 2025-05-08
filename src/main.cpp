@@ -46,7 +46,9 @@ std::vector<MM::Task> task_signal_current_mode = {
 
 void debug()
 {
-  mouse.dbg_red.toggle();
+  
+  //MM::log_current_mm_values();
+  /*mouse.dbg_red.toggle();
   if( g.mode_selector.get_current_mode() != CONSTS::MODES::MEASUREMENT && g.mode_selector.get_current_mode() != CONSTS::MODES::MEASUREMENT_SNAPSHOT  )
   {
     MM::log_current_mm_values();
@@ -68,7 +70,7 @@ void debug()
     {
       new_snapshot = false;
     }
-  }
+  }*/
 
 }
 
@@ -103,7 +105,7 @@ void setup()
   delay(5000);
 
   // Creating initial commands
-  for( int i = 0; i < 10; i++)
+  /*for( int i = 0; i < 2; i++)
   {
     g.commandBuffer.push( 
       std::make_unique<MM::CollisionAvoidanceCommand>
@@ -111,8 +113,8 @@ void setup()
         std::make_unique<MM::WallCenteringCommand>
         ( 
           std::make_unique<MM::LinearTravelCommand>
-          ( 
-            1800000, 100, 1, 1, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage
+          ( 400000, 100, 1, 1, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage, g.locController
+            //1800000, 100, 1, 1, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage, g.locController
           ), 
           g.dist_frontleft_mm, g.dist_frontright_mm, g.currentOrientation, g.leftMotorVoltage, g.rightMotorVoltage 
         ),
@@ -120,12 +122,12 @@ void setup()
       )
     );
 
-    g.commandBuffer.push
+    /*g.commandBuffer.push
     ( 
-      std::make_unique<MM::RotationCommandPid>( 90, g.currentOrientation, g.leftMotorVoltage, g.rightMotorVoltage)
-    );
-  }
-  //mouse.accelerometer.myAngRotMeter.startMeasurement();
+      std::make_unique<MM::RotationCommandPid>( 90, g.currentOrientation, g.leftMotorVoltage, g.rightMotorVoltage, g.locController)
+    );*/
+  //}
+  mouse.accelerometer.myAngRotMeter.startMeasurement();
   LOG_INFO("Setup Done\n");
 }
 

@@ -11,6 +11,7 @@ public:
     CollisionAvoidanceCommand(std::unique_ptr<MotionCommandIF> commandToWrap, uint16_t const& dist_left, uint16_t const& dist_right, int16_t& leftMotorVoltage_mV, int16_t& rightMotorVoltage_mV);
     void execute() override;
     bool isFinished() const override;
+    void finishCommand() override;
 
     // ONLY FOR DEBUG:
     void print() const override;
