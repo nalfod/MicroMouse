@@ -85,13 +85,15 @@ int16_t MM::LinearTravelCommand::calcVoltageFromSpeed_mV( float setSpeed_um_per_
 
 void MM::LinearTravelCommand::print() const
 {
-    LOG_INFO("TOT_T: %d ELAPS_T: %d DDIST: %d RDIST: %d CURR_SPEED: %d ",
+    LOG_INFO("LIN_TRAV_CMD: TOT_T: %d ELAPS_T: %d DDIST: %d RDIST: %d CURR_SPEED: %d ",
         mTotalTimeOfTravel_ms,
         mElapsedTime_ms, 
         static_cast<int> ( mDesiredCurrentPosition_um / 1000 ),
         static_cast<int> ( mRealCurrentPosition_um / 1000 ),
         static_cast<int> ( mCurrentSpeed_UmPerMs )
       );
+
+    LOG_INFO("\n");
 }
 
 void MM::LinearTravelCommand::finishCommand()

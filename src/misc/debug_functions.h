@@ -12,7 +12,6 @@ void log_active_command()
     {
       g.commandBuffer.front()->print();
     }
-    LOG_INFO("\n");
 }
 
 void log_current_led_values()
