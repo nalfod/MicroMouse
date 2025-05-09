@@ -35,13 +35,17 @@ MM::LinearTravelCommand::LinearTravelCommand(float dist_um,
                                              int64_t const& encoderValue1R, 
                                              int64_t const& encoderValue2R,
                                              int16_t& leftMotorVoltageR_mV,
-                                             int16_t& rightMotorVoltageR_mV, 
+                                             int16_t& rightMotorVoltageR_mV,
+                                             LocationController& locController,
+                                             bool isDummy, 
                                              double Kp, double Ki, double Kd):
 myTargetSpeedCalculator(dist_um, speed_um_per_ms, acc_um_per_ms2, dec_um_per_ms2),
 myEncIntegrator1(encoderValue1R),
 myEncIntegrator2(encoderValue2R),
 mLeftMotorVoltageR_mV(leftMotorVoltageR_mV),
 mRightMotorVoltageR_mV(rightMotorVoltageR_mV),
+mLocController(locController),
+mDummy(isDummy),
 myMovementCtrl(Kp, Ki, Kd)
 {
     mTotalTimeOfTravel_ms = myTargetSpeedCalculator.getTotalTimeOfTravel_Ms();

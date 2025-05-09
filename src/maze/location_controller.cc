@@ -15,7 +15,7 @@ LocationController::LocationController(int mazeSize, Direction startDirection, u
 void LocationController::updateDirection(float rotDeg)
 {
     Direction newDir = toDirection[mCurrentDirection][rotDeg];
-    LOG_INFO("CHANGE DIR:  %d   %d\n", static_cast<int>(mCurrentDirection), static_cast<int>(newDir));
+    //LOG_INFO("CHANGE DIR:  %d   %d\n", static_cast<int>(mCurrentDirection), static_cast<int>(newDir));
     mCurrentDirection = newDir;
 }
 
@@ -45,7 +45,7 @@ void LocationController::updateWalls()
 {
     // TODO FIX
     int newWallMask = 0;
-    LOG_INFO("UPDATE WALLS: %d ---  %d, ---- %d, ----  %d\n",mDistFrLeft, mDistFrRight, mDistLeft, mDistRight );
+    //LOG_INFO("UPDATE WALLS: %d ---  %d, ---- %d, ----  %d\n",mDistFrLeft, mDistFrRight, mDistLeft, mDistRight );
 
     if( mDistFrLeft < 90 )
     {
@@ -66,7 +66,7 @@ void LocationController::updateWalls()
 float LocationController::calcNextMovement()
 {
     Direction moveDir = maze.simpleMove(mPosX, mPosY);
-    LOG_INFO("LOCCONTROL:  %d   %d\n", static_cast<int>(moveDir), static_cast<int>(mCurrentDirection));
+    //LOG_INFO("LOCCONTROL:  %d   %d\n", static_cast<int>(moveDir), static_cast<int>(mCurrentDirection));
     if( moveDir == Direction::UNKNOWN ) {
         maze.updateMazeValues(mPosX, mPosY);
         moveDir = maze.simpleMove(mPosX, mPosY);

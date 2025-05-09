@@ -62,18 +62,18 @@ void Maze::updateCellWallMask(int x, int y, int wall) {
         LOG_INFO("\n");
     }*/
 
-    LOG_INFO("UPDATEWALL MASK: %d    %d    %d\n",x, y, wall );
+    //LOG_INFO("UPDATEWALL MASK: %d    %d    %d\n",x, y, wall );
     cells[x][y].setWallMask(wall);
 }
 
 Direction Maze::simpleMove(int currx, int curry) {
     Cell& c = cells[currx][curry];
     if(currx == 6 && curry == 3) {
-        LOG_INFO("CURRENT VAL:  %d\n",cells[currx][curry].getValue());
+        /*LOG_INFO("CURRENT VAL:  %d\n",cells[currx][curry].getValue());
         LOG_INFO("N:  %d\n", c.isAccessible(Direction::NORTH));
         LOG_INFO("E:  %d   %d\n", c.isAccessible(Direction::EAST), cells[currx][curry+1].getValue());
         LOG_INFO("S:  %d   %d\n", c.isAccessible(Direction::SOUTH), cells[currx-1][curry].getValue());
-        LOG_INFO("W:  %d   %d\n", c.isAccessible(Direction::WEST), cells[currx][curry-1].getValue());
+        LOG_INFO("W:  %d   %d\n", c.isAccessible(Direction::WEST), cells[currx][curry-1].getValue());*/
     }
 
     if( c.isAccessible(Direction::NORTH) && isValidPos(currx+1) &&

@@ -46,9 +46,8 @@ std::vector<MM::Task> task_signal_current_mode = {
 
 void debug()
 {
-  
   //MM::log_current_mm_values();
-  /*mouse.dbg_red.toggle();
+  mouse.dbg_red.toggle();
   if( g.mode_selector.get_current_mode() != CONSTS::MODES::MEASUREMENT && g.mode_selector.get_current_mode() != CONSTS::MODES::MEASUREMENT_SNAPSHOT  )
   {
     //MM::log_current_mm_values();
@@ -71,7 +70,7 @@ void debug()
     {
       new_snapshot = false;
     }
-  }*/
+  }
 
 }
 
@@ -105,30 +104,33 @@ void setup()
   // Wait 5 sec to be able to connect with mobile!
   delay(5000);
 
-  // Creating initial commands
-  /*for( int i = 0; i < 2; i++)
+  if( g.mode_selector.get_current_mode() == CONSTS::MODES::SPEED_RUN )
   {
-    g.commandBuffer.push( 
-      std::make_unique<MM::CollisionAvoidanceCommand>
-      ( 
-        std::make_unique<MM::WallCenteringCommand>
+    // Creating initial commands
+    for( int i = 0; i < 1; i++)
+    {
+      g.commandBuffer.push( 
+        std::make_unique<MM::CollisionAvoidanceCommand>
         ( 
-          std::make_unique<MM::LinearTravelCommand>
-          ( 400000, 100, 1, 1, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage, g.locController
-            //1800000, 100, 1, 1, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage, g.locController
-          ), 
-          g.dist_frontleft_mm, g.dist_frontright_mm, g.currentOrientation, g.leftMotorVoltage, g.rightMotorVoltage 
-        ),
-        g.dist_left_mm, g.dist_right_mm, g.leftMotorVoltage, g.rightMotorVoltage
-      )
-    );
+          std::make_unique<MM::WallCenteringCommand>
+          ( 
+            std::make_unique<MM::LinearTravelCommand>
+            ( 
+              180000, 100, 1, 1, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage, g.locController
+            ), 
+            g.dist_frontleft_mm, g.dist_frontright_mm, g.currentOrientation, g.leftMotorVoltage, g.rightMotorVoltage 
+          ),
+          g.dist_left_mm, g.dist_right_mm, g.leftMotorVoltage, g.rightMotorVoltage
+        )
+      );
 
-    /*g.commandBuffer.push
-    ( 
-      std::make_unique<MM::RotationCommandPid>( 90, g.currentOrientation, g.leftMotorVoltage, g.rightMotorVoltage, g.locController)
-    );*/
-  //}
-  mouse.accelerometer.myAngRotMeter.startMeasurement();
+      /*g.commandBuffer.push
+      ( 
+        std::make_unique<MM::RotationCommandPid>( 90, g.currentOrientation, g.leftMotorVoltage, g.rightMotorVoltage, g.locController)
+      );*/
+    }
+  }
+  //mouse.accelerometer.myAngRotMeter.startMeasurement();
   LOG_INFO("Setup Done\n");
 }
 

@@ -40,8 +40,11 @@ void MM::control()
         else
         {
            // delay(1000);
-            LOG_INFO("COMMAND EMPTY:\n" );
-            generateNextCommand();
+            // LOG_INFO("COMMAND EMPTY:\n" );
+            if( g.mode_selector.get_current_mode() == CONSTS::MODES::DISCOVERY )
+            {
+              generateNextCommand();
+            }
             mouse.dbg_green.off();
         }
     }
