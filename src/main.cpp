@@ -116,7 +116,7 @@ void setup()
           ( 
             std::make_unique<MM::LinearTravelCommand>
             ( 
-              180000, 100, 1, 1, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage, g.locController
+              180, 100, 1000, 1000, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage, g.locController
             ), 
             g.dist_frontleft_mm, g.dist_frontright_mm, g.currentOrientation, g.leftMotorVoltage, g.rightMotorVoltage 
           ),

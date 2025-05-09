@@ -49,7 +49,7 @@ void MM::RotationCommandFF::execute()
     else
     {
         // Calculating feed forward; theoretical values:
-        float outputSpeed_urev_per_ms = myTargetSpeedCalculator.calcCurrentTargetSpeed_UmPerMs( mElapsedTime_ms );
+        float outputSpeed_urev_per_ms = myTargetSpeedCalculator.calcCurrentTargetSpeed_mmPerS( mElapsedTime_ms );
         mDesiredCurrentPosition_urev += outputSpeed_urev_per_ms * timeChange_ms;
 
         // Real values

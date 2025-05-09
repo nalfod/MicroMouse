@@ -15,10 +15,10 @@ constexpr std::chrono::duration<uint32_t, std::micro> MEASUREMENT_BLINK_TIME = 7
 
 // Encoder and wheel data
 constexpr uint16_t ENCODER_RESOULTION = 288; // no unit
-constexpr uint16_t WHEEL_DIAMETER_UM = 43800; // um
+constexpr float WHEEL_DIAMETER_MM = 43.8;
 
 // speed - voltage function coeeffs in case of linear motion
-constexpr float K_SPEED_FF = 1.540; // mV / (um/ms)
+constexpr float K_SPEED_FF = 1.540; // mV / (mm/s)
 constexpr float K_BIAS_FF = 285.190; // mV the absolute minimu theretical value for the motor to start
 
 // speed - voltage function coeeffs in case of rotation movement
