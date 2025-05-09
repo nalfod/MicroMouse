@@ -140,6 +140,7 @@ int32_t MM::WallCenteringCommand::getCurrentError() const
 
 void MM::WallCenteringCommand::print() const
 {
+    /*
     LOG_INFO("WALL_CENT_CMD   ");
     if( isCenteringWithWallsPossible() )
     {
@@ -157,7 +158,7 @@ void MM::WallCenteringCommand::print() const
             static_cast<int16_t>( myCenteringPidForOrientation.getInput() ),
             static_cast<int16_t>( myCurrentOriR_deg ) );
     }
-    LOG_INFO("\n");
+    LOG_INFO("\n");*/
 
     if( myWrappedCommandP.get() != nullptr )
     {  

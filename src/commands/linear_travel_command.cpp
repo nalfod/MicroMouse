@@ -28,6 +28,26 @@ mDummy(isDummy)
     myMovementCtrl.init(1, AUTOMATIC, -1000, 1000); // QUESTION: should the min and the max value be bounded to the current voltage somehow??
 }
 
+MM::LinearTravelCommand::LinearTravelCommand(float dist_um, 
+                                             float speed_um_per_ms, 
+                                             float acc_um_per_ms2, 
+                                             float dec_um_per_ms2, 
+                                             int64_t const& encoderValue1R, 
+                                             int64_t const& encoderValue2R,
+                                             int16_t& leftMotorVoltageR_mV,
+                                             int16_t& rightMotorVoltageR_mV, 
+                                             double Kp, double Ki, double Kd):
+myTargetSpeedCalculator(dist_um, speed_um_per_ms, acc_um_per_ms2, dec_um_per_ms2),
+myEncIntegrator1(encoderValue1R),
+myEncIntegrator2(encoderValue2R),
+mLeftMotorVoltageR_mV(leftMotorVoltageR_mV),
+mRightMotorVoltageR_mV(rightMotorVoltageR_mV),
+myMovementCtrl(Kp, Ki, Kd)
+{
+    mTotalTimeOfTravel_ms = myTargetSpeedCalculator.getTotalTimeOfTravel_Ms();
+    myMovementCtrl.init(1, AUTOMATIC, -1000, 1000); // QUESTION: should the min and the max value be bounded to the current voltage somehow??
+}
+
 
 void MM::LinearTravelCommand::execute()
 {
@@ -85,15 +105,13 @@ int16_t MM::LinearTravelCommand::calcVoltageFromSpeed_mV( float setSpeed_um_per_
 
 void MM::LinearTravelCommand::print() const
 {
-    LOG_INFO("LIN_TRAV_CMD: TOT_T: %d ELAPS_T: %d DDIST: %d RDIST: %d CURR_SPEED: %d ",
+    LOG_INFO("LIN_TRAV_CMD: TOT_T: %d ELAPS_T: %d DDIST: %d RDIST: %d PID_OUT: %d \n",
         mTotalTimeOfTravel_ms,
         mElapsedTime_ms, 
         static_cast<int> ( mDesiredCurrentPosition_um / 1000 ),
         static_cast<int> ( mRealCurrentPosition_um / 1000 ),
-        static_cast<int> ( mCurrentSpeed_UmPerMs )
+        static_cast<int> ( myMovementCtrl.getOuput() )
       );
-
-    LOG_INFO("\n");
 }
 
 void MM::LinearTravelCommand::finishCommand()

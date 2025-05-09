@@ -41,6 +41,9 @@ public:
     LinearTravelCommand(float dist_um, float speed_um_per_ms, float acc_um_per_ms2, float dec_um_per_ms2, 
                         int64_t const& encoderValue1, int64_t const& encoderValue2, int16_t& leftMotorVoltage_mV, int16_t& rightMotorVoltage_mV,
                         LocationController& locController, bool isDummy = false);
+
+    LinearTravelCommand(float dist_um, float speed_um_per_ms, float acc_um_per_ms2, float dec_um_per_ms2, 
+                        int64_t const& encoderValue1, int64_t const& encoderValue2, int16_t& leftMotorVoltage_mV, int16_t& rightMotorVoltage_mV, double Kp, double Ki, double Kd);
     
     void execute() override;
     void finishCommand() override;
@@ -62,7 +65,7 @@ private:
     TargetSpeedCalculator myTargetSpeedCalculator;
     EncoderValueIntegrator myEncIntegrator1;
     EncoderValueIntegrator myEncIntegrator2;
-    PidWrapper myMovementCtrl{0.1, 0, 0};
+    PidWrapper myMovementCtrl{0, 0, 0};
     // QUESTION: How should this be fine-tuned? Should we change it durint runtime?
 
     // state flags
