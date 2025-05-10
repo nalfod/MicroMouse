@@ -29,16 +29,20 @@ bool MM::Accelerometer::init()
     else
     {
         Serial.println("MPU6050 connection successful");
-        uint8_t devStatus = myMpu.dmpInitialize();
-        // myMpu.setRate(2); // DO NOT SET THIS ALONE!!! will ruin the yaw calculation!!!!
-        // myMpu.setDMPEnabled(true);
+        uint8_t devStatus = myMpu.dmpInitialize(4);
+        bool fifoDeviderResult = false;
+        if(devStatus == 0)
+        {
+            fifoDeviderResult = dmp_set_fifo_divider(0);
+        }
+
         myMpu.setXAccelOffset(0); //Set your accelerometer offset for axis X
         myMpu.setYAccelOffset(0); //Set your accelerometer offset for axis Y
         myMpu.setZAccelOffset(0); //Set your accelerometer offset for axis Z
         myMpu.setXGyroOffset(0);  //Set your gyro offset for axis X
         myMpu.setYGyroOffset(0);  //Set your gyro offset for axis Y
         myMpu.setZGyroOffset(0);  //Set your gyro offset for axis Z
-        if(devStatus == 0)
+        if(fifoDeviderResult)
         {
             myMpu.CalibrateAccel(6);  // Calibration Time: generate offsets and calibrate our MPU6050
             myMpu.CalibrateGyro(6);
@@ -55,9 +59,28 @@ bool MM::Accelerometer::init()
             // uint16_t  packetSize = mpu.dmpGetFIFOPacketSize(); //Get expected DMP packet size for later comparison
             return true;
         }
-
-        return false;
+        else
+        {
+            return false;
+        }
     }
+}
+
+bool MM::Accelerometer::dmp_set_fifo_divider(uint16_t divider)
+{
+    constexpr uint8_t cmd[12] = {0xFE, 0xF2, 0xAB, 0xc4, 0xAA, 0xF1, 0xDF, 0xDF, 0xBB, 0xAF, 0xDF, 0xDF};
+    uint8_t div[2];
+    div[0] = (uint8_t)((divider >> 8) & 0xFF);
+    div[1] = (uint8_t)(divider & 0xFF);
+
+    //TODO: maybe the ! is not needed in the conditions
+    if (!myMpu.writeMemoryBlock(div, 2, 0x02, 0x16, false)) {
+        return false; //assert
+    }
+    if (!myMpu.writeMemoryBlock(cmd, 12, 0x0A, 0xC1, false)) {
+        return false; //assert
+    }
+    return true;
 }
 
 bool MM::Accelerometer::loadSensorValues()

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "I2Cdev.h"
-#include "MPU6050_6Axis_MotionApps20.h"
+#include "MPU6050_6Axis_MotionApps612.h"
 
 namespace MM {
 
@@ -47,6 +47,7 @@ class Accelerometer
         /*------Init functions------*/
         static void setupI2C();
         bool init();
+        bool dmp_set_fifo_divider(uint16_t divider);
 
         /*------FIFO loader and getters------*/
         bool loadSensorValues();

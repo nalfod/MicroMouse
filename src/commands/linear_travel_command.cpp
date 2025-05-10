@@ -94,7 +94,7 @@ void MM::LinearTravelCommand::execute()
         // Determining output voltage
         int16_t outputVoltage = static_cast<int16_t>(calcVoltageFromSpeed_mV(outputSpeed_mm_per_s)) + static_cast<int16_t>( myMovementCtrl.getOuput() );
         mLeftMotorVoltageR_mV = outputVoltage;
-        mRightMotorVoltageR_mV = outputVoltage;                 
+        mRightMotorVoltageR_mV = outputVoltage;
     }
 }
 
