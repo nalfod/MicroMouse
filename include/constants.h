@@ -6,6 +6,7 @@ using namespace std::chrono_literals;
 namespace CONSTS {
 
 constexpr std::chrono::duration<uint32_t, std::micro> MAIN_CYCLE_TIME = 1ms;
+constexpr std::chrono::duration<uint32_t, std::micro> DIST_MEASURE_CYCLE_TIME = 10ms;
 constexpr std::chrono::duration<uint32_t, std::micro> DEBUG_CYCLE_TIME = 20ms;
 
 constexpr std::chrono::duration<uint32_t, std::micro> IDLE_BLINK_TIME = 1000ms;

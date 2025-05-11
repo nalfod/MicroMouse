@@ -8,8 +8,6 @@
 
 void MM::read_sensors()
 {
-    measure_distances_alternately();
-
     g.currentBatteryVoltage = analogRead(MM::PINS::BATT);
 
     g.rightEncoderValue = mouse.motor_right.getEncoderCount();
@@ -20,7 +18,7 @@ void MM::read_sensors()
         // mouse.accelerometer.serialPrint();
         // mouse.accelerometer.myAngRotMeter.refresh();
         g.currentOrientation = mouse.accelerometer.getCurrentYawValue();
-        //Serial.print("Current orientation: ");
+        //Serial.print(" Current orientation: ");
         //Serial.println(g.currentOrientation);
     }
     else

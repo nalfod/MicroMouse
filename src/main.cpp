@@ -30,6 +30,7 @@ MM::Globals g {};
 MM::Mouse mouse {};
 
 MM::Task task_read_sensors        {MM::read_sensors, CONSTS::MAIN_CYCLE_TIME};
+MM::Task task_measure_distances   {MM::measure_distances_alternately, CONSTS::DIST_MEASURE_CYCLE_TIME};
 MM::Task task_pre_process_inputs  {MM::pre_process_inputs, CONSTS::MAIN_CYCLE_TIME};
 MM::Task task_control             {MM::control, CONSTS::MAIN_CYCLE_TIME};
 MM::Task task_post_process        {MM::post_process, CONSTS::MAIN_CYCLE_TIME};
@@ -143,6 +144,7 @@ void loop()
       //Serial.print(millis());
       //Serial.print("\t");
       task_read_sensors();
+      task_measure_distances();
       task_pre_process_inputs();
       task_control();
       task_post_process();

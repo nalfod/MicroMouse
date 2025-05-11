@@ -122,7 +122,7 @@ void MM::generateNextCommand()
 void MM::check_mode_selector()
 {
     // refreshing mode
-    /*g.mode_selector.update();
+    g.mode_selector.update();
     if( g.mode_selector.is_mode_just_changed() )
     {
         mouse.dbg_green.toggle();
@@ -132,6 +132,6 @@ void MM::check_mode_selector()
         mouse.dbg_green.toggle();
         delay(100);
         mouse.dbg_green.toggle();
-    }*/
+    }
 }
 
