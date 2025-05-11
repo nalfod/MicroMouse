@@ -16,12 +16,14 @@ mDeceleration_mm_per_s2(dec_mm_per_s2)
 {
     while( true )
     {
+        
         mAccelerationTime_ms = ( mSetSpeed_mm_per_s / mAcceleration_mm_per_s2 ) * 1000;
         mDecelerationTime_ms = ( mSetSpeed_mm_per_s / mDeceleration_mm_per_s2 ) * 1000;
-        mUniformTravelTime_ms  = ( (mDistance_mm - 0.5 * mSetSpeed_mm_per_s * mSetSpeed_mm_per_s * ( 1 / mAcceleration_mm_per_s2 + 1 / mDeceleration_mm_per_s2 ) ) / (mSetSpeed_mm_per_s) ) * 1000;
+        long tmpUniformTravelTime_ms =  ( (mDistance_mm - 0.5 * mSetSpeed_mm_per_s * mSetSpeed_mm_per_s * ( 1 / mAcceleration_mm_per_s2 + 1 / mDeceleration_mm_per_s2 ) ) / (mSetSpeed_mm_per_s) ) * 1000;
 
-        if( mUniformTravelTime_ms > 0 )
+        if( tmpUniformTravelTime_ms > 0 )
         {
+            mUniformTravelTime_ms = tmpUniformTravelTime_ms;
             break;
         }
         else
