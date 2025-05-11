@@ -116,7 +116,7 @@ void setup()
           ( 
             std::make_unique<MM::LinearTravelCommand>
             ( 
-              180, 500, 500, 1000, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage, g.locController, true, 30, 300, 0.1
+              180, 100, 250, 500, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage, g.locController, true, 30, 300, 0.1
             ), 
             g.dist_frontleft_mm, g.dist_frontright_mm, g.currentOrientation, g.leftMotorVoltage, g.rightMotorVoltage 
           ),
@@ -124,10 +124,10 @@ void setup()
         )
       );
 
-      g.commandBuffer.push
+      /*g.commandBuffer.push
       ( 
         std::make_unique<MM::RotationCommandPid>( 90, g.currentOrientation, g.leftMotorVoltage, g.rightMotorVoltage, g.locController)
-      );
+      );*/
     }
   }
   //mouse.accelerometer.myAngRotMeter.startMeasurement();
