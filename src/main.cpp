@@ -116,7 +116,7 @@ void setup()
           ( 
             std::make_unique<MM::LinearTravelCommand>
             ( 
-              180, 100, 1000, 1000, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage, g.locController, true, 10, 5, 0
+              180, 100, 500, 1000, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage, g.locController, true, 30, 300, 0.1
             ), 
             g.dist_frontleft_mm, g.dist_frontright_mm, g.currentOrientation, g.leftMotorVoltage, g.rightMotorVoltage 
           ),
@@ -139,9 +139,9 @@ void loop()
   if( MM::Accelerometer::MPUInterrupt )
   {
       // for debugging the cycle time
-      Serial.print("Current time: ");
-      Serial.print(millis());
-      Serial.print("\t");
+      //Serial.print("Current time: ");
+      //Serial.print(millis());
+      //Serial.print("\t");
       task_read_sensors();
       task_pre_process_inputs();
       task_control();

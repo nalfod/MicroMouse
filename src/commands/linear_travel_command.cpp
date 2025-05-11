@@ -92,7 +92,8 @@ void MM::LinearTravelCommand::execute()
         myMovementCtrl.compute( static_cast<double>( mRealCurrentPosition_mm) );
 
         // Determining output voltage
-        int16_t outputVoltage = static_cast<int16_t>(calcVoltageFromSpeed_mV(outputSpeed_mm_per_s)) + static_cast<int16_t>( myMovementCtrl.getOuput() );
+        // int16_t outputVoltage = static_cast<int16_t>(calcVoltageFromSpeed_mV(outputSpeed_mm_per_s)) + static_cast<int16_t>( myMovementCtrl.getOuput() );
+        int16_t outputVoltage = static_cast<int16_t>( calcVoltageFromSpeed_mV( outputSpeed_mm_per_s + static_cast<float>( myMovementCtrl.getOuput() ) ) );
         mLeftMotorVoltageR_mV = outputVoltage;
         mRightMotorVoltageR_mV = outputVoltage;
     }
@@ -100,7 +101,20 @@ void MM::LinearTravelCommand::execute()
 
 int16_t MM::LinearTravelCommand::calcVoltageFromSpeed_mV( float setSpeed_mm_per_s )
 {
-    return static_cast<int16_t>(CONSTS::K_SPEED_FF * setSpeed_mm_per_s + CONSTS::K_BIAS_FF);
+    int16_t outputVoltageAbs_mV = static_cast<int16_t>(CONSTS::K_SPEED_FF * std::abs(setSpeed_mm_per_s) + CONSTS::K_BIAS_FF);
+
+    if( setSpeed_mm_per_s > 0.0 )
+    {
+        return outputVoltageAbs_mV;
+    }
+    else if ( setSpeed_mm_per_s < 0.0 )
+    {
+        return -outputVoltageAbs_mV;
+    }
+    else
+    {
+        return 0;
+    }
 }
 
 void MM::LinearTravelCommand::print() const
