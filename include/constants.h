@@ -33,6 +33,8 @@ constexpr float K_BIAS_PID_REV = K_BIAS_FF * 1.5;
 constexpr uint16_t WALL_DISTANCE_LIMIT_FOR_CENTERING_MM = 90;
 constexpr uint16_t WALL_DISTANCE_MID_FOR_CENTERING_MM = 67;
 
+constexpr uint16_t CELL_DISTANCE_MM = 180;
+
 // MODE SELECTION
 enum MODES
 {
