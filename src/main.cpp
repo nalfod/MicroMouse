@@ -108,7 +108,7 @@ void setup()
   if( g.mode_selector.get_current_mode() == CONSTS::MODES::SPEED_RUN )
   {
     // Creating initial commands
-    for( int i = 0; i < 1; i++)
+    for( int i = 0; i < 5; i++)
     {
       g.commandBuffer.push( 
         std::make_unique<MM::CollisionAvoidanceCommand>

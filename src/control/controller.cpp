@@ -34,7 +34,7 @@ void MM::control()
                 // {
                 //     g.commandBuffer.front()->execute(); // immediately execute the next command to not waste an cycle
                 // }
-                delay(1000);
+                // delay(1000);
             }
         }
         else
@@ -64,7 +64,7 @@ void MM::generateNextCommand()
               ( 
                 std::make_unique<MM::LinearTravelCommand>
                 ( 
-                  170000, 100, 1, 1, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage, g.locController
+                  180, 500, 250, 500, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage, g.locController
                 ), 
                 g.dist_frontleft_mm, g.dist_frontright_mm, g.currentOrientation, g.leftMotorVoltage, g.rightMotorVoltage 
               ),
@@ -82,7 +82,7 @@ void MM::generateNextCommand()
               ( 
                 std::make_unique<MM::LinearTravelCommand>
                 ( 
-                  170000, 100, 1, 1, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage, g.locController, true
+                  180, 100, 250, 500, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage, g.locController, true
                 ), 
                 g.dist_frontleft_mm, g.dist_frontright_mm, g.currentOrientation, g.leftMotorVoltage, g.rightMotorVoltage 
               ),
@@ -105,7 +105,7 @@ void MM::generateNextCommand()
             ( 
               std::make_unique<MM::LinearTravelCommand>
               ( 
-                138000, 100, 1, 1, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage, g.locController
+                138, 100, 250, 500, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage, g.locController
               ), 
               g.dist_frontleft_mm, g.dist_frontright_mm, g.currentOrientation, g.leftMotorVoltage, g.rightMotorVoltage 
             ),

@@ -34,7 +34,7 @@ private:
     TargetSpeedCalculator myTargetSpeedCalculator;
     EncoderValueIntegrator myEncIntegrator1;
     EncoderValueIntegrator myEncIntegrator2;
-    PidWrapper myMovementCtrl{0, 0, 0};
+    PidWrapper myMovementCtrl{30, 300, 0.1};
     // QUESTION: How should this be fine-tuned? Should we change it durint runtime?
 
     // state flags
