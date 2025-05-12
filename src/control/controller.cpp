@@ -82,7 +82,7 @@ void MM::generateNextCommand()
               ( 
                 std::make_unique<MM::LinearTravelCommand>
                 ( 
-                  180, 100, 250, 500, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage, g.locController, true
+                  180, 500, 250, 500, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage, g.locController, true
                 ), 
                 g.dist_frontleft_mm, g.dist_frontright_mm, g.currentOrientation, g.leftMotorVoltage, g.rightMotorVoltage 
               ),
@@ -105,7 +105,7 @@ void MM::generateNextCommand()
             ( 
               std::make_unique<MM::LinearTravelCommand>
               ( 
-                138, 100, 250, 500, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage, g.locController
+                138, 500, 250, 500, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage, g.locController
               ), 
               g.dist_frontleft_mm, g.dist_frontright_mm, g.currentOrientation, g.leftMotorVoltage, g.rightMotorVoltage 
             ),

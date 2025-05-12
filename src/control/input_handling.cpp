@@ -8,8 +8,6 @@
 
 void MM::read_sensors()
 {
-    g.currentBatteryVoltage = analogRead(MM::PINS::BATT);
-
     g.rightEncoderValue = mouse.motor_right.getEncoderCount();
     g.leftEncoderValue =  mouse.motor_left.getEncoderCount();
 
@@ -62,4 +60,9 @@ void MM::measure_distances_alternately()
         mouse.right_dist_measure.turn_on_led();
     }
     phase_changer = !phase_changer;
+}
+
+void MM::update_battery_voltage()
+{
+    g.currentBatteryVoltage = analogRead(MM::PINS::BATT);
 }
