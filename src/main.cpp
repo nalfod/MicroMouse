@@ -51,9 +51,9 @@ void debug()
   mouse.dbg_red.toggle();
   if( g.mode_selector.get_current_mode() != CONSTS::MODES::MEASUREMENT && g.mode_selector.get_current_mode() != CONSTS::MODES::MEASUREMENT_SNAPSHOT  )
   {
-    //MM::log_current_mm_values();
+    MM::log_current_mm_values();
     // MM::log_mode_selector();
-    MM::log_active_command();
+    // MM::log_active_command();
   }
   else
   {
