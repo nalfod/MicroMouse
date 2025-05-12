@@ -1,6 +1,6 @@
 #pragma once
 
-#include "direction.h"
+#include "constants.h"
 
 class Cell {
     public:
@@ -16,7 +16,7 @@ class Cell {
         int getWallMask();
         void setWallMask(int newMask);
 
-        bool isAccessible(Direction direction) const ;
+        bool isAccessible(CONSTS::Direction direction) const ;
     private:
         int mX;
         int mY;

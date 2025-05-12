@@ -130,9 +130,9 @@ void MM::LinearTravelCommand::print() const
 void MM::LinearTravelCommand::finishCommand()
 {
     LOG_INFO("FINISH COMMAND: %d   %d\n",mStarted, mDummy);
-    if(mStarted && !mDummy)
+    if(mStarted)
     {
-        mLocController.moveInDirection();
+        mLocController.mCurrentPosition.increasePositionInCell(mRealCurrentPosition_mm);
         mLocController.updateWalls();
     }
 }

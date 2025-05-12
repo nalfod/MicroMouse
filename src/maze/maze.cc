@@ -1,6 +1,6 @@
 #include "maze.h"
 #include <iostream>
-#include "direction.h"
+#include "constants.h"
 
 #include "utils/logging.h"
 
@@ -19,7 +19,7 @@ void Maze::initMaze() {
 
     for(int i = 0; i < numOfRows; i++) {
         for(int j = 0; j < numOfRows; j++) {
-            Cell newCell(i, j, Direction::UNKNOWN, calcBaseVal(i,j));
+            Cell newCell(i, j, CONSTS::Direction::UNKNOWN, calcBaseVal(i,j));
             cells[i].push_back(newCell);
         }
     }
@@ -91,7 +91,7 @@ void Maze::updateNeighbourWalls(int x, int y)
     }
 }
 
-Direction Maze::simpleMove(int currx, int curry) {
+CONSTS::Direction Maze::simpleMove(int currx, int curry) {
     Cell& c = cells[currx][curry];
     if(currx == 6 && curry == 3) {
         /*LOG_INFO("CURRENT VAL:  %d\n",cells[currx][curry].getValue());
@@ -101,31 +101,31 @@ Direction Maze::simpleMove(int currx, int curry) {
         LOG_INFO("W:  %d   %d\n", c.isAccessible(Direction::WEST), cells[currx][curry-1].getValue());*/
     }
 
-    if( c.isAccessible(Direction::NORTH) && isValidPos(currx+1) &&
+    if( c.isAccessible(CONSTS::Direction::NORTH) && isValidPos(currx+1) &&
         (cells[currx+1][curry].getValue() < c.getValue())) 
     {
-        return Direction::NORTH;
+        return CONSTS::Direction::NORTH;
     }
     
-    if( c.isAccessible(Direction::EAST) && isValidPos(curry+1) &&
+    if( c.isAccessible(CONSTS::Direction::EAST) && isValidPos(curry+1) &&
         (cells[currx][curry+1].getValue() < c.getValue())) 
     {
-        return Direction::EAST;
+        return CONSTS::Direction::EAST;
     }
 
-    if( c.isAccessible(Direction::SOUTH) && isValidPos(currx-1) &&
+    if( c.isAccessible(CONSTS::Direction::SOUTH) && isValidPos(currx-1) &&
         (cells[currx-1][curry].getValue() < c.getValue())) 
     {
-        return Direction::SOUTH;
+        return CONSTS::Direction::SOUTH;
     }
 
-    if( c.isAccessible(Direction::WEST) && isValidPos(curry-1) &&
+    if( c.isAccessible(CONSTS::Direction::WEST) && isValidPos(curry-1) &&
         (cells[currx][curry-1].getValue() < c.getValue())) 
     {
-        return Direction::WEST;
+        return CONSTS::Direction::WEST;
     }
 
-    return Direction::UNKNOWN;
+    return CONSTS::Direction::UNKNOWN;
 }
 
 bool Maze::isValidPos(int pos) {
@@ -153,7 +153,7 @@ void Maze::CheckCellandNeighbours() {
     Cell* cS = 0;
     Cell* cW = 0;
     
-    if( currCellP->isAccessible(Direction::NORTH) && isValidPos(currCellP->getX()+1)) 
+    if( currCellP->isAccessible(CONSTS::Direction::NORTH) && isValidPos(currCellP->getX()+1)) 
     {
         if(cells[currCellP->getX()+1][currCellP->getY()].getValue() < lowestNeighbourValue) 
         {
@@ -161,7 +161,7 @@ void Maze::CheckCellandNeighbours() {
         }
         cN = &cells[currCellP->getX()+1][currCellP->getY()];
     }
-    if( currCellP->isAccessible(Direction::EAST) && isValidPos(currCellP->getY()+1)) 
+    if( currCellP->isAccessible(CONSTS::Direction::EAST) && isValidPos(currCellP->getY()+1)) 
     {
         if(cells[currCellP->getX()][currCellP->getY()+1].getValue() < lowestNeighbourValue) 
         {
@@ -169,7 +169,7 @@ void Maze::CheckCellandNeighbours() {
         }
         cE = &cells[currCellP->getX()][currCellP->getY()+1];
     }
-    if( currCellP->isAccessible(Direction::SOUTH) && isValidPos(currCellP->getX()-1)) 
+    if( currCellP->isAccessible(CONSTS::Direction::SOUTH) && isValidPos(currCellP->getX()-1)) 
     {
         if(cells[currCellP->getX()-1][currCellP->getY()].getValue() < lowestNeighbourValue) 
         {
@@ -177,7 +177,7 @@ void Maze::CheckCellandNeighbours() {
         }
         cS = &cells[currCellP->getX()-1][currCellP->getY()];
     }
-    if( currCellP->isAccessible(Direction::WEST) && isValidPos(currCellP->getY()-1)) 
+    if( currCellP->isAccessible(CONSTS::Direction::WEST) && isValidPos(currCellP->getY()-1)) 
     {
         if(cells[currCellP->getX()][currCellP->getY()-1].getValue() < lowestNeighbourValue) 
         {
@@ -198,7 +198,7 @@ void Maze::CheckCellandNeighbours() {
     updateQueue.pop();
 }
 
-bool Maze::isCellDirectionBlocked(int currx, int curry, Direction dir)
+bool Maze::isCellDirectionBlocked(int currx, int curry, CONSTS::Direction dir)
 {
     return (0 != (cells[currx][curry].getWallMask() & dir));
 }

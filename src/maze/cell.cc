@@ -34,7 +34,7 @@ void Cell::setWallMask(int newMask)
     wallMask = newMask;
 }
 
-bool Cell::isAccessible(Direction direction) const
+bool Cell::isAccessible(CONSTS::Direction direction) const
 {
     return !(wallMask & direction);
 }

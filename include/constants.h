@@ -1,5 +1,6 @@
 #pragma once
 #include <chrono>
+#include <array>
 
 using namespace std::chrono_literals;
 
@@ -49,5 +50,38 @@ constexpr uint16_t MODE_SIGNAL_THRESHOLD_MV = 3900;
 constexpr uint16_t MODE_SIGNAL_HOLD_TIME_MS = 2000;
 
 constexpr uint16_t COLLISION_AVOIDANCE_DIST_MM = 50;
+
+enum Direction
+{
+    NORTH   = 1,
+    EAST    = 2,
+    SOUTH   = 4,
+    WEST    = 8,
+    UNKNOWN = 16
+};
+
+constexpr std::array<std::pair<Direction, std::array<std::pair<float, Direction>, 3>>, 4> DIRECTION_MAP = {{
+    { Direction::NORTH, {{
+        {90.0f, Direction::EAST},
+        {180.0f, Direction::SOUTH},
+        {-90.0f, Direction::WEST}
+    }}},
+    { Direction::EAST, {{
+        {90.0f, Direction::SOUTH},
+        {180.0f, Direction::WEST},
+        {-90.0f, Direction::NORTH}
+    }}},
+    { Direction::SOUTH, {{
+        {90.0f, Direction::WEST},
+        {180.0f, Direction::NORTH},
+        {-90.0f, Direction::EAST}
+    }}},
+    { Direction::WEST, {{
+        {90.0f, Direction::NORTH},
+        {180.0f, Direction::EAST},
+        {-90.0f, Direction::SOUTH}
+    }}}
+}};
+
 
 }

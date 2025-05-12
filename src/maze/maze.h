@@ -2,6 +2,7 @@
 
 #include <vector>
 #include "cell.h"
+#include "constants.h"
 #include <queue>
 
 class Maze {
@@ -10,10 +11,10 @@ class Maze {
 
         void updateCellWallMask(int x, int y, int wall);
 
-        Direction simpleMove(int currx, int curry);
+        CONSTS::Direction simpleMove(int currx, int curry);
         void updateMazeValues(int x, int y);
 
-        bool isCellDirectionBlocked(int currx, int curry, Direction dir);
+        bool isCellDirectionBlocked(int currx, int curry, CONSTS::Direction dir);
 
         void resetValues();
 

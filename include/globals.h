@@ -28,7 +28,7 @@ struct Globals {
     int64_t rightEncoderValue{0};
     float currentOrientation{0};
 
-    LocationController locController{7, Direction::NORTH, dist_left_mm, dist_right_mm, dist_frontleft_mm, dist_frontright_mm};
+    LocationController locController{7, CONSTS::Direction::NORTH, dist_left_mm, dist_right_mm, dist_frontleft_mm, dist_frontright_mm};
 
 // Outputs =================================================
     int16_t leftMotorVoltage{0};

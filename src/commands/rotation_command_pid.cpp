@@ -81,5 +81,5 @@ void MM::RotationCommandPid::print() const
 
 void MM::RotationCommandPid::finishCommand()
 {
-    mLocController.updateDirection(myTargetMagnitude_deg);
+    mLocController.mCurrentPosition.updateDirection(myTargetMagnitude_deg);
 }
