@@ -26,6 +26,8 @@ class LocationController{
         int mPosX{0};
         int mPosY{0};
 
+        bool toMid{true};
+
         uint16_t& mDistLeft;
         uint16_t& mDistRight;
         uint16_t& mDistFrLeft;

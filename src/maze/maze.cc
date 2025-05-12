@@ -177,3 +177,81 @@ bool Maze::isCellDirectionBlocked(int currx, int curry, Direction dir)
 {
     return (0 != (cells[currx][curry].getWallMask() & dir));
 }
+
+void Maze::resetValues()
+{
+    for(int i = 0; i < numOfRows; i++)
+    {
+        for(int j = 0; j < numOfRows; j++)
+        {
+            cells[i][j].setValue(20000);
+        }
+    }
+}
+
+void Maze::reCalcMaze(bool toMid)
+{
+    resetValues();
+    if(toMid)
+    {
+        if(numOfRows%2 != 0)
+        {
+            flowMaze(numOfRows/2,numOfRows/2,0);
+        }
+        else
+        {
+            for(int i = 0; i < 2; i++)
+            {
+                for(int j = 0; j < 2; j++)
+                {
+                    if(cells[numOfRows/2 - 1 + i][numOfRows/2 - + j].getWallMask() != Direction::UNKNOWN)
+                    {
+                        LOG_INFO("RECALC MAZE, EVEN %d  %d\n",i,j);
+                        flowMaze(numOfRows/2-1+i,numOfRows/2-1+j,0);
+                        LOG_INFO("RECALC MAZE, FLOW DONE\n");
+                        return;
+                    }
+                }
+            }
+        }
+    }
+    else
+    {
+        flowMaze(0,0,0);
+    }
+}
+
+void Maze::flowMaze(int x, int y, int stepCount)
+{   
+    if( cells[x][y].getValue() <= stepCount)
+    {
+        return;
+    }
+    cells[x][y].setValue(stepCount);
+
+    if( cells[x][y].isAccessible(Direction::NORTH) && isValidPos(x+1) 
+            && cells[x+1][y].getValue() > stepCount+1 )
+    {
+        flowMaze(x+1,y,stepCount+1);
+    }
+    if( cells[x][y].isAccessible(Direction::EAST) && isValidPos(y+1) 
+            && cells[x][y+1].getValue() > stepCount+1 )
+    {
+        flowMaze(x,y+1,stepCount+1);
+    }
+    if( cells[x][y].isAccessible(Direction::SOUTH) && isValidPos(x-1) 
+            && cells[x-1][y].getValue() > stepCount+1 )
+    {
+        flowMaze(x-1,y,stepCount+1);
+    }
+    if( cells[x][y].isAccessible(Direction::WEST) && isValidPos(y-1) 
+            && cells[x][y-1].getValue() > stepCount+1 )
+    {
+        flowMaze(x,y-1,stepCount+1);
+    }
+}
+
+int Maze::getWeightOfCell(int x, int y)
+{
+    return cells[x][y].getValue();
+}

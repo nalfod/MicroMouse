@@ -9,7 +9,8 @@ LocationController::LocationController(int mazeSize, Direction startDirection, u
     mDistFrLeft(distFrLeft),
     mDistFrRight(distFrRight),
     mCurrentDirection(startDirection),
-    maze(mazeSize)
+    maze(mazeSize),
+    toMid(true)
 {}
 
 void LocationController::updateDirection(float rotDeg)
@@ -65,6 +66,12 @@ void LocationController::updateWalls()
 
 float LocationController::calcNextMovement()
 {
+    if(maze.getWeightOfCell(mPosX,mPosY) == 0)
+    {
+        LOG_INFO("REACHED GOAL!!!!!!!!!!RECALC\n");
+        toMid = !toMid;
+        maze.reCalcMaze(toMid);
+    }
     Direction moveDir = maze.simpleMove(mPosX, mPosY);
     //LOG_INFO("LOCCONTROL:  %d   %d\n", static_cast<int>(moveDir), static_cast<int>(mCurrentDirection));
     if( moveDir == Direction::UNKNOWN ) {
