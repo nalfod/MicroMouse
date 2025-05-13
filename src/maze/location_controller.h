@@ -11,7 +11,7 @@ class LocationController{
         void updateWalls();
         bool isFrontWayBlocked();
 
-        float calcNextMovement();
+        int calcNextMovement();
 
         MM::CellPosition mCurrentPosition;
     private:

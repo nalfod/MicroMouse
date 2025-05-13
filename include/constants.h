@@ -51,6 +51,10 @@ constexpr uint16_t MODE_SIGNAL_HOLD_TIME_MS = 2000;
 
 constexpr uint16_t COLLISION_AVOIDANCE_DIST_MM = 50;
 
+
+/////////////////////////
+// DIRECTION MANIPULATION
+/////////////////////////
 enum Direction
 {
     NORTH   = 1,
@@ -60,28 +64,85 @@ enum Direction
     UNKNOWN = 16
 };
 
-constexpr std::array<std::pair<Direction, std::array<std::pair<float, Direction>, 3>>, 4> DIRECTION_MAP = {{
-    { Direction::NORTH, {{
-        {90.0f, Direction::EAST},
-        {180.0f, Direction::SOUTH},
-        {-90.0f, Direction::WEST}
-    }}},
-    { Direction::EAST, {{
-        {90.0f, Direction::SOUTH},
-        {180.0f, Direction::WEST},
-        {-90.0f, Direction::NORTH}
-    }}},
-    { Direction::SOUTH, {{
-        {90.0f, Direction::WEST},
-        {180.0f, Direction::NORTH},
-        {-90.0f, Direction::EAST}
-    }}},
-    { Direction::WEST, {{
-        {90.0f, Direction::NORTH},
-        {180.0f, Direction::EAST},
-        {-90.0f, Direction::SOUTH}
-    }}}
-}};
+inline
+Direction getDirectionAfterRotation(Direction currentDirection, float rotationAngle) {
+    if (rotationAngle > 89.9f && rotationAngle < 90.1f) {
+        switch (currentDirection) {
+            case Direction::NORTH: return Direction::EAST;
+            case Direction::EAST: return Direction::SOUTH;
+            case Direction::SOUTH: return Direction::WEST;
+            case Direction::WEST: return Direction::NORTH;
+            default: return Direction::UNKNOWN;
+        }
+    } else if (rotationAngle > 179.9f && rotationAngle < 180.1f) {
+        switch (currentDirection) {
+            case Direction::NORTH: return Direction::SOUTH;
+            case Direction::EAST: return Direction::WEST;
+            case Direction::SOUTH: return Direction::NORTH;
+            case Direction::WEST: return Direction::EAST;
+            default: return Direction::UNKNOWN;
+        }
+    } else if (rotationAngle > -90.1f && rotationAngle < -89.9f) {
+        switch (currentDirection) {
+            case Direction::NORTH: return Direction::WEST;
+            case Direction::EAST: return Direction::NORTH;
+            case Direction::SOUTH: return Direction::EAST;
+            case Direction::WEST: return Direction::SOUTH;
+            default: return Direction::UNKNOWN;
+        }
+    } else {
+        return Direction::UNKNOWN; // Invalid rotation angle
+    }
+}
 
+inline
+int getRotationAngle(Direction source, Direction destination) {
+    if (source == destination) {
+        return 0; // No rotation needed
+    }
+
+    switch (source) {
+        case Direction::NORTH:
+            switch (destination) {
+                case Direction::EAST: return 90;
+                case Direction::SOUTH: return 180;
+                case Direction::WEST: return -90;
+                default: break;
+            }
+            break;
+
+        case Direction::EAST:
+            switch (destination) {
+                case Direction::SOUTH: return 90;
+                case Direction::WEST: return 180;
+                case Direction::NORTH: return -90;
+                default: break;
+            }
+            break;
+
+        case Direction::SOUTH:
+            switch (destination) {
+                case Direction::WEST: return 90;
+                case Direction::NORTH: return 180;
+                case Direction::EAST: return -90;
+                default: break;
+            }
+            break;
+
+        case Direction::WEST:
+            switch (destination) {
+                case Direction::NORTH: return 90;
+                case Direction::EAST: return 180;
+                case Direction::SOUTH: return -90;
+                default: break;
+            }
+            break;
+
+        default:
+            break;
+    }
+
+    return -1; // Invalid rotation (e.g., UNKNOWN direction)
+}
 
 }

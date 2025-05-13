@@ -22,11 +22,11 @@ void LocationController::updateWalls()
 
     if( mDistFrLeft < 90 )
     {
-        newWallMask = (newWallMask | CONSTS::DIRECTION_MAP[mCurrentPosition.getCurrentDirection()][-90.0f]);
+        newWallMask = (newWallMask | CONSTS::getDirectionAfterRotation(mCurrentPosition.getCurrentDirection(), -90.0f) );
     }
     if( mDistFrRight < 90 )
     {
-        newWallMask = (newWallMask | CONSTS::DIRECTION_MAP[mCurrentPosition.getCurrentDirection()][90.0f]);
+        newWallMask = (newWallMask | CONSTS::getDirectionAfterRotation(mCurrentPosition.getCurrentDirection(), 90.0f) );
     }
     if( (mDistLeft < 80 ) || (mDistRight < 80 ) )
     {
@@ -36,7 +36,7 @@ void LocationController::updateWalls()
     maze.updateCellWallMask(mCurrentPosition.getPosX(), mCurrentPosition.getPosY(), newWallMask);
 }
 
-float LocationController::calcNextMovement()
+int LocationController::calcNextMovement()
 {
     if(maze.getWeightOfCell(mCurrentPosition.getPosX(),mCurrentPosition.getPosY()) == 0)
     {
@@ -55,17 +55,8 @@ float LocationController::calcNextMovement()
         maze.updateMazeValues(mCurrentPosition.getPosX(), mCurrentPosition.getPosY());
         moveDir = maze.simpleMove(mCurrentPosition.getPosX(), mCurrentPosition.getPosY());
     }
-    if( moveDir == mCurrentPosition.getCurrentDirection()) {
-        return 0;
-    } else {
-        for (auto toDirEntry : CONSTS::DIRECTION_MAP[mCurrentPosition.getCurrentDirection()])
-        {
-            if(static_cast<int>(toDirEntry.second) == moveDir) {
-                return static_cast<int>(toDirEntry.first);
-            }
-        }
-    }
-    return -1;
+
+    return CONSTS::getRotationAngle(mCurrentPosition.getCurrentDirection(), moveDir);
 }
 
 bool LocationController::isFrontWayBlocked()

@@ -53,9 +53,9 @@ void MM::control()
 
 void MM::generateNextCommand() 
 {
-    float nextCommand = g.locController.calcNextMovement();
+    int nextCommand = g.locController.calcNextMovement();
 
-    if (nextCommand == 0.0f)
+    if (nextCommand == 0)
     {
         g.commandBuffer.push( 
             std::make_unique<MM::CollisionAvoidanceCommand>
@@ -72,7 +72,7 @@ void MM::generateNextCommand()
             )
           );
     }
-    else if(nextCommand >= -180.0f && nextCommand <= 180.0f) 
+    else if(nextCommand >= -180 && nextCommand <= 180) 
     {
       if (g.locController.isFrontWayBlocked()) {
           g.commandBuffer.push( 
@@ -95,7 +95,7 @@ void MM::generateNextCommand()
 
         g.commandBuffer.push
         ( 
-          std::make_unique<MM::RotationCommandPid>( nextCommand, g.currentOrientation, g.leftMotorVoltage, g.rightMotorVoltage, g.locController)
+          std::make_unique<MM::RotationCommandPid>( static_cast<float>( nextCommand ), g.currentOrientation, g.leftMotorVoltage, g.rightMotorVoltage, g.locController)
         );
 
         g.commandBuffer.push( 

@@ -12,7 +12,7 @@ void MM::CellPosition::_setCurrentDirection(CONSTS::Direction direction)
 
 void MM::CellPosition::updateDirection(float rotDeg)
 {
-    _setCurrentDirection( CONSTS::DIRECTION_MAP[mCurrentDirection][rotDeg] );
+    _setCurrentDirection( CONSTS::getDirectionAfterRotation(mCurrentDirection, rotDeg) );
 }
 
 void MM::CellPosition::increasePositionInCell(float position) 
