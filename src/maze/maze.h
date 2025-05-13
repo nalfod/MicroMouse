@@ -20,6 +20,10 @@ class Maze {
         void reCalcMaze(bool toMid);
 
         int getWeightOfCell(int x, int y);
+
+        void closeMidCells(int x, int y);
+
+        void updateNeighbourWalls(int x, int y);
     private:
         void initMaze();
 

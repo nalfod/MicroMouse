@@ -64,6 +64,31 @@ void Maze::updateCellWallMask(int x, int y, int wall) {
 
     //LOG_INFO("UPDATEWALL MASK: %d    %d    %d\n",x, y, wall );
     cells[x][y].setWallMask(wall);
+    updateNeighbourWalls(x,y);
+}
+
+void Maze::updateNeighbourWalls(int x, int y)
+{
+    if( !cells[x][y].isAccessible(Direction::NORTH) && isValidPos(x+1))
+    {
+        int newWallMask = (cells[x+1][y].getWallMask() | Direction::SOUTH);
+        cells[x+1][y].setWallMask(newWallMask);
+    }
+    if( !cells[x][y].isAccessible(Direction::EAST) && isValidPos(y+1))
+    {
+        int newWallMask = (cells[x][y+1].getWallMask() | Direction::WEST);
+        cells[x][y+1].setWallMask(newWallMask);
+    }
+    if( !cells[x][y].isAccessible(Direction::SOUTH) && isValidPos(x-1))
+    {
+        int newWallMask = (cells[x-1][y].getWallMask() | Direction::NORTH);
+        cells[x-1][y].setWallMask(newWallMask);
+    }
+    if( !cells[x][y].isAccessible(Direction::WEST) && isValidPos(y-1))
+    {
+        int newWallMask = (cells[x][y-1].getWallMask() | Direction::EAST);
+        cells[x][y-1].setWallMask(newWallMask);
+    }
 }
 
 Direction Maze::simpleMove(int currx, int curry) {
@@ -200,24 +225,49 @@ void Maze::reCalcMaze(bool toMid)
         }
         else
         {
+            int posx = 0;
+            int posy = 0;
             for(int i = 0; i < 2; i++)
             {
                 for(int j = 0; j < 2; j++)
                 {
-                    if(cells[numOfRows/2 - 1 + i][numOfRows/2 - + j].getWallMask() != Direction::UNKNOWN)
-                    {
-                        LOG_INFO("RECALC MAZE, EVEN %d  %d\n",i,j);
-                        flowMaze(numOfRows/2-1+i,numOfRows/2-1+j,0);
-                        LOG_INFO("RECALC MAZE, FLOW DONE\n");
-                        return;
+                    if ( cells[numOfRows/2 - 1 + i][numOfRows/2 - 1 + j].getWallMask() < 15) {
+                        posx = numOfRows/2 - 1 + i;
+                        posy = numOfRows/2 - 1 + j;
                     }
                 }
             }
+            std::cout << "FLOWMAZE ODD " << posx << "  " << posy << std::endl;
+            flowMaze(posx,posy,0);
+            return;
         }
     }
     else
     {
         flowMaze(0,0,0);
+    }
+}
+
+void Maze::closeMidCells(int x, int y)
+{
+    if(numOfRows%2 == 0)
+    {
+        for(int i = 0; i < 2; i++)
+        {
+            for(int j = 0; j < 2; j++)
+            {
+                if((numOfRows/2 - 1 + i) == x && (numOfRows/2 - 1 + j) == y)
+                {
+                    // Current position inside the middle
+                    continue;
+                }
+                else
+                {
+                    int wallMask = (Direction::NORTH | Direction::EAST | Direction::SOUTH | Direction::WEST);
+                    cells[numOfRows/2 - 1 + i][numOfRows/2 - 1 + j].setWallMask(wallMask);
+                }
+            }
+        }
     }
 }
 

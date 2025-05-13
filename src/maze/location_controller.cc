@@ -70,6 +70,11 @@ float LocationController::calcNextMovement()
     {
         LOG_INFO("REACHED GOAL!!!!!!!!!!RECALC\n");
         toMid = !toMid;
+        // We are in the middle and want to move back to the start
+        if(!toMid)
+        {
+            maze.closeMidCells(mPosX,mPosY);
+        }
         maze.reCalcMaze(toMid);
     }
     Direction moveDir = maze.simpleMove(mPosX, mPosY);
