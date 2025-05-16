@@ -69,24 +69,24 @@ void Maze::updateCellWallMask(int x, int y, int wall) {
 
 void Maze::updateNeighbourWalls(int x, int y)
 {
-    if( !cells[x][y].isAccessible(Direction::NORTH) && isValidPos(x+1))
+    if( !cells[x][y].isAccessible(CONSTS::Direction::NORTH) && isValidPos(x+1))
     {
-        int newWallMask = (cells[x+1][y].getWallMask() | Direction::SOUTH);
+        int newWallMask = (cells[x+1][y].getWallMask() | CONSTS::Direction::SOUTH);
         cells[x+1][y].setWallMask(newWallMask);
     }
-    if( !cells[x][y].isAccessible(Direction::EAST) && isValidPos(y+1))
+    if( !cells[x][y].isAccessible(CONSTS::Direction::EAST) && isValidPos(y+1))
     {
-        int newWallMask = (cells[x][y+1].getWallMask() | Direction::WEST);
+        int newWallMask = (cells[x][y+1].getWallMask() | CONSTS::Direction::WEST);
         cells[x][y+1].setWallMask(newWallMask);
     }
-    if( !cells[x][y].isAccessible(Direction::SOUTH) && isValidPos(x-1))
+    if( !cells[x][y].isAccessible(CONSTS::Direction::SOUTH) && isValidPos(x-1))
     {
-        int newWallMask = (cells[x-1][y].getWallMask() | Direction::NORTH);
+        int newWallMask = (cells[x-1][y].getWallMask() | CONSTS::Direction::NORTH);
         cells[x-1][y].setWallMask(newWallMask);
     }
-    if( !cells[x][y].isAccessible(Direction::WEST) && isValidPos(y-1))
+    if( !cells[x][y].isAccessible(CONSTS::Direction::WEST) && isValidPos(y-1))
     {
-        int newWallMask = (cells[x][y-1].getWallMask() | Direction::EAST);
+        int newWallMask = (cells[x][y-1].getWallMask() | CONSTS::Direction::EAST);
         cells[x][y-1].setWallMask(newWallMask);
     }
 }
@@ -263,7 +263,7 @@ void Maze::closeMidCells(int x, int y)
                 }
                 else
                 {
-                    int wallMask = (Direction::NORTH | Direction::EAST | Direction::SOUTH | Direction::WEST);
+                    int wallMask = (CONSTS::Direction::NORTH | CONSTS::Direction::EAST | CONSTS::Direction::SOUTH | CONSTS::Direction::WEST);
                     cells[numOfRows/2 - 1 + i][numOfRows/2 - 1 + j].setWallMask(wallMask);
                 }
             }
@@ -279,22 +279,22 @@ void Maze::flowMaze(int x, int y, int stepCount)
     }
     cells[x][y].setValue(stepCount);
 
-    if( cells[x][y].isAccessible(Direction::NORTH) && isValidPos(x+1) 
+    if( cells[x][y].isAccessible(CONSTS::Direction::NORTH) && isValidPos(x+1) 
             && cells[x+1][y].getValue() > stepCount+1 )
     {
         flowMaze(x+1,y,stepCount+1);
     }
-    if( cells[x][y].isAccessible(Direction::EAST) && isValidPos(y+1) 
+    if( cells[x][y].isAccessible(CONSTS::Direction::EAST) && isValidPos(y+1) 
             && cells[x][y+1].getValue() > stepCount+1 )
     {
         flowMaze(x,y+1,stepCount+1);
     }
-    if( cells[x][y].isAccessible(Direction::SOUTH) && isValidPos(x-1) 
+    if( cells[x][y].isAccessible(CONSTS::Direction::SOUTH) && isValidPos(x-1) 
             && cells[x-1][y].getValue() > stepCount+1 )
     {
         flowMaze(x-1,y,stepCount+1);
     }
-    if( cells[x][y].isAccessible(Direction::WEST) && isValidPos(y-1) 
+    if( cells[x][y].isAccessible(CONSTS::Direction::WEST) && isValidPos(y-1) 
             && cells[x][y-1].getValue() > stepCount+1 )
     {
         flowMaze(x,y-1,stepCount+1);
