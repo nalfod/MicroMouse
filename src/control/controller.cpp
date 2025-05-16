@@ -28,7 +28,15 @@ void MM::control()
             {
                 LOG_INFO("COMMAND FINISHED:\n" );
                 //g.commandBuffer.front()->print();
-                g.commandBuffer.front()->finishCommand();
+                uint16_t XPosOld = g.currentCellPosition.getPosX();
+                uint16_t YPosOld = g.currentCellPosition.getPosY();
+                g.currentCellPosition.updatePosition( g.commandBuffer.front()->getResult() );
+
+                if( XPosOld != g.currentCellPosition.getPosX() || YPosOld != g.currentCellPosition.getPosY() )
+                {
+                  // We are in a new cell, wall update is necessary!
+                  g.locController.updateWalls();
+                }
                 g.commandBuffer.pop();
                 // if( !g.commandBuffer.empty() )
                 // {
@@ -64,7 +72,7 @@ void MM::generateNextCommand()
               ( 
                 std::make_unique<MM::LinearTravelCommand>
                 ( 
-                  180, 500, 250, 500, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage, g.locController
+                  180, 500, 250, 500, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage
                 ), 
                 g.dist_frontleft_mm, g.dist_frontright_mm, g.currentOrientation, g.leftMotorVoltage, g.rightMotorVoltage 
               ),
@@ -82,7 +90,7 @@ void MM::generateNextCommand()
               ( 
                 std::make_unique<MM::LinearTravelCommand>
                 ( 
-                  180, 500, 250, 500, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage, g.locController, true
+                  180, 500, 250, 500, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage
                 ), 
                 g.dist_frontleft_mm, g.dist_frontright_mm, g.currentOrientation, g.leftMotorVoltage, g.rightMotorVoltage 
               ),
@@ -95,7 +103,7 @@ void MM::generateNextCommand()
 
         g.commandBuffer.push
         ( 
-          std::make_unique<MM::RotationCommandPid>( static_cast<float>( nextCommand ), g.currentOrientation, g.leftMotorVoltage, g.rightMotorVoltage, g.locController)
+          std::make_unique<MM::RotationCommandPid>( static_cast<float>( nextCommand ), g.currentOrientation, g.leftMotorVoltage, g.rightMotorVoltage)
         );
 
         g.commandBuffer.push( 
@@ -105,7 +113,7 @@ void MM::generateNextCommand()
             ( 
               std::make_unique<MM::LinearTravelCommand>
               ( 
-                138, 500, 250, 500, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage, g.locController
+                138, 500, 250, 500, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage
               ), 
               g.dist_frontleft_mm, g.dist_frontright_mm, g.currentOrientation, g.leftMotorVoltage, g.rightMotorVoltage 
             ),

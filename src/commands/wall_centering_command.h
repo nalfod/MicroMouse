@@ -12,7 +12,7 @@ public:
     WallCenteringCommand(std::unique_ptr<MotionCommandIF> commandToWrap, uint16_t const& dist_frontleft, uint16_t const& dist_frontright, float const& currentOriR, int16_t& leftMotorVoltage_mV, int16_t& rightMotorVoltage_mV);
     void execute() override;
     bool isFinished() const override;
-    void finishCommand() override;
+    CommandResult getResult() override;
 
     // ONLY FOR DEBUG:
     void print() const override;

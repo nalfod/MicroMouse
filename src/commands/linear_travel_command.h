@@ -13,15 +13,14 @@ class LinearTravelCommand : public MotionCommandIF
 {
 public:
     LinearTravelCommand(float dist_mm, float speed_mm_per_s, float acc_mm_per_s2, float dec_mm_per_s2, 
-                        int64_t const& encoderValue1, int64_t const& encoderValue2, int16_t& leftMotorVoltage_mV, int16_t& rightMotorVoltage_mV,
-                        LocationController& locController, bool isDummy = false);
+                        int64_t const& encoderValue1, int64_t const& encoderValue2, int16_t& leftMotorVoltage_mV, int16_t& rightMotorVoltage_mV);
 
     LinearTravelCommand(float dist_um, float speed_um_per_ms, float acc_um_per_ms2, float dec_um_per_ms2, 
                         int64_t const& encoderValue1, int64_t const& encoderValue2, int16_t& leftMotorVoltage_mV, int16_t& rightMotorVoltage_mV, 
-                        LocationController& locController, bool isDummy, double Kp, double Ki, double Kd);
+                        double Kp, double Ki, double Kd);
     
     void execute() override;
-    void finishCommand() override;
+    CommandResult getResult() override;
     
     bool isFinished() const override { return mFinished; }
 
@@ -50,14 +49,9 @@ private:
     float mRealCurrentPosition_mm{0}; // will be read from the encoders
     float mDesiredCurrentPosition_mm{0};
 
-    LocationController& mLocController;
-
     // controlled units
     int16_t& mLeftMotorVoltageR_mV;
     int16_t& mRightMotorVoltageR_mV;
-
-    //
-    bool mDummy{false};
 };
 
 } // namespace MM

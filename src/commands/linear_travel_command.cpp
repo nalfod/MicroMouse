@@ -13,16 +13,12 @@ MM::LinearTravelCommand::LinearTravelCommand(float dist_mm,
                                              int64_t const& encoderValue1R, 
                                              int64_t const& encoderValue2R,
                                              int16_t& leftMotorVoltageR_mV,
-                                             int16_t& rightMotorVoltageR_mV,
-                                             LocationController& locController,
-                                             bool isDummy):
+                                             int16_t& rightMotorVoltageR_mV):
 myTargetSpeedCalculator(dist_mm, speed_mm_per_s, acc_mm_per_s2, dec_mm_per_s2),
 myEncIntegrator1(encoderValue1R),
 myEncIntegrator2(encoderValue2R),
 mLeftMotorVoltageR_mV(leftMotorVoltageR_mV),
-mRightMotorVoltageR_mV(rightMotorVoltageR_mV),
-mLocController(locController),
-mDummy(isDummy)
+mRightMotorVoltageR_mV(rightMotorVoltageR_mV)
 {
     mTotalTimeOfTravel_ms = myTargetSpeedCalculator.getTotalTimeOfTravel_Ms();
     myMovementCtrl.init(1, AUTOMATIC, -1000, 1000); // QUESTION: should the min and the max value be bounded to the current voltage somehow??
@@ -35,17 +31,13 @@ MM::LinearTravelCommand::LinearTravelCommand(float dist_mm,
                                              int64_t const& encoderValue1R, 
                                              int64_t const& encoderValue2R,
                                              int16_t& leftMotorVoltageR_mV,
-                                             int16_t& rightMotorVoltageR_mV,
-                                             LocationController& locController,
-                                             bool isDummy, 
+                                             int16_t& rightMotorVoltageR_mV, 
                                              double Kp, double Ki, double Kd):
 myTargetSpeedCalculator(dist_mm, speed_mm_per_s, acc_mm_per_s2, dec_mm_per_s2),
 myEncIntegrator1(encoderValue1R),
 myEncIntegrator2(encoderValue2R),
 mLeftMotorVoltageR_mV(leftMotorVoltageR_mV),
 mRightMotorVoltageR_mV(rightMotorVoltageR_mV),
-mLocController(locController),
-mDummy(isDummy),
 myMovementCtrl(Kp, Ki, Kd)
 {
     mTotalTimeOfTravel_ms = myTargetSpeedCalculator.getTotalTimeOfTravel_Ms();
@@ -127,12 +119,7 @@ void MM::LinearTravelCommand::print() const
       );
 }
 
-void MM::LinearTravelCommand::finishCommand()
+MM::CommandResult MM::LinearTravelCommand::getResult()
 {
-    LOG_INFO("FINISH COMMAND: %d   %d\n",mStarted, mDummy);
-    if(mStarted)
-    {
-        mLocController.mCurrentPositionR.increasePositionInCell(mRealCurrentPosition_mm);
-        mLocController.updateWalls();
-    }
+    return CommandResult(mRealCurrentPosition_mm, 0.0);
 }

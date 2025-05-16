@@ -13,7 +13,6 @@
 #include "commands/collision_avoidance_command.h"
 #include "commands/linear_travel_command.h"
 #include "commands/wall_centering_command.h"
-#include "commands/rotation_command_ff.h"
 #include "commands/rotation_command_pid.h"
 
 #include "misc/debug_functions.h"
@@ -31,7 +30,7 @@ MM::Mouse mouse {};
 
 MM::Task task_read_sensors        {MM::read_sensors, CONSTS::MAIN_CYCLE_TIME};
 MM::Task task_measure_distances   {MM::measure_distances_alternately, CONSTS::DIST_MEASURE_CYCLE_TIME};
-MM::Task task_update_battery           {MM::update_battery_voltage, CONSTS::BATTERY_CHECK_TIME};
+MM::Task task_update_battery      {MM::update_battery_voltage, CONSTS::BATTERY_CHECK_TIME};
 MM::Task task_pre_process_inputs  {MM::pre_process_inputs, CONSTS::MAIN_CYCLE_TIME};
 MM::Task task_control             {MM::control, CONSTS::MAIN_CYCLE_TIME};
 MM::Task task_post_process        {MM::post_process, CONSTS::MAIN_CYCLE_TIME};
@@ -118,7 +117,7 @@ void setup()
           ( 
             std::make_unique<MM::LinearTravelCommand>
             ( 
-              180, 100, 250, 500, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage, g.locController, true, 30, 300, 0.1
+              180, 100, 250, 500, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage, 30, 300, 0.1
             ), 
             g.dist_frontleft_mm, g.dist_frontright_mm, g.currentOrientation, g.leftMotorVoltage, g.rightMotorVoltage 
           ),
@@ -128,7 +127,7 @@ void setup()
 
       /*g.commandBuffer.push
       ( 
-        std::make_unique<MM::RotationCommandPid>( 90, g.currentOrientation, g.leftMotorVoltage, g.rightMotorVoltage, g.locController)
+        std::make_unique<MM::RotationCommandPid>( 90, g.currentOrientation, g.leftMotorVoltage, g.rightMotorVoltage)
       );*/
     }
   }

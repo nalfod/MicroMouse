@@ -57,10 +57,16 @@ void MM::CollisionAvoidanceCommand::print() const
     myWrappedCommandP->print();
 }
 
-void MM::CollisionAvoidanceCommand::finishCommand()
+MM::CommandResult MM::CollisionAvoidanceCommand::getResult()
 {
     if(myWrappedCommandP)
     {
-        myWrappedCommandP->finishCommand();
+        return myWrappedCommandP->getResult();
+    }
+    else
+    {
+        // FIXME: this is not ideal, but it is not needed currently to run this wrapper on its own
+        // This can be fixed by adding an encoder integrator object, and log the traveled distance inside this class as well!
+        return CommandResult();
     }
 }

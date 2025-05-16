@@ -6,6 +6,8 @@ using namespace std::chrono_literals;
 
 namespace CONSTS {
 
+constexpr float EPSILON = 1e-5f; // for float comparasion
+
 constexpr std::chrono::duration<uint32_t, std::micro> MAIN_CYCLE_TIME = 1ms;
 constexpr std::chrono::duration<uint32_t, std::micro> DIST_MEASURE_CYCLE_TIME = 10ms;
 constexpr std::chrono::duration<uint32_t, std::micro> BATTERY_CHECK_TIME = 1000ms;
@@ -34,7 +36,7 @@ constexpr float K_BIAS_PID_REV = K_BIAS_FF * 1.5;
 constexpr uint16_t WALL_DISTANCE_LIMIT_FOR_CENTERING_MM = 90;
 constexpr uint16_t WALL_DISTANCE_MID_FOR_CENTERING_MM = 67;
 
-constexpr uint16_t CELL_DISTANCE_MM = 180;
+constexpr float HALF_CELL_DISTANCE_MM = 90.00;
 
 // MODE SELECTION
 enum MODES
