@@ -15,35 +15,37 @@ void MM::control()
 {
     check_mode_selector();
     
-    //if( g.mode_selector.get_current_mode() == CONSTS::MODES::SPEED_RUN )
+    if( g.mode_selector.get_current_mode() == CONSTS::MODES::DISCOVERY )
     {
-        if( !g.commandBuffer.empty() )
+        if( g.locController.isInWallUpdateMode() )
         {
-            if( !g.commandBuffer.front()->isFinished() )
-            {
-                //g.commandBuffer.front()->print();
-                g.commandBuffer.front()->execute();
-            }
-            else
-            {
-                LOG_INFO("COMMAND FINISHED:\n" );
-                //g.commandBuffer.front()->print();
-                uint16_t XPosOld = g.currentCellPosition.getPosX();
-                uint16_t YPosOld = g.currentCellPosition.getPosY();
-                g.currentCellPosition.updatePosition( g.commandBuffer.front()->getResult() );
+          mouse.dbg_green.on();
+          g.locController.updateWallsBayesian();
+        }
+        else if( !g.commandBuffer.empty() )
+        {
+          mouse.dbg_green.on();
+          if( !g.commandBuffer.front()->isFinished() )
+          {
+            //g.commandBuffer.front()->print();
+            g.commandBuffer.front()->execute();
+          }
+          else
+          {
+              //LOG_INFO("COMMAND FINISHED:\n" );
+              //g.commandBuffer.front()->print();
+              uint16_t XPosOld = g.currentCellPosition.getPosX();
+              uint16_t YPosOld = g.currentCellPosition.getPosY();
+              g.currentCellPosition.updatePosition( g.commandBuffer.front()->getResult() );
+              g.commandBuffer.pop();
 
-                if( XPosOld != g.currentCellPosition.getPosX() || YPosOld != g.currentCellPosition.getPosY() )
-                {
-                  // We are in a new cell, wall update is necessary!
-                  g.locController.updateWalls();
-                }
-                g.commandBuffer.pop();
-                // if( !g.commandBuffer.empty() )
-                // {
-                //     g.commandBuffer.front()->execute(); // immediately execute the next command to not waste an cycle
-                // }
-                // delay(1000);
-            }
+              if( XPosOld != g.currentCellPosition.getPosX() || YPosOld != g.currentCellPosition.getPosY() )
+              {
+                // We are in a new cell, wall update is necessary!
+                g.locController.activateWallUpdateMode();
+              }
+              // delay(1000);
+          }
         }
         else
         {
@@ -53,7 +55,7 @@ void MM::control()
             {
               generateNextCommand();
             }
-            mouse.dbg_green.off();
+            mouse.dbg_green.on();
         }
     }
 

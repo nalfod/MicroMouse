@@ -19,7 +19,7 @@ void MM::CollisionAvoidanceCommand::execute()
             mDistRightR_mm < CONSTS::COLLISION_AVOIDANCE_DIST_MM )
         {
             // avoid collision with wall in front
-            LOG_INFO("WALL COLLISION STOP, %d   %d\n",mDistLeftR_mm, mDistRightR_mm);
+            //LOG_INFO("WALL COLLISION STOP, %d   %d\n",mDistLeftR_mm, mDistRightR_mm);
             mFinished = true;
             mLeftMotorVoltageR_mV = 0;
             mRightMotorVoltageR_mV = 0;

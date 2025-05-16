@@ -237,7 +237,7 @@ void Maze::reCalcMaze(bool toMid)
                     }
                 }
             }
-            std::cout << "FLOWMAZE ODD " << posx << "  " << posy << std::endl;
+            //std::cout << "FLOWMAZE ODD " << posx << "  " << posy << std::endl;
             flowMaze(posx,posy,0);
             return;
         }
