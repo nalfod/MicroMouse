@@ -11,11 +11,11 @@ void MM::CellPosition::updatePosition(CommandResult movementResult)
 
     if( movementResult.distance_traveled_mm > CONSTS::EPSILON )
     {
-        increasePositionInCell( movementResult.distance_traveled_mm );
+        _increasePositionInCell( movementResult.distance_traveled_mm );
     }
     else if( movementResult.angle_turned_deg > CONSTS::EPSILON )
     {
-        updateDirection( movementResult.angle_turned_deg );
+        _updateDirection( movementResult.angle_turned_deg );
     }
 }
 
@@ -51,12 +51,12 @@ void MM::CellPosition::_setCurrentDirection(CONSTS::Direction direction)
     }
 }
 
-void MM::CellPosition::updateDirection(float rotDeg)
+void MM::CellPosition::_updateDirection(float rotDeg)
 {
     _setCurrentDirection( CONSTS::getDirectionAfterRotation(mCurrentDirection, rotDeg) );
 }
 
-void MM::CellPosition::increasePositionInCell(float traveled_distance_magnitude) 
+void MM::CellPosition::_increasePositionInCell(float traveled_distance_magnitude) 
 {
     // NOTE: the function cannot be used with negative traveled ditance, hence the argument name!
     traveled_distance_magnitude = std::abs(traveled_distance_magnitude);

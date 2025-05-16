@@ -16,9 +16,9 @@ class CellPosition
 
         // Setters
         void updatePosition(CommandResult movementResult);
-        void updateDirection(float rotDeg);
-        void increasePositionInCell(float traveled_distance_magnitude);
     private:
+        void _updateDirection(float rotDeg);
+        void _increasePositionInCell(float traveled_distance_magnitude);
         void _setCurrentDirection(CONSTS::Direction direction);
         CONSTS::Direction mCurrentDirection{CONSTS::Direction::NORTH};
         int mPosX{0};
