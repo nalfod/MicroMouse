@@ -80,31 +80,24 @@ void MM::CellPosition::_increasePositionInCell(float traveled_distance_magnitude
             break;
     }
 
-    if( std::abs(mXPositionInCell_mm) >= CONSTS::HALF_CELL_DISTANCE_MM )
-    {
-        float distance_overflow_magnitude_mm = std::abs(mXPositionInCell_mm) - CONSTS::HALF_CELL_DISTANCE_MM;
-        if( mXPositionInCell_mm > 0)
-        {
-            mXPositionInCell_mm = -CONSTS::HALF_CELL_DISTANCE_MM + distance_overflow_magnitude_mm;
+    // Handle overflow for X and Y positions, possibly for multiple cells
+    // TODO: written by copilot, prove if it works!
+    while (std::abs(mXPositionInCell_mm) >= CONSTS::HALF_CELL_DISTANCE_MM) {
+        if (mXPositionInCell_mm > 0) {
+            mXPositionInCell_mm -= 2 * CONSTS::HALF_CELL_DISTANCE_MM;
             mPosX += 1;
-        }
-        else
-        {
-            mXPositionInCell_mm = CONSTS::HALF_CELL_DISTANCE_MM - distance_overflow_magnitude_mm;
+        } else {
+            mXPositionInCell_mm += 2 * CONSTS::HALF_CELL_DISTANCE_MM;
             mPosX -= 1;
         }
     }
-    else if( std::abs(mYPositionInCell_mm) >= CONSTS::HALF_CELL_DISTANCE_MM )
-    {
-        float distance_overflow_magnitude_mm = std::abs(mYPositionInCell_mm) - CONSTS::HALF_CELL_DISTANCE_MM;
-        if( mYPositionInCell_mm > 0)
-        {
-            mYPositionInCell_mm = -CONSTS::HALF_CELL_DISTANCE_MM + distance_overflow_magnitude_mm;
+
+    while (std::abs(mYPositionInCell_mm) >= CONSTS::HALF_CELL_DISTANCE_MM) {
+        if (mYPositionInCell_mm > 0) {
+            mYPositionInCell_mm -= 2 * CONSTS::HALF_CELL_DISTANCE_MM;
             mPosY += 1;
-        }
-        else
-        {
-            mYPositionInCell_mm = CONSTS::HALF_CELL_DISTANCE_MM - distance_overflow_magnitude_mm;
+        } else {
+            mYPositionInCell_mm += 2 * CONSTS::HALF_CELL_DISTANCE_MM;
             mPosY -= 1;
         }
     }

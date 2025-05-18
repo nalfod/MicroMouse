@@ -4,7 +4,6 @@
 #include "constants.h"
 #include <cstdint>
 #include "drv/pid/pidWrapper.h"
-#include "maze/location_controller.h"
 #include "misc/encoder_value_integrator.h"
 
 namespace MM {

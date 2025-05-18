@@ -109,7 +109,7 @@ int LocationController::calcNextMovement()
 {
     if(maze.getWeightOfCell(mCurrentPositionR.getPosX(),mCurrentPositionR.getPosY()) == 0)
     {
-        LOG_INFO("REACHED GOAL!!!!!!!!!!RECALC\n");
+        // LOG_INFO("REACHED GOAL!!!!!!!!!!RECALC\n");
         toMid = !toMid;
         // We are in the middle and want to move back to the start
         if(!toMid)

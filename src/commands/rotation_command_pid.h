@@ -2,7 +2,6 @@
 #include "motion_command_if.h"
 #include <cstdint>
 #include "drv/pid/pidWrapper.h"
-#include "maze/location_controller.h"
 
 namespace MM {
 

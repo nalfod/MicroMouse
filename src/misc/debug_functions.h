@@ -8,10 +8,11 @@ namespace MM {
 
 void log_active_command()
 {
+    /*
     if( !g.commandBuffer.empty() )
     {
       g.commandBuffer.front()->print();
-    }
+    }*/
 }
 
 void log_current_led_values()
@@ -44,11 +45,6 @@ void log_current_motor_voltages_and_revs()
 {
     LOG_INFO("M_LEFT: %d ENC_L: %d M_RIGHT: %d ENC_R: %d \n", g.leftMotorVoltage, static_cast<int>( g.leftEncoderValue ), 
                                                               g.rightMotorVoltage, static_cast<int>( g.rightEncoderValue ) );
-}
-
-void log_command_queue_state()
-{
-    LOG_INFO("QUEUE SIZE: %d EMPTY?: %d \n", g.commandBuffer.size(), static_cast<int>( g.commandBuffer.empty() ) );
 }
 
 // for this dont forget to call the mouse.accelerometer.myAngRotMeter.startMeasurement() function

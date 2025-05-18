@@ -97,6 +97,9 @@ Direction getDirectionAfterRotation(Direction currentDirection, float rotationAn
     }
 }
 
+/////////////////////////
+// COMMAND CREATION /////
+/////////////////////////
 inline
 int getRotationAngle(Direction source, Direction destination) {
     if (source == destination) {

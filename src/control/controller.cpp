@@ -14,7 +14,7 @@
 void MM::control()
 {
     check_mode_selector();
-    
+    /*
     if( g.mode_selector.get_current_mode() == CONSTS::MODES::DISCOVERY )
     {
         if( g.locController.isInWallUpdateMode() )
@@ -57,76 +57,21 @@ void MM::control()
             }
             mouse.dbg_green.on();
         }
-    }
+    }*/
+  if( g.commandExecuter.execute() )
+  {
+    mouse.dbg_green.toggle();
+  }
+  else
+  {
+    LOG_INFO("COMMAND EXECUTER IS FINISHED:\n" );
+  }
 
 }
 
 void MM::generateNextCommand() 
 {
-    int nextCommand = g.locController.calcNextMovement();
-
-    if (nextCommand == 0)
-    {
-        g.commandBuffer.push( 
-            std::make_unique<MM::CollisionAvoidanceCommand>
-            ( 
-              std::make_unique<MM::WallCenteringCommand>
-              ( 
-                std::make_unique<MM::LinearTravelCommand>
-                ( 
-                  180, 500, 250, 500, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage
-                ), 
-                g.dist_frontleft_mm, g.dist_frontright_mm, g.currentOrientation, g.leftMotorVoltage, g.rightMotorVoltage 
-              ),
-              g.dist_left_mm, g.dist_right_mm, g.leftMotorVoltage, g.rightMotorVoltage
-            )
-          );
-    }
-    else if(nextCommand >= -180 && nextCommand <= 180) 
-    {
-      if (g.locController.isFrontWayBlocked()) {
-          g.commandBuffer.push( 
-            std::make_unique<MM::CollisionAvoidanceCommand>
-            ( 
-              std::make_unique<MM::WallCenteringCommand>
-              ( 
-                std::make_unique<MM::LinearTravelCommand>
-                ( 
-                  180, 500, 250, 500, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage
-                ), 
-                g.dist_frontleft_mm, g.dist_frontright_mm, g.currentOrientation, g.leftMotorVoltage, g.rightMotorVoltage 
-              ),
-              g.dist_left_mm, g.dist_right_mm, g.leftMotorVoltage, g.rightMotorVoltage
-            )
-          );
-    }
-
-      //int dist = ((nextCommand == -180.0f) || (nextCommand == 180.0f))? 170000 : 155000;
-
-        g.commandBuffer.push
-        ( 
-          std::make_unique<MM::RotationCommandPid>( static_cast<float>( nextCommand ), g.currentOrientation, g.leftMotorVoltage, g.rightMotorVoltage)
-        );
-
-        g.commandBuffer.push( 
-          std::make_unique<MM::CollisionAvoidanceCommand>
-          ( 
-            std::make_unique<MM::WallCenteringCommand>
-            ( 
-              std::make_unique<MM::LinearTravelCommand>
-              ( 
-                138, 500, 250, 500, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage
-              ), 
-              g.dist_frontleft_mm, g.dist_frontright_mm, g.currentOrientation, g.leftMotorVoltage, g.rightMotorVoltage 
-            ),
-            g.dist_left_mm, g.dist_right_mm, g.leftMotorVoltage, g.rightMotorVoltage
-          )
-        );
-    }
-    else
-    {
-        LOG_INFO("ERROR COMMAND: %d\n",nextCommand);
-    }
+    g.commandExecuter.addCommandRelativeToCurrentPos( g.locController.calcNextMovement() , 1);
 }
 
 void MM::check_mode_selector()

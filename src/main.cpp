@@ -51,7 +51,7 @@ void debug()
   mouse.dbg_red.toggle();
   if( g.mode_selector.get_current_mode() != CONSTS::MODES::MEASUREMENT && g.mode_selector.get_current_mode() != CONSTS::MODES::MEASUREMENT_SNAPSHOT  )
   {
-    // MM::log_current_mm_values();
+    MM::log_current_mm_values();
     // MM::log_mode_selector();
     // MM::log_active_command();
   }
@@ -107,29 +107,10 @@ void setup()
 
   if( g.mode_selector.get_current_mode() == CONSTS::MODES::SPEED_RUN )
   {
-    // Creating initial commands
-    for( int i = 0; i < 5; i++)
-    {
-      g.commandBuffer.push( 
-        std::make_unique<MM::CollisionAvoidanceCommand>
-        ( 
-          std::make_unique<MM::WallCenteringCommand>
-          ( 
-            std::make_unique<MM::LinearTravelCommand>
-            ( 
-              180, 100, 250, 500, g.leftEncoderValue, g.rightEncoderValue, g.leftMotorVoltage, g.rightMotorVoltage, 30, 300, 0.1
-            ), 
-            g.dist_frontleft_mm, g.dist_frontright_mm, g.currentOrientation, g.leftMotorVoltage, g.rightMotorVoltage 
-          ),
-          g.dist_left_mm, g.dist_right_mm, g.leftMotorVoltage, g.rightMotorVoltage
-        )
-      );
-
-      /*g.commandBuffer.push
-      ( 
-        std::make_unique<MM::RotationCommandPid>( 90, g.currentOrientation, g.leftMotorVoltage, g.rightMotorVoltage)
-      );*/
-    }
+      g.commandExecuter.addCommandRelativeToCurrentPos(0, 2);
+      g.commandExecuter.addCommandRelativeToCurrentPos(90, 1);
+      g.commandExecuter.addCommandRelativeToCurrentPos(90, 2);
+      g.commandExecuter.addCommandRelativeToCurrentPos(90, 1);
   }
   //mouse.accelerometer.myAngRotMeter.startMeasurement();
   LOG_INFO("Setup Done\n");

@@ -2,7 +2,7 @@
 #pragma once
 
 #include <cstdint>
-#include "commands/motion_command_if.h"
+#include "commands/command_executer.h"
 #include <memory>
 #include <queue>
 #include "misc/mode_selector.h"
@@ -33,15 +33,16 @@ struct Globals {
     int16_t leftMotorVoltage{0};
     int16_t rightMotorVoltage{0};
 
-// Commands =================================================
-    std::queue< std::unique_ptr<MotionCommandIF> > commandBuffer;
-
 // Position and location control
     CellPosition currentCellPosition;
     LocationController locController{7, currentCellPosition, dist_left_mm, dist_right_mm, dist_frontleft_mm, dist_frontright_mm};
 
 // Mode selector =================================================
-    ModeSelector mode_selector{ir_left, ir_frontleft, ir_frontright, ir_right, CONSTS::MODES::DISCOVERY};
+    ModeSelector mode_selector{ir_left, ir_frontleft, ir_frontright, ir_right, CONSTS::MODES::SPEED_RUN};
+
+// Commands =================================================
+    CommandExecuter commandExecuter{currentCellPosition, dist_left_mm, dist_right_mm, dist_frontleft_mm, dist_frontright_mm, 
+                                    leftEncoderValue, rightEncoderValue, currentOrientation, leftMotorVoltage, rightMotorVoltage};
 };
 
 } // namespace MM
