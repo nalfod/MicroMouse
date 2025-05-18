@@ -22,19 +22,10 @@ void MM::control()
     }
     else
     {
-      if( g.locController.isInWallUpdateMode() )
+      if( g.locController.updateWalls() )
       {
-        g.locController.updateWalls();
-        if( !g.locController.isInWallUpdateMode() )
-        {
-          LOG_INFO("====NEXT CMD-->\n" );
-          g.commandExecuter.addCommandRelativeToCurrentPos( g.locController.calcNextMovement() , 1);
-        }
-      }
-      else
-      {
-        g.locController.activateWallUpdateMode();
-        // delay(2000);
+        LOG_INFO("====NEXT CMD-->\n" );
+        g.commandExecuter.addCommandRelativeToCurrentPos( g.locController.calcNextMovement() , 1);
       }
     }
   }
