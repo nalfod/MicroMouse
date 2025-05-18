@@ -3,22 +3,23 @@
 #include "constants.h"
 #include "maze.h"
 #include "cell_position.h"
+#include "wall_detector.h"
 
 class LocationController{
     public:
         LocationController(int mazeSize, MM::CellPosition const& cellPositionR, uint16_t& distLeft, uint16_t& distRight, uint16_t& distFrLeft, uint16_t& distFrRight);
 
         void updateWalls();
-        void updateWallsBayesian();
         void activateWallUpdateMode() { mIsWallUpdateNeeded = true; }
         bool isInWallUpdateMode() const { return mIsWallUpdateNeeded; }
 
-        bool isFrontWayBlocked();
         int calcNextMovement();
 
-        MM::CellPosition const& mCurrentPositionR;
+        
     private:
+        MM::CellPosition const& mCurrentPositionR;
         Maze maze;
+        MM::WallDetector mWallDetector;
         bool mIsWallUpdateNeeded{false};
         bool toMid{true};
 

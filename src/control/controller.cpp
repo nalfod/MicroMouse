@@ -16,23 +16,26 @@ void MM::control()
   check_mode_selector();
   if( g.mode_selector.get_current_mode() == CONSTS::MODES::DISCOVERY )
   {
-    if( g.locController.isInWallUpdateMode() )
-    {
-      g.locController.updateWallsBayesian();
-      if( !g.locController.isInWallUpdateMode() )
-      {
-        LOG_INFO("====NEXT CMD-->\n" );
-        g.commandExecuter.addCommandRelativeToCurrentPos( g.locController.calcNextMovement() , 1);
-      }
-    }
-    else if( !g.commandExecuter.isFinished() )
+    if( !g.commandExecuter.isFinished() )
     {
       g.commandExecuter.execute();
     }
     else
     {
-      g.locController.activateWallUpdateMode();
-      delay(2000);
+      if( g.locController.isInWallUpdateMode() )
+      {
+        g.locController.updateWalls();
+        if( !g.locController.isInWallUpdateMode() )
+        {
+          LOG_INFO("====NEXT CMD-->\n" );
+          g.commandExecuter.addCommandRelativeToCurrentPos( g.locController.calcNextMovement() , 1);
+        }
+      }
+      else
+      {
+        g.locController.activateWallUpdateMode();
+        // delay(2000);
+      }
     }
   }
   else if( g.mode_selector.get_current_mode() == CONSTS::MODES::SPEED_RUN )
