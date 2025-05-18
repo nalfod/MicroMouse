@@ -4,21 +4,27 @@
 
 void MM::CellPosition::updatePosition(CommandResult movementResult)
 {
-    if( movementResult.distance_traveled_mm > CONSTS::EPSILON && movementResult.angle_turned_deg > CONSTS::EPSILON )
+    movementResult.print();
+    if( std::abs(movementResult.distance_traveled_mm) > CONSTS::EPSILON && std::abs(movementResult.angle_turned_deg) > CONSTS::EPSILON )
     {
         // Wrong input, only one of the values should be changed at once
         return;
     }
 
-    if( movementResult.distance_traveled_mm > CONSTS::EPSILON )
+    if( std::abs(movementResult.distance_traveled_mm) > CONSTS::EPSILON )
     {
         _increasePositionInCell( movementResult.distance_traveled_mm );
     }
-    else if( movementResult.angle_turned_deg > CONSTS::EPSILON )
+    else if( std::abs(movementResult.angle_turned_deg) > CONSTS::EPSILON )
     {
         _updateDirection( movementResult.angle_turned_deg );
     }
     printMyself();
+}
+
+void MM::CellPosition::_updateDirection(float rotDeg)
+{
+    _setCurrentDirection( CONSTS::getDirectionAfterRotation(mCurrentDirection, rotDeg) );
 }
 
 void MM::CellPosition::_setCurrentDirection(CONSTS::Direction direction) 
@@ -51,11 +57,6 @@ void MM::CellPosition::_setCurrentDirection(CONSTS::Direction direction)
                 break;
         }
     }
-}
-
-void MM::CellPosition::_updateDirection(float rotDeg)
-{
-    _setCurrentDirection( CONSTS::getDirectionAfterRotation(mCurrentDirection, rotDeg) );
 }
 
 void MM::CellPosition::_increasePositionInCell(float traveled_distance_magnitude) 

@@ -13,66 +13,39 @@
 
 void MM::control()
 {
-    check_mode_selector();
-    /*
-    if( g.mode_selector.get_current_mode() == CONSTS::MODES::DISCOVERY )
+  check_mode_selector();
+  if( g.mode_selector.get_current_mode() == CONSTS::MODES::DISCOVERY )
+  {
+    if( g.locController.isInWallUpdateMode() )
     {
-        if( g.locController.isInWallUpdateMode() )
-        {
-          mouse.dbg_green.on();
-          g.locController.updateWallsBayesian();
-        }
-        else if( !g.commandBuffer.empty() )
-        {
-          mouse.dbg_green.on();
-          if( !g.commandBuffer.front()->isFinished() )
-          {
-            //g.commandBuffer.front()->print();
-            g.commandBuffer.front()->execute();
-          }
-          else
-          {
-              //LOG_INFO("COMMAND FINISHED:\n" );
-              //g.commandBuffer.front()->print();
-              uint16_t XPosOld = g.currentCellPosition.getPosX();
-              uint16_t YPosOld = g.currentCellPosition.getPosY();
-              g.currentCellPosition.updatePosition( g.commandBuffer.front()->getResult() );
-              g.commandBuffer.pop();
-
-              if( XPosOld != g.currentCellPosition.getPosX() || YPosOld != g.currentCellPosition.getPosY() )
-              {
-                // We are in a new cell, wall update is necessary!
-                g.locController.activateWallUpdateMode();
-              }
-              // delay(1000);
-          }
-        }
-        else
-        {
-           // delay(1000);
-            // LOG_INFO("COMMAND EMPTY:\n" );
-            if( g.mode_selector.get_current_mode() == CONSTS::MODES::DISCOVERY )
-            {
-              generateNextCommand();
-            }
-            mouse.dbg_green.on();
-        }
-    }*/
-  g.commandExecuter.execute();
-  if( !g.commandExecuter.isFinished() )
-  {
-    mouse.dbg_green.toggle();
+      g.locController.updateWallsBayesian();
+      if( !g.locController.isInWallUpdateMode() )
+      {
+        LOG_INFO("====NEXT CMD-->\n" );
+        g.commandExecuter.addCommandRelativeToCurrentPos( g.locController.calcNextMovement() , 1);
+      }
+    }
+    else if( !g.commandExecuter.isFinished() )
+    {
+      g.commandExecuter.execute();
+    }
+    else
+    {
+      g.locController.activateWallUpdateMode();
+      delay(2000);
+    }
   }
-  else
-  {
-    // LOG_INFO("COMMAND EXECUTER IS FINISHED:\n" );
+  else if( g.mode_selector.get_current_mode() == CONSTS::MODES::SPEED_RUN )
+  { 
+    if( !g.commandExecuter.isFinished() )
+    {
+      g.commandExecuter.execute();
+    }
+    else
+    {
+      // LOG_INFO("COMMAND EXECUTER IS FINISHED:\n" );
+    }
   }
-
-}
-
-void MM::generateNextCommand() 
-{
-    g.commandExecuter.addCommandRelativeToCurrentPos( g.locController.calcNextMovement() , 1);
 }
 
 void MM::check_mode_selector()

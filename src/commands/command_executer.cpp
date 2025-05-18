@@ -33,11 +33,8 @@ void MM::CommandExecuter::execute()
 {
     if( mCurrCommandToExecute )
     {
-        if( !mCurrCommandToExecute->isFinished() )
-        {
-            mCurrCommandToExecute->execute();
-        }
-        else
+        mCurrCommandToExecute->execute();
+        if( mCurrCommandToExecute->isFinished() )
         {
             mCurrentCellPositionR.updatePosition( mCurrCommandToExecute->getResult() );
             _actualizeCurrentCommand();
@@ -67,7 +64,7 @@ bool MM::CommandExecuter::isFinished() const
     }
     else
     {
-        return true;
+        return mCommandsToExecute.empty();
     }
 }
 
@@ -155,14 +152,14 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommand(Command
                         ),
                         mDistLeftR_mm, mDistRightR_mm, mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV
                       );
-        LOG_INFO("NEW LINEAR MOVEMENT CMD: dist= %d dir= %d \n", static_cast<int>(distanceToMove_mm), 
-                                                                 static_cast<int>(mCurrentCellPositionR.getCurrentDirection()) );
+        /*LOG_INFO("NEW LINEAR MOVEMENT CMD: dist= %d dir= %d \n", static_cast<int>(distanceToMove_mm), 
+                                                                 static_cast<int>(mCurrentCellPositionR.getCurrentDirection()) );*/
         break;
     }
     case ROTATING:
     {
         cmdToReturnP = std::make_unique<MM::RotationCommandPid>( commandParams.second, myCurrentOriR_deg, mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV);
-        LOG_INFO("NEW ROTATION CMD: deg= %d \n", static_cast<int>(commandParams.second) );
+        //LOG_INFO("NEW ROTATION CMD: deg= %d \n", static_cast<int>(commandParams.second) );
         break;
     }
     default:

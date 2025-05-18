@@ -76,8 +76,8 @@ void LocationController::updateWallsBayesian()
         (mProbWallFront2 > wallProbabilityThreshold || mProbWallFront2 < noWallProbabilityThreshold) &&
         (mProbWallFront1 == mProbWallFront2);
 
-    LOG_INFO("UPD_WALLS_B: L= %d ---  R= %d, --- F1= %d, ---  F2= %d\n", static_cast<int>( 100 * mProbWallOnLeft ), static_cast<int>( 100 * mProbWallOnRight ), 
-                                                                         static_cast<int>( 100 * mProbWallFront1 ), static_cast<int>( 100 * mProbWallFront2 ) );
+    /*LOG_INFO("UPD_WALLS_B: L= %d ---  R= %d, --- F1= %d, ---  F2= %d\n", static_cast<int>( 100 * mProbWallOnLeft ), static_cast<int>( 100 * mProbWallOnRight ), 
+                                                                         static_cast<int>( 100 * mProbWallFront1 ), static_cast<int>( 100 * mProbWallFront2 ) );*/
     if (allWallsConfident) 
     {
         int wallMask = 0;
@@ -94,9 +94,11 @@ void LocationController::updateWallsBayesian()
         }
 
         // Commit the wall mask to the maze
-        LOG_INFO("UPD_WALLS_B DONE: X= %d ---  Y= %d, --- WM= %d\n", static_cast<int>(mCurrentPositionR.getPosX()), 
-                                                                     static_cast<int>(mCurrentPositionR.getPosY()),
-                                                                     static_cast<int>(wallMask) );
+        LOG_INFO("UPD_WALLS_B DONE: X= %d ---  Y= %d, --- WM= %d ---", static_cast<int>(mCurrentPositionR.getPosX()), 
+                                                                       static_cast<int>(mCurrentPositionR.getPosY()),
+                                                                       static_cast<int>(wallMask) );
+        LOG_INFO(" L= %d ---  R= %d, --- F1= %d, ---  F2= %d\n", static_cast<int>( 100 * mProbWallOnLeft ), static_cast<int>( 100 * mProbWallOnRight ), 
+                                                                 static_cast<int>( 100 * mProbWallFront1 ), static_cast<int>( 100 * mProbWallFront2 ) );
         maze.updateCellWallMask(mCurrentPositionR.getPosX(), mCurrentPositionR.getPosY(), wallMask);
         mIsWallUpdateNeeded = false;
 
