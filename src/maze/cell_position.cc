@@ -1,5 +1,6 @@
 #include "cell_position.h"
 #include "constants.h"
+#include "utils/logging.h"
 
 void MM::CellPosition::updatePosition(CommandResult movementResult)
 {
@@ -17,6 +18,7 @@ void MM::CellPosition::updatePosition(CommandResult movementResult)
     {
         _updateDirection( movementResult.angle_turned_deg );
     }
+    printMyself();
 }
 
 void MM::CellPosition::_setCurrentDirection(CONSTS::Direction direction) 
@@ -101,4 +103,12 @@ void MM::CellPosition::_increasePositionInCell(float traveled_distance_magnitude
             mPosY -= 1;
         }
     }
+}
+
+void MM::CellPosition::printMyself()
+{
+    LOG_INFO("I am in cell x= %d y= %d in the cell: x= %d y= %d ori= %d\n", mPosX, mPosY, 
+                                                                            static_cast<int>(mXPositionInCell_mm), 
+                                                                            static_cast<int>(mYPositionInCell_mm), 
+                                                                            static_cast<int>(mCurrentDirection) );
 }

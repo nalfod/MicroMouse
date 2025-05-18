@@ -16,6 +16,9 @@ class CellPosition
 
         // Setters
         void updatePosition(CommandResult movementResult);
+
+        // For debug
+        void printMyself();
     private:
         void _updateDirection(float rotDeg);
         void _increasePositionInCell(float traveled_distance_magnitude);

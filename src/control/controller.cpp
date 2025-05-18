@@ -58,13 +58,14 @@ void MM::control()
             mouse.dbg_green.on();
         }
     }*/
-  if( g.commandExecuter.execute() )
+  g.commandExecuter.execute();
+  if( !g.commandExecuter.isFinished() )
   {
     mouse.dbg_green.toggle();
   }
   else
   {
-    LOG_INFO("COMMAND EXECUTER IS FINISHED:\n" );
+    // LOG_INFO("COMMAND EXECUTER IS FINISHED:\n" );
   }
 
 }

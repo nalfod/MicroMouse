@@ -3,6 +3,7 @@
 #include "wall_centering_command.h"
 #include "collision_avoidance_command.h"
 #include "rotation_command_pid.h"
+#include "utils/logging.h"
 
 MM::CommandExecuter::CommandExecuter( MM::CellPosition& cellPositionR, 
                                       uint16_t const& dist_left, 
@@ -28,7 +29,7 @@ mRightMotorVoltageR_mV(rightMotorVoltage_mV)
 
 }
 
-bool MM::CommandExecuter::execute()
+void MM::CommandExecuter::execute()
 {
     if( mCurrCommandToExecute )
     {
@@ -39,35 +40,26 @@ bool MM::CommandExecuter::execute()
         else
         {
             mCurrentCellPositionR.updatePosition( mCurrCommandToExecute->getResult() );
-            if( !mCommandsToExecute.empty() )
-            {
-                _actualizeCurrentCommand();
-            }
+            _actualizeCurrentCommand();
         }
     }
-    else if( !mCommandsToExecute.empty() )
+    else
     {
         _actualizeCurrentCommand();
     }
-    return _isFinished();
 }
 
 void MM::CommandExecuter::addCommandRelativeToCurrentPos(int directionToMove_deg, uint16_t numberOfCellsToMove)
 {
     if( directionToMove_deg != 0 )
     {
-        if( (mDistLeftR_mm < 80 ) || (mDistRightR_mm < 80 ) )
-        {
-            //FIXME: this is the part, when it aligns itself if there is a wall in front of it
-            // this movement should be done nevertheless, but for that it has to be measured!
-            mCommandsToExecute.push( CommandToExecute(FORWARD_MOVEMENT_BY_DISTANCE, 80) );
-        }
+        mCommandsToExecute.push( CommandToExecute(FORWARD_MOVEMENT_FOR_ALIGNMENT, 0) );
         mCommandsToExecute.push( CommandToExecute(ROTATING, directionToMove_deg) );
     }
     mCommandsToExecute.push( CommandToExecute(FORWARD_MOVEMENT_BY_CELL_NUMBER, numberOfCellsToMove ) );
 }
 
-bool MM::CommandExecuter::_isFinished() const
+bool MM::CommandExecuter::isFinished() const
 {
     if( mCurrCommandToExecute )
     {
@@ -81,12 +73,24 @@ bool MM::CommandExecuter::_isFinished() const
 
 void MM::CommandExecuter::_actualizeCurrentCommand()
 {
-    if( ( mCurrCommandToExecute == nullptr || mCurrCommandToExecute->isFinished() ) && !mCommandsToExecute.empty() )
+    if( ( mCurrCommandToExecute == nullptr || mCurrCommandToExecute->isFinished() ) )
     {
-        CommandToExecute paramsOfNextCommand = mCommandsToExecute.front();
-        mCommandsToExecute.pop();
-        mCurrCommandToExecute = _createCommand(paramsOfNextCommand);
+        if( !mCommandsToExecute.empty() )
+        {
+            CommandToExecute paramsOfNextCommand = mCommandsToExecute.front();
+            mCommandsToExecute.pop();
+            mCurrCommandToExecute = _createCommand(paramsOfNextCommand);
+        }
+        else
+        {
+            mCurrCommandToExecute = nullptr;
+        }
     }
+}
+
+bool MM::CommandExecuter::_isFrontBlocked()
+{
+    return (mDistLeftR_mm < 80 ) || (mDistRightR_mm < 80 );
 }
 
 std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommand(CommandToExecute commandParams)
@@ -95,15 +99,15 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommand(Command
     switch ( commandParams.first )
     {
     case FORWARD_MOVEMENT_BY_CELL_NUMBER:
-    case FORWARD_MOVEMENT_BY_DISTANCE:
+    case FORWARD_MOVEMENT_FOR_ALIGNMENT:
     {
         float distanceToMove_mm = 0.0;
         if( commandParams.first == FORWARD_MOVEMENT_BY_CELL_NUMBER )
         {
             distanceToMove_mm = commandParams.second * CONSTS::HALF_CELL_DISTANCE_MM * 2;
-            CONSTS::Direction currentDirectionInCell =  mCurrentCellPositionR.getCurrentDirection();
+            CONSTS::Direction currentDirectionInCell = mCurrentCellPositionR.getCurrentDirection();
 
-            if( currentDirectionInCell == CONSTS::Direction::NORTH && currentDirectionInCell == CONSTS::Direction::SOUTH )
+            if( currentDirectionInCell == CONSTS::Direction::NORTH || currentDirectionInCell == CONSTS::Direction::SOUTH )
             {
                 if( currentDirectionInCell == CONSTS::Direction::NORTH )
                 {
@@ -114,7 +118,7 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommand(Command
                     distanceToMove_mm += mCurrentCellPositionR.getXPositionInCell();
                 }
             }
-            else if( currentDirectionInCell == CONSTS::Direction::EAST && currentDirectionInCell == CONSTS::Direction::WEST )
+            else if( currentDirectionInCell == CONSTS::Direction::EAST || currentDirectionInCell == CONSTS::Direction::WEST )
             {
                 if( currentDirectionInCell == CONSTS::Direction::EAST )
                 {
@@ -126,9 +130,17 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommand(Command
                 }
             }
         }
-        else
+        else if ( commandParams.first == FORWARD_MOVEMENT_FOR_ALIGNMENT )
         {
-            distanceToMove_mm = commandParams.second;
+            if(_isFrontBlocked())
+            {
+                // front is blocked so it is okay to go one cell, the command will be terminated by the collision avoidance anyway
+                distanceToMove_mm = CONSTS::HALF_CELL_DISTANCE_MM * 2;
+            }
+            else
+            {
+                distanceToMove_mm = 30;
+            }
         }
 
         cmdToReturnP = std::make_unique<MM::CollisionAvoidanceCommand>
@@ -143,11 +155,14 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommand(Command
                         ),
                         mDistLeftR_mm, mDistRightR_mm, mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV
                       );
+        LOG_INFO("NEW LINEAR MOVEMENT CMD: dist= %d dir= %d \n", static_cast<int>(distanceToMove_mm), 
+                                                                 static_cast<int>(mCurrentCellPositionR.getCurrentDirection()) );
         break;
     }
     case ROTATING:
     {
         cmdToReturnP = std::make_unique<MM::RotationCommandPid>( commandParams.second, myCurrentOriR_deg, mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV);
+        LOG_INFO("NEW ROTATION CMD: deg= %d \n", static_cast<int>(commandParams.second) );
         break;
     }
     default:

@@ -21,20 +21,21 @@ namespace MM
                              float const& currentOriR, 
                              int16_t& leftMotorVoltage_mV, 
                              int16_t& rightMotorVoltage_mV);
-            bool execute();
+            void execute();
+            bool isFinished() const;
             void addCommandRelativeToCurrentPos(int directionToMove_deg, uint16_t numberOfCellsToMove);
         private:
             enum MovementPrimitives
             {
                 FORWARD_MOVEMENT_BY_CELL_NUMBER = 1,
-                FORWARD_MOVEMENT_BY_DISTANCE = 2,
+                FORWARD_MOVEMENT_FOR_ALIGNMENT = 2,
                 ROTATING = 3
             };
             // first pair value is the movement type, second one is the specific magnitude (eg.: distance or angle)
             using CommandToExecute = std::pair< MovementPrimitives, int >;
 
-            bool _isFinished() const;
             void _actualizeCurrentCommand();
+            bool _isFrontBlocked();
             std::unique_ptr<MotionCommandIF> _createCommand(CommandToExecute commandParams);
             
             std::unique_ptr<MotionCommandIF> mCurrCommandToExecute;
