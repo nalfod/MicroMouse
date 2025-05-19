@@ -22,7 +22,7 @@ void MM::WallCenteringCommand::execute()
 {
     if( !mStarted )
     {
-        myCenteringPidForOrientation.setTarget( myCurrentOriR_deg );
+        myCenteringPidForOrientation.setTarget( adjustAngleToExactDirection( myCurrentOriR_deg ) );
         mStarted = true;
     }
 
@@ -65,7 +65,7 @@ void MM::WallCenteringCommand::executeWallCenteringControl()
     if( isCenteringWithWallsPossible() )
     {
         executeCenteringUsingWallDistance();
-        myCenteringPidForOrientation.setTarget( myCurrentOriR_deg ); // saving target for a time when there is no two sidewalls
+        myCenteringPidForOrientation.setTarget( adjustAngleToExactDirection( myCurrentOriR_deg ) ); // saving target for a time when there is no two sidewalls
     }
     else
     {
@@ -120,6 +120,32 @@ double MM::WallCenteringCommand::shiftOrientationValueRespectedToTarget(float cu
         retVal += 360.0;
     }
     return retVal;
+}
+
+float MM::WallCenteringCommand::adjustAngleToExactDirection( float currentOrientation )
+{
+    if( -30.0 < currentOrientation && currentOrientation < 30 )
+    {
+        currentOrientation = 0.0;
+    }
+    else if( 60.0 < currentOrientation && currentOrientation < 120.0 )
+    {
+        currentOrientation = 90.0;
+    }
+    else if( -120.0 < currentOrientation && currentOrientation < -60.0 )
+    {
+        currentOrientation = -90.0;
+    }
+    else if( -180.0 < currentOrientation && currentOrientation < -150.0 )
+    {
+        currentOrientation = -179.9;
+    }
+    else if( 150.0 < currentOrientation && currentOrientation < 180.0 )
+    {
+        currentOrientation = 179.9;
+    }
+
+    return currentOrientation;
 }
 
 // FOR DEBUG

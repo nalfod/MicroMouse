@@ -5,17 +5,17 @@
 void MM::CellPosition::updatePosition(CommandResult movementResult)
 {
     movementResult.print();
-    if( std::abs(movementResult.distance_traveled_mm) > CONSTS::EPSILON && std::abs(movementResult.angle_turned_deg) > CONSTS::EPSILON )
+    if( std::abs(movementResult.distance_traveled_mm) > 0.0 && std::abs(movementResult.angle_turned_deg) > 0.0 )
     {
         // Wrong input, only one of the values should be changed at once
         return;
     }
 
-    if( std::abs(movementResult.distance_traveled_mm) > CONSTS::EPSILON )
+    if( std::abs(movementResult.distance_traveled_mm) > 0.0 )
     {
         _increasePositionInCell( movementResult.distance_traveled_mm );
     }
-    else if( std::abs(movementResult.angle_turned_deg) > CONSTS::EPSILON )
+    else if( std::abs(movementResult.angle_turned_deg) > 0.0 )
     {
         _updateDirection( movementResult.angle_turned_deg );
     }

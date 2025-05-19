@@ -23,7 +23,7 @@ bool LocationController::updateWalls()
     else
     {
         // Using Bayesian way
-        int retVal = mWallDetector.getWallMaskOfCurrentCell( mCurrentPositionR );
+        int retVal = mWallDetector.getWallMaskOfCurrentCellBayesian( mCurrentPositionR );
         if( retVal >= 0 )
         {
             maze.updateCellWallMask( mCurrentPositionR.getPosX(), mCurrentPositionR.getPosY(), retVal );

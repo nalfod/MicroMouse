@@ -136,7 +136,7 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommand(Command
             }
             else
             {
-                distanceToMove_mm = 30;
+                distanceToMove_mm = 30; // TODO: measure it!
             }
         }
 
