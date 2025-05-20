@@ -48,6 +48,8 @@ enum MODES
     MEASUREMENT_SNAPSHOT = 4
 };
 
+constexpr uint16_t MODE_SPEED_RUN_ACTIVATION_LIMIT = 5;
+
 constexpr uint16_t MODE_SIGNAL_THRESHOLD_MV = 3900;
 constexpr uint16_t MODE_SIGNAL_HOLD_TIME_MS = 2000;
 

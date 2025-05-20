@@ -25,7 +25,15 @@ void MM::control()
       if( g.locController.updateWalls() )
       {
         LOG_INFO("====NEXT CMD-->\n" );
-        g.commandExecuter.addCommandRelativeToCurrentPos( g.locController.calcNextMovement() , 1);
+        int nextMovement = g.locController.calcNextMovement();
+        if( nextMovement != -2)
+        {
+          g.commandExecuter.addCommandRelativeToCurrentPos( nextMovement , 1);
+        }
+        else
+        {
+          g.mode_selector.set_current_mode(CONSTS::MODES::SPEED_RUN);
+        }
       }
     }
   }
@@ -37,6 +45,7 @@ void MM::control()
     }
     else
     {
+      g.commandExecuter.parseRouteForSpeedRun(g.locController.findRouteForSpeedRun());
       // LOG_INFO("COMMAND EXECUTER IS FINISHED:\n" );
     }
   }

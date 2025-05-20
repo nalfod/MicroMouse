@@ -93,13 +93,6 @@ void Maze::updateNeighbourWalls(int x, int y)
 
 CONSTS::Direction Maze::simpleMove(int currx, int curry) {
     Cell& c = cells[currx][curry];
-    if(currx == 6 && curry == 3) {
-        /*LOG_INFO("CURRENT VAL:  %d\n",cells[currx][curry].getValue());
-        LOG_INFO("N:  %d\n", c.isAccessible(Direction::NORTH));
-        LOG_INFO("E:  %d   %d\n", c.isAccessible(Direction::EAST), cells[currx][curry+1].getValue());
-        LOG_INFO("S:  %d   %d\n", c.isAccessible(Direction::SOUTH), cells[currx-1][curry].getValue());
-        LOG_INFO("W:  %d   %d\n", c.isAccessible(Direction::WEST), cells[currx][curry-1].getValue());*/
-    }
 
     if( c.isAccessible(CONSTS::Direction::NORTH) && isValidPos(currx+1) &&
         (cells[currx+1][curry].getValue() < c.getValue())) 
@@ -237,7 +230,6 @@ void Maze::reCalcMaze(bool toMid)
                     }
                 }
             }
-            //std::cout << "FLOWMAZE ODD " << posx << "  " << posy << std::endl;
             flowMaze(posx,posy,0);
             return;
         }
@@ -304,4 +296,41 @@ void Maze::flowMaze(int x, int y, int stepCount)
 int Maze::getWeightOfCell(int x, int y)
 {
     return cells[x][y].getValue();
+}
+
+std::string Maze::findShortestRoute(int x, int y)
+{
+    std::string route = "";
+
+    int offSetX = 0;
+    int offSetY = 0;
+    Cell* currentCell = &cells[x][y];
+    while(currentCell->getValue() != 0)
+    {
+        CONSTS::Direction toDirection = simpleMove(x,y);
+        switch (toDirection)
+        {
+        case CONSTS::Direction::NORTH:
+            x++;
+            route += 'N';
+            break;
+        case CONSTS::Direction::EAST:
+            y++;
+            route += 'E';
+        break;
+        case CONSTS::Direction::SOUTH:
+            x--;
+            route += 'S';
+            break;        
+        case CONSTS::Direction::WEST:
+            y--;
+            route += 'W';
+        break;
+        default:
+            break;
+        }
+    }
+
+    LOG_INFO("FOUND SHORTEST ROUTE:  %s\n",route );
+    return route;
 }

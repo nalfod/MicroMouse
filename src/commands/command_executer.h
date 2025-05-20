@@ -24,6 +24,8 @@ namespace MM
             void execute();
             bool isFinished() const;
             void addCommandRelativeToCurrentPos(int directionToMove_deg, uint16_t numberOfCellsToMove);
+
+            void parseRouteForSpeedRun(std::string route);
         private:
             enum MovementPrimitives
             {

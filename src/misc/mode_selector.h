@@ -20,6 +20,8 @@ class ModeSelector
         ModeSelector(uint16_t const& ir_left, uint16_t const& ir_frontleft, uint16_t const& ir_frontright, uint16_t const& ir_right, CONSTS::MODES init_mode = CONSTS::MODES::IDLE);
 
         CONSTS::MODES get_current_mode();
+        void set_current_mode(CONSTS::MODES newMode);
+        
         bool is_mode_just_changed();
         void update();
 

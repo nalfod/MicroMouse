@@ -12,10 +12,13 @@ class LocationController{
         bool updateWalls();
         int calcNextMovement();
 
+        std::string findRouteForSpeedRun();
     private:
         MM::CellPosition const& mCurrentPositionR;
         Maze maze;
         MM::WallDetector mWallDetector;
         bool mIsWallUpdateNeeded{false};
         bool toMid{true};
+
+        int numOfFullCircles{0};
 };

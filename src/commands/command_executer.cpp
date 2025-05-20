@@ -90,6 +90,44 @@ bool MM::CommandExecuter::_isFrontBlocked()
     return (mDistLeftR_mm < 80 ) || (mDistRightR_mm < 80 );
 }
 
+void  MM::CommandExecuter::parseRouteForSpeedRun(std::string route)
+{
+    int i = 0;
+    CONSTS::Direction currentDir = mCurrentCellPositionR.getCurrentDirection();
+    while(i < route.size())
+    {
+        int16_t moveCellNo = 1;
+        CONSTS::Direction toDirection;
+        switch (route[i])
+        {
+            case 'N':
+                toDirection = CONSTS::Direction::NORTH;
+                break;
+            case 'E':
+                toDirection = CONSTS::Direction::EAST;
+                break;
+            case 'S':
+                toDirection = CONSTS::Direction::SOUTH;
+                break;
+            case 'W':
+                toDirection = CONSTS::Direction::WEST;
+                break;
+            default:
+                break;
+        }
+        if(toDirection == currentDir)
+        {
+            while( i+1 < route.size() && route[i] == route[i+1] )
+            {
+                i++;
+                moveCellNo++;
+            }
+        }
+        addCommandRelativeToCurrentPos( CONSTS::getRotationAngle( currentDir, toDirection ), moveCellNo);
+        currentDir = toDirection;
+    }
+}
+
 std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommand(CommandToExecute commandParams)
 {
     std::unique_ptr<MM::MotionCommandIF> cmdToReturnP;

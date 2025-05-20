@@ -7,7 +7,8 @@ LocationController::LocationController(int mazeSize, MM::CellPosition const& cel
     mCurrentPositionR(cellPositionR),
     mWallDetector(distLeft, distRight, distFrLeft, distFrRight),
     maze(mazeSize),
-    toMid(true)
+    toMid(true),
+    numOfFullCircles(0)
 {
 
 }
@@ -36,21 +37,39 @@ bool LocationController::updateWalls()
     }
 }
 
+std::string LocationController::findRouteForSpeedRun()
+{
+    toMid = !toMid;
+    maze.reCalcMaze(toMid);
+    return maze.findShortestRoute(mCurrentPositionR.getPosX(),mCurrentPositionR.getPosY());
+}
+
 int LocationController::calcNextMovement()
 {
     if(maze.getWeightOfCell(mCurrentPositionR.getPosX(),mCurrentPositionR.getPosY()) == 0)
     {
-        // LOG_INFO("REACHED GOAL!!!!!!!!!!RECALC\n");
         toMid = !toMid;
         // We are in the middle and want to move back to the start
         if(!toMid)
         {
             maze.closeMidCells(mCurrentPositionR.getPosX(),mCurrentPositionR.getPosY());
         }
+        else
+        {
+            numOfFullCircles++;
+            LOG_INFO("NUMBER OF FULL CIRCLES:  %d\n",numOfFullCircles );
+        }
+        if(numOfFullCircles >= CONSTS::MODE_SPEED_RUN_ACTIVATION_LIMIT)
+        {
+            toMid = !toMid;
+            // SPEEDRUN
+            return -2;
+            //std::string route = maze.findShortestRoute(mCurrentPositionR.getPosX(),mCurrentPositionR.getPosY());
+        }
         maze.reCalcMaze(toMid);
     }
     CONSTS::Direction moveDir = maze.simpleMove(mCurrentPositionR.getPosX(), mCurrentPositionR.getPosY());
-    //LOG_INFO("LOCCONTROL:  %d   %d\n", static_cast<int>(moveDir), static_cast<int>(mCurrentDirection));
+
     if( moveDir == CONSTS::Direction::UNKNOWN ) {
         maze.updateMazeValues(mCurrentPositionR.getPosX(), mCurrentPositionR.getPosY());
         moveDir = maze.simpleMove(mCurrentPositionR.getPosX(), mCurrentPositionR.getPosY());

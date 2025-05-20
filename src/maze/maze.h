@@ -25,6 +25,8 @@ class Maze {
         void closeMidCells(int x, int y);
 
         void updateNeighbourWalls(int x, int y);
+
+        std::string findShortestRoute(int x, int y);
     private:
         void initMaze();
 

@@ -46,6 +46,11 @@ CONSTS::MODES MM::ModeSelector::get_current_mode()
     return _current_mode;
 }
 
+void MM::ModeSelector::set_current_mode(CONSTS::MODES newMode)
+{
+    _current_mode = newMode;
+}
+
 bool MM::ModeSelector::is_mode_just_changed()
 {
     return _is_mode_just_changed;
