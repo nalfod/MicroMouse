@@ -53,7 +53,10 @@ void MM::CommandExecuter::addCommandRelativeToCurrentPos(int directionToMove_deg
         mCommandsToExecute.push( CommandToExecute(FORWARD_MOVEMENT_FOR_ALIGNMENT, 0) );
         mCommandsToExecute.push( CommandToExecute(ROTATING, directionToMove_deg) );
     }
-    mCommandsToExecute.push( CommandToExecute(FORWARD_MOVEMENT_BY_CELL_NUMBER, numberOfCellsToMove ) );
+    if( numberOfCellsToMove != 0)
+    {
+        mCommandsToExecute.push( CommandToExecute(FORWARD_MOVEMENT_BY_CELL_NUMBER, numberOfCellsToMove ) );
+    }
 }
 
 bool MM::CommandExecuter::isFinished() const
@@ -129,6 +132,7 @@ void  MM::CommandExecuter::parseRouteForSpeedRun(std::string route)
         }
         else
         {
+            moveCellNo = 0;
             LOG_INFO("EXECUTER parse ADD ROT %d\n", CONSTS::getRotationAngle( currentDir, toDirection ));
         }
         addCommandRelativeToCurrentPos( CONSTS::getRotationAngle( currentDir, toDirection ), moveCellNo);
