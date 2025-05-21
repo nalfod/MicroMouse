@@ -152,4 +152,31 @@ int getRotationAngle(Direction source, Direction destination) {
     return -1; // Invalid rotation (e.g., UNKNOWN direction)
 }
 
+inline
+float adjustAngleToAlignGridDirection( float currentOrientation )
+{
+    if( -30.0 < currentOrientation && currentOrientation < 30 )
+    {
+        currentOrientation = 0.0;
+    }
+    else if( 60.0 < currentOrientation && currentOrientation < 120.0 )
+    {
+        currentOrientation = 90.0;
+    }
+    else if( -120.0 < currentOrientation && currentOrientation < -60.0 )
+    {
+        currentOrientation = -90.0;
+    }
+    else if( -210.0 < currentOrientation && currentOrientation < -150.0 )
+    {
+        currentOrientation = -179.9999;
+    }
+    else if( 150.0 < currentOrientation && currentOrientation < 210.0 )
+    {
+        currentOrientation = 179.9999;
+    }
+
+    return currentOrientation;
+}
+
 }
