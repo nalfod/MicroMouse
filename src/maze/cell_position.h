@@ -7,6 +7,7 @@ namespace MM {
 class CellPosition
 {
     public:
+        CellPosition(float startXPosInCell, float startYPosInCell, CONSTS::Direction startDirection);
         // Getters
         CONSTS::Direction getCurrentDirection() const { return mCurrentDirection; }
         int getPosX() const { return mPosX; }
@@ -23,6 +24,8 @@ class CellPosition
         void _updateDirection(float rotDeg);
         void _increasePositionInCell(float traveled_distance_magnitude);
         void _setCurrentDirection(CONSTS::Direction direction);
+
+        
         CONSTS::Direction mCurrentDirection{CONSTS::Direction::NORTH};
         int mPosX{0};
         int mPosY{0};

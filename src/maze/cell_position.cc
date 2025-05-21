@@ -1,6 +1,13 @@
 #include "cell_position.h"
 #include "constants.h"
 #include "utils/logging.h"
+MM::CellPosition::CellPosition(float startXPosInCell, float startYPosInCell, CONSTS::Direction startDirection):
+mCurrentDirection(startDirection),
+mXPositionInCell_mm(startXPosInCell),
+mYPositionInCell_mm(startYPosInCell)
+{
+    
+}
 
 void MM::CellPosition::updatePosition(CommandResult movementResult)
 {
