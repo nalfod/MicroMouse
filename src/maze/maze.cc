@@ -13,7 +13,7 @@ Maze::Maze(int mazeSize)
 void Maze::initMaze() {
     for(int i = 0; i < numOfRows; i++) {
         std::vector<Cell> row;
-        row.reserve(10);
+        row.reserve(numOfRows);
         cells.push_back(row);
     }
 
@@ -54,15 +54,6 @@ int Maze::calcBaseVal(int x, int y) {
 }
 
 void Maze::updateCellWallMask(int x, int y, int wall) {
-    // PRINT MAZE
-    /*for(int i = 6; i >= 0; i--) {
-        for(int j = 0; j < 7; j++ ) {
-            LOG_INFO(" %d ", cells[i][j].getValue());
-        }
-        LOG_INFO("\n");
-    }*/
-
-    //LOG_INFO("UPDATEWALL MASK: %d    %d    %d\n",x, y, wall );
     cells[x][y].setWallMask(wall);
     updateNeighbourWalls(x,y);
 }
@@ -305,7 +296,6 @@ std::string Maze::findShortestRoute(int x, int y)
     int offSetX = 0;
     int offSetY = 0;
     Cell* currentCell = &cells[x][y];
-    int step = 0;
     while(currentCell->getValue() != 0)
     {
         CONSTS::Direction toDirection = simpleMove(x,y);
@@ -330,13 +320,7 @@ std::string Maze::findShortestRoute(int x, int y)
         default:
             break;
         }
-        step++;
-        LOG_INFO("STEP %d\n", step);
-        for(int i = 0; i < route.size();++i) {
-            LOG_INFO("  CHAR  ||%c||\n",route[i]);
-        }
         currentCell = &cells[x][y];
     }
-    LOG_INFO("FOUND ROUTE in %d  |  %d \n", step, route.size());
     return route;
 }

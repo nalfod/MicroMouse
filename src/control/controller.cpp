@@ -24,7 +24,6 @@ void MM::control()
     {
       if( g.locController.updateWalls() )
       {
-        LOG_INFO("====NEXT CMD-->\n" );
         int nextMovement = g.locController.calcNextMovement();
         if( nextMovement != -2)
         {
@@ -32,7 +31,6 @@ void MM::control()
         }
         else
         {
-          LOG_INFO("MODE TO SPEEDRUN\n" );
           g.mode_selector.set_current_mode(CONSTS::MODES::SPEED_RUN);
         }
       }
@@ -46,11 +44,8 @@ void MM::control()
     }
     else
     {
-      LOG_INFO("PARSE ROUTE SPEEDRUN\n" );
       g.commandExecuter.parseRouteForSpeedRun(g.locController.findRouteForSpeedRun());
-      LOG_INFO("PARSE ROUTE SPEEDRUN FINISHED\n" );
       delay(2000);
-      // LOG_INFO("COMMAND EXECUTER IS FINISHED:\n" );
     }
   }
 }
