@@ -305,6 +305,7 @@ std::string Maze::findShortestRoute(int x, int y)
     int offSetX = 0;
     int offSetY = 0;
     Cell* currentCell = &cells[x][y];
+    int step = 0;
     while(currentCell->getValue() != 0)
     {
         CONSTS::Direction toDirection = simpleMove(x,y);
@@ -329,8 +330,13 @@ std::string Maze::findShortestRoute(int x, int y)
         default:
             break;
         }
+        step++;
+        LOG_INFO("STEP %d\n", step);
+        for(int i = 0; i < route.size();++i) {
+            LOG_INFO("  CHAR  ||%c||\n",route[i]);
+        }
+        currentCell = &cells[x][y];
     }
-
-    LOG_INFO("FOUND SHORTEST ROUTE:  %s\n",route );
+    LOG_INFO("FOUND ROUTE in %d  |  %d \n", step, route.size());
     return route;
 }

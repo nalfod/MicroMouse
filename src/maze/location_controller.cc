@@ -41,6 +41,7 @@ std::string LocationController::findRouteForSpeedRun()
 {
     toMid = !toMid;
     maze.reCalcMaze(toMid);
+    LOG_INFO("FIND ROUTE RECALC DONE\n" );
     return maze.findShortestRoute(mCurrentPositionR.getPosX(),mCurrentPositionR.getPosY());
 }
 
@@ -63,6 +64,7 @@ int LocationController::calcNextMovement()
         {
             toMid = !toMid;
             // SPEEDRUN
+            LOG_INFO("LOGCONTROLL -2\n" );
             return -2;
             //std::string route = maze.findShortestRoute(mCurrentPositionR.getPosX(),mCurrentPositionR.getPosY());
         }

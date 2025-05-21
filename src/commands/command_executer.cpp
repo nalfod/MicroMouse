@@ -93,11 +93,13 @@ bool MM::CommandExecuter::_isFrontBlocked()
 void  MM::CommandExecuter::parseRouteForSpeedRun(std::string route)
 {
     int i = 0;
+    LOG_INFO("EXECUTER parse  %d\n", route.size());
     CONSTS::Direction currentDir = mCurrentCellPositionR.getCurrentDirection();
     while(i < route.size())
     {
         int16_t moveCellNo = 1;
         CONSTS::Direction toDirection;
+        LOG_INFO("EXECUTER parse ||| %d  %c\n", i, route[i]);
         switch (route[i])
         {
             case 'N':
@@ -122,6 +124,12 @@ void  MM::CommandExecuter::parseRouteForSpeedRun(std::string route)
                 i++;
                 moveCellNo++;
             }
+            i++;
+            LOG_INFO("EXECUTER parse ADD STRAIGHT %d\n", moveCellNo);
+        }
+        else
+        {
+            LOG_INFO("EXECUTER parse ADD ROT %d\n", CONSTS::getRotationAngle( currentDir, toDirection ));
         }
         addCommandRelativeToCurrentPos( CONSTS::getRotationAngle( currentDir, toDirection ), moveCellNo);
         currentDir = toDirection;
