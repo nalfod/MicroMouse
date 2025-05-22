@@ -23,10 +23,14 @@ class Maze {
         int getWeightOfCell(int x, int y);
 
         void closeMidCells(int x, int y);
+        void closeUnknownCells();
 
         void updateNeighbourWalls(int x, int y);
 
         std::string findShortestRoute(int x, int y);
+
+        void findShortestRoute2(int x, int y, std::string route, std::vector<std::string>& routes);
+        std::string getShortestRoute2(int x, int y);
     private:
         void initMaze();
 

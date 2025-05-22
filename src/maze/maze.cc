@@ -23,7 +23,7 @@ void Maze::initMaze() {
             cells[i].push_back(newCell);
         }
     }
-    cells[0][0].setWallMask(14);
+    updateCellWallMask(0,0,14);
 }
 
 int Maze::calcBaseVal(int x, int y) {
@@ -54,6 +54,7 @@ int Maze::calcBaseVal(int x, int y) {
 }
 
 void Maze::updateCellWallMask(int x, int y, int wall) {
+    cells[x][y].isVisited(true);
     cells[x][y].setWallMask(wall);
     updateNeighbourWalls(x,y);
 }
@@ -289,6 +290,95 @@ int Maze::getWeightOfCell(int x, int y)
     return cells[x][y].getValue();
 }
 
+void Maze::closeUnknownCells()
+{
+    for(int i = 0; i < this->numOfRows; i++)
+    {
+        for(int j = 0; j < numOfRows; j++) 
+        {
+            if(!cells[i][j].getWasCellVisited())
+            {
+                // close cell in all directions
+                cells[i][j].setWallMask(15);
+            }
+        }
+    }
+}
+
+std::string Maze::getShortestRoute2(int x, int y)
+{
+    std::vector<std::string> routes;
+    std::string baseRoute = "";
+    findShortestRoute2(x, y, baseRoute, routes);
+    int minRotates = 20000;
+    std::string shortestRoute;
+    for(int i = 0; i < routes.size();i++)
+    {
+        std::string route = routes[i];
+        int rotates = 0;
+        for(int j = 1; j < route.size();j++)
+        {
+            if(route[j] != route[j-1])
+            {
+                rotates++;
+            }
+        }
+        LOG_INFO("ROUTE_START\n");
+        for(int i = 0; i < route.size(); i++)
+        {
+            LOG_INFO("ROUTE %d  %c", i, route[i]);
+        }
+        LOG_INFO("ROUTE_END, ROTATES: %d\n", rotates);
+        if(rotates < minRotates)
+        {
+            minRotates = rotates;
+            shortestRoute = route;
+        }
+    }
+    LOG_INFO("SHORT ROUTE_START\n");
+    for(int i = 0; i < shortestRoute.size(); i++)
+    {
+        LOG_INFO("SHORT ROUTE %d  %c", i, shortestRoute[i]);
+    }
+    LOG_INFO("SHORT ROUTE_END, ROTATES: %d\n", minRotates);
+    return shortestRoute;
+}
+
+void Maze::findShortestRoute2(int x, int y, std::string route, std::vector<std::string>& routes)
+{
+    Cell* currentCell = &cells[x][y];
+
+    if(currentCell->getValue() == 0)
+    {
+        routes.push_back(route);
+        return;
+    }
+    if(currentCell->isAccessible(CONSTS::Direction::NORTH) && isValidPos(x+1)
+        && currentCell->getValue() > cells[x+1][y].getValue())
+    {
+        std::string newRoute = (route + 'N');
+        findShortestRoute2(x+1,y,newRoute,routes);
+    }
+    if(currentCell->isAccessible(CONSTS::Direction::EAST) && isValidPos(y+1)
+        && currentCell->getValue() > cells[x][y+1].getValue())
+    {
+        std::string newRoute = (route + 'E');
+        findShortestRoute2(x,y+1,newRoute,routes);
+    }
+    if(currentCell->isAccessible(CONSTS::Direction::SOUTH) && isValidPos(x-1)
+        && currentCell->getValue() > cells[x-1][y].getValue())
+    {
+        std::string newRoute = (route + 'S');
+        findShortestRoute2(x-1,y,newRoute,routes);
+    }
+    if(currentCell->isAccessible(CONSTS::Direction::WEST) && isValidPos(y-1)
+        && currentCell->getValue() > cells[x][y-1].getValue())
+    {
+        std::string newRoute = (route + 'W');
+        findShortestRoute2(x,y-1,newRoute,routes);
+    }
+}
+
 std::string Maze::findShortestRoute(int x, int y)
 {
     std::string route = "";
@@ -296,6 +386,7 @@ std::string Maze::findShortestRoute(int x, int y)
     int offSetX = 0;
     int offSetY = 0;
     Cell* currentCell = &cells[x][y];
+    int step = 0;
     while(currentCell->getValue() != 0)
     {
         CONSTS::Direction toDirection = simpleMove(x,y);
@@ -320,7 +411,18 @@ std::string Maze::findShortestRoute(int x, int y)
         default:
             break;
         }
+        step++;
         currentCell = &cells[x][y];
+        LOG_INFO("STEP: %d\n", step);
+        for(int i = 0; i < route.size(); ++i)
+        {
+            LOG_INFO("FIND SHORT ROUTE: %d,  %c\n",i,route[i]);
+        }
+    }
+    LOG_INFO("FOUND ROUTE: %d\n", route.size());
+    for(int i = 0; i < route.size(); ++i)
+    {
+        LOG_INFO("FIND SHORT ROUTE: %d,  %c\n",i,route[i]);
     }
     return route;
 }

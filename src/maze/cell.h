@@ -17,10 +17,15 @@ class Cell {
         void setWallMask(int newMask);
 
         bool isAccessible(CONSTS::Direction direction) const ;
+
+        void isVisited(bool isVisited);
+        bool getWasCellVisited();
     private:
         int mX;
         int mY;
 
         int wallMask;
         int value;
+
+        bool wasCellVisited{false};
 };

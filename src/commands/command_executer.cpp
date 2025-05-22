@@ -101,6 +101,7 @@ void  MM::CommandExecuter::parseRouteForSpeedRun(std::string route)
     {
         int16_t moveCellNo = 1;
         CONSTS::Direction toDirection;
+        int step = 0;
         switch (route[i])
         {
             case 'N':
@@ -126,11 +127,16 @@ void  MM::CommandExecuter::parseRouteForSpeedRun(std::string route)
                 moveCellNo++;
             }
             i++;
+            LOG_INFO("MOVE FORWARD: %d, %d\n", i, moveCellNo);
         }
         else
         {
+            LOG_INFO("ROTATE: %d, %d\n", static_cast<int>(currentDir),static_cast<int>(toDirection));
             moveCellNo = 0;
         }
+        step++;
+        LOG_INFO("ADD NEW COMMAND: %d, %c\n", step, route[i]);
+        
         addCommandRelativeToCurrentPos( CONSTS::getRotationAngle( currentDir, toDirection ), moveCellNo);
         currentDir = toDirection;
     }
