@@ -1,6 +1,7 @@
 #include "maze.h"
 #include <iostream>
 #include "constants.h"
+#include <cmath>
 
 #include "utils/logging.h"
 
@@ -87,25 +88,25 @@ CONSTS::Direction Maze::simpleMove(int currx, int curry) {
     Cell& c = cells[currx][curry];
 
     if( c.isAccessible(CONSTS::Direction::NORTH) && isValidPos(currx+1) &&
-        (cells[currx+1][curry].getValue() < c.getValue())) 
+        (cells[currx+1][curry].getWeight() < c.getWeight())) 
     {
         return CONSTS::Direction::NORTH;
     }
     
     if( c.isAccessible(CONSTS::Direction::EAST) && isValidPos(curry+1) &&
-        (cells[currx][curry+1].getValue() < c.getValue())) 
+        (cells[currx][curry+1].getWeight() < c.getWeight())) 
     {
         return CONSTS::Direction::EAST;
     }
 
     if( c.isAccessible(CONSTS::Direction::SOUTH) && isValidPos(currx-1) &&
-        (cells[currx-1][curry].getValue() < c.getValue())) 
+        (cells[currx-1][curry].getWeight() < c.getWeight())) 
     {
         return CONSTS::Direction::SOUTH;
     }
 
     if( c.isAccessible(CONSTS::Direction::WEST) && isValidPos(curry-1) &&
-        (cells[currx][curry-1].getValue() < c.getValue())) 
+        (cells[currx][curry-1].getWeight() < c.getWeight())) 
     {
         return CONSTS::Direction::WEST;
     }
@@ -140,40 +141,40 @@ void Maze::CheckCellandNeighbours() {
     
     if( currCellP->isAccessible(CONSTS::Direction::NORTH) && isValidPos(currCellP->getX()+1)) 
     {
-        if(cells[currCellP->getX()+1][currCellP->getY()].getValue() < lowestNeighbourValue) 
+        if(cells[currCellP->getX()+1][currCellP->getY()].getWeight() < lowestNeighbourValue) 
         {
-            lowestNeighbourValue = cells[currCellP->getX()+1][currCellP->getY()].getValue();
+            lowestNeighbourValue = cells[currCellP->getX()+1][currCellP->getY()].getWeight();
         }
         cN = &cells[currCellP->getX()+1][currCellP->getY()];
     }
     if( currCellP->isAccessible(CONSTS::Direction::EAST) && isValidPos(currCellP->getY()+1)) 
     {
-        if(cells[currCellP->getX()][currCellP->getY()+1].getValue() < lowestNeighbourValue) 
+        if(cells[currCellP->getX()][currCellP->getY()+1].getWeight() < lowestNeighbourValue) 
         {
-            lowestNeighbourValue = cells[currCellP->getX()][currCellP->getY()+1].getValue();
+            lowestNeighbourValue = cells[currCellP->getX()][currCellP->getY()+1].getWeight();
         }
         cE = &cells[currCellP->getX()][currCellP->getY()+1];
     }
     if( currCellP->isAccessible(CONSTS::Direction::SOUTH) && isValidPos(currCellP->getX()-1)) 
     {
-        if(cells[currCellP->getX()-1][currCellP->getY()].getValue() < lowestNeighbourValue) 
+        if(cells[currCellP->getX()-1][currCellP->getY()].getWeight() < lowestNeighbourValue) 
         {
-            lowestNeighbourValue = cells[currCellP->getX()-1][currCellP->getY()].getValue();
+            lowestNeighbourValue = cells[currCellP->getX()-1][currCellP->getY()].getWeight();
         }
         cS = &cells[currCellP->getX()-1][currCellP->getY()];
     }
     if( currCellP->isAccessible(CONSTS::Direction::WEST) && isValidPos(currCellP->getY()-1)) 
     {
-        if(cells[currCellP->getX()][currCellP->getY()-1].getValue() < lowestNeighbourValue) 
+        if(cells[currCellP->getX()][currCellP->getY()-1].getWeight() < lowestNeighbourValue) 
         {
-            lowestNeighbourValue = cells[currCellP->getX()][currCellP->getY()-1].getValue();
+            lowestNeighbourValue = cells[currCellP->getX()][currCellP->getY()-1].getWeight();
         }
         cW = &cells[currCellP->getX()][currCellP->getY()-1];
     }
     
-    if(currCellP->getValue() <= lowestNeighbourValue) 
+    if(currCellP->getWeight() <= lowestNeighbourValue) 
     {
-        currCellP->setValue(lowestNeighbourValue+1);
+        currCellP->setWeight(lowestNeighbourValue+1);
 
         if(cN != 0) { updateQueue.push(cN);}
         if(cE != 0) { updateQueue.push(cE);}
@@ -194,7 +195,7 @@ void Maze::resetValues()
     {
         for(int j = 0; j < numOfRows; j++)
         {
-            cells[i][j].setValue(20000);
+            cells[i][j].setWeight(20000);
         }
     }
 }
@@ -202,16 +203,17 @@ void Maze::resetValues()
 void Maze::reCalcMaze(bool toMid)
 {
     resetValues();
+    int posx = 0;
+    int posy = 0;
     if(toMid)
     {
         if(numOfRows%2 != 0)
         {
-            flowMaze(numOfRows/2,numOfRows/2,0);
+            posx = numOfRows/2;
+            posy = numOfRows/2;
         }
         else
         {
-            int posx = 0;
-            int posy = 0;
             for(int i = 0; i < 2; i++)
             {
                 for(int j = 0; j < 2; j++)
@@ -222,14 +224,9 @@ void Maze::reCalcMaze(bool toMid)
                     }
                 }
             }
-            flowMaze(posx,posy,0);
-            return;
         }
     }
-    else
-    {
-        flowMaze(0,0,0);
-    }
+    floodMaze(posx,posy,0);
 }
 
 void Maze::closeMidCells(int x, int y)
@@ -248,46 +245,46 @@ void Maze::closeMidCells(int x, int y)
                 else
                 {
                     int wallMask = (CONSTS::Direction::NORTH | CONSTS::Direction::EAST | CONSTS::Direction::SOUTH | CONSTS::Direction::WEST);
-                    cells[numOfRows/2 - 1 + i][numOfRows/2 - 1 + j].setWallMask(wallMask);
+                    updateCellWallMask(numOfRows/2 - 1 + i, numOfRows/2 - 1 + j, wallMask);
                 }
             }
         }
     }
 }
 
-void Maze::flowMaze(int x, int y, int stepCount)
+void Maze::floodMaze(int x, int y, int stepCount)
 {   
-    if( cells[x][y].getValue() <= stepCount)
+    if( cells[x][y].getWeight() <= stepCount)
     {
         return;
     }
-    cells[x][y].setValue(stepCount);
+    cells[x][y].setWeight(stepCount);
 
     if( cells[x][y].isAccessible(CONSTS::Direction::NORTH) && isValidPos(x+1) 
-            && cells[x+1][y].getValue() > stepCount+1 )
+            && cells[x+1][y].getWeight() > stepCount+1 )
     {
-        flowMaze(x+1,y,stepCount+1);
+        floodMaze(x+1,y,stepCount+1);
     }
     if( cells[x][y].isAccessible(CONSTS::Direction::EAST) && isValidPos(y+1) 
-            && cells[x][y+1].getValue() > stepCount+1 )
+            && cells[x][y+1].getWeight() > stepCount+1 )
     {
-        flowMaze(x,y+1,stepCount+1);
+        floodMaze(x,y+1,stepCount+1);
     }
     if( cells[x][y].isAccessible(CONSTS::Direction::SOUTH) && isValidPos(x-1) 
-            && cells[x-1][y].getValue() > stepCount+1 )
+            && cells[x-1][y].getWeight() > stepCount+1 )
     {
-        flowMaze(x-1,y,stepCount+1);
+        floodMaze(x-1,y,stepCount+1);
     }
     if( cells[x][y].isAccessible(CONSTS::Direction::WEST) && isValidPos(y-1) 
-            && cells[x][y-1].getValue() > stepCount+1 )
+            && cells[x][y-1].getWeight() > stepCount+1 )
     {
-        flowMaze(x,y-1,stepCount+1);
+        floodMaze(x,y-1,stepCount+1);
     }
 }
 
 int Maze::getWeightOfCell(int x, int y)
 {
-    return cells[x][y].getValue();
+    return cells[x][y].getWeight();
 }
 
 void Maze::closeUnknownCells()
@@ -298,8 +295,8 @@ void Maze::closeUnknownCells()
         {
             if(!cells[i][j].getWasCellVisited())
             {
-                // close cell in all directions
-                cells[i][j].setWallMask(15);
+                int wallMask = (CONSTS::Direction::NORTH | CONSTS::Direction::EAST | CONSTS::Direction::SOUTH | CONSTS::Direction::WEST);
+                updateCellWallMask(i, j, wallMask);
             }
         }
     }
@@ -348,31 +345,31 @@ void Maze::findShortestRoute2(int x, int y, std::string route, std::vector<std::
 {
     Cell* currentCell = &cells[x][y];
 
-    if(currentCell->getValue() == 0)
+    if(currentCell->getWeight() == 0)
     {
         routes.push_back(route);
         return;
     }
     if(currentCell->isAccessible(CONSTS::Direction::NORTH) && isValidPos(x+1)
-        && currentCell->getValue() > cells[x+1][y].getValue())
+        && currentCell->getWeight() > cells[x+1][y].getWeight())
     {
         std::string newRoute = (route + 'N');
         findShortestRoute2(x+1,y,newRoute,routes);
     }
     if(currentCell->isAccessible(CONSTS::Direction::EAST) && isValidPos(y+1)
-        && currentCell->getValue() > cells[x][y+1].getValue())
+        && currentCell->getWeight() > cells[x][y+1].getWeight())
     {
         std::string newRoute = (route + 'E');
         findShortestRoute2(x,y+1,newRoute,routes);
     }
     if(currentCell->isAccessible(CONSTS::Direction::SOUTH) && isValidPos(x-1)
-        && currentCell->getValue() > cells[x-1][y].getValue())
+        && currentCell->getWeight() > cells[x-1][y].getWeight())
     {
         std::string newRoute = (route + 'S');
         findShortestRoute2(x-1,y,newRoute,routes);
     }
     if(currentCell->isAccessible(CONSTS::Direction::WEST) && isValidPos(y-1)
-        && currentCell->getValue() > cells[x][y-1].getValue())
+        && currentCell->getWeight() > cells[x][y-1].getWeight())
     {
         std::string newRoute = (route + 'W');
         findShortestRoute2(x,y-1,newRoute,routes);
@@ -387,7 +384,7 @@ std::string Maze::findShortestRoute(int x, int y)
     int offSetY = 0;
     Cell* currentCell = &cells[x][y];
     int step = 0;
-    while(currentCell->getValue() != 0)
+    while(currentCell->getWeight() != 0)
     {
         CONSTS::Direction toDirection = simpleMove(x,y);
         switch (toDirection)
@@ -425,4 +422,94 @@ std::string Maze::findShortestRoute(int x, int y)
         LOG_INFO("FIND SHORT ROUTE: %d,  %c\n",i,route[i]);
     }
     return route;
+}
+
+
+void Maze::calcForSpeedRun(bool toMid)
+{
+    resetValues();
+    int posx = 0;
+    int posy = 0;
+    if(toMid)
+    {
+        if(numOfRows%2 != 0)
+        {
+            posx = numOfRows/2;
+            posy = numOfRows/2;
+        }
+        else
+        {
+            for(int i = 0; i < 2; i++)
+            {
+                for(int j = 0; j < 2; j++)
+                {
+                    if ( cells[numOfRows/2 - 1 + i][numOfRows/2 - 1 + j].getWallMask() < 15) {
+                        posx = numOfRows/2 - 1 + i;
+                        posy = numOfRows/2 - 1 + j;
+                    }
+                }
+            }
+        }
+    }
+    CONSTS::Direction startDir = (CONSTS::Direction)(cells[posx][posy].getWallMask()^15);
+    floodMazeSpeedRun(posx,posy,0,0,startDir);
+}
+
+void Maze::floodDirectionSpeedRun(CONSTS::Direction checkDirection, int x, int y, CONSTS::Direction currentDir, int sameInRow, int weight)
+{
+    if( cells[x][y].isAccessible(checkDirection) )
+    {
+        switch (checkDirection)
+        {
+            case CONSTS::Direction::NORTH:
+                x++;
+                break;
+
+            case CONSTS::Direction::EAST:
+                y++;
+                break;
+
+            case CONSTS::Direction::SOUTH:
+                x--;
+                break;
+
+            case CONSTS::Direction::WEST:
+                y--;
+                break;
+            default:
+                break;
+        }
+        if(isValidPos(x) && isValidPos(y)) 
+        {
+            CONSTS::Direction newDir = currentDir;
+            float newWeight = weight;
+            int newSameInRow = sameInRow;
+            if(newDir!=checkDirection)
+            {
+                newDir = checkDirection;
+                newWeight += 1.5f;
+                newSameInRow = 0;
+            }
+            else
+            {
+                newSameInRow++;
+                newWeight += std::pow(0.6,newSameInRow);
+            }
+            floodMazeSpeedRun(x,y,newWeight,newSameInRow,newDir);
+        }
+    }
+}
+
+void Maze::floodMazeSpeedRun(int x, int y, float weight, int sameInRow, CONSTS::Direction currentDir)
+{   
+    if( cells[x][y].getWeight() <= weight)
+    {
+        return;
+    }
+    cells[x][y].setWeight(weight);
+
+    floodDirectionSpeedRun(CONSTS::Direction::NORTH, x, y, currentDir, sameInRow, weight);
+    floodDirectionSpeedRun(CONSTS::Direction::EAST, x, y, currentDir, sameInRow, weight);
+    floodDirectionSpeedRun(CONSTS::Direction::SOUTH, x, y, currentDir, sameInRow, weight);
+    floodDirectionSpeedRun(CONSTS::Direction::WEST, x, y, currentDir, sameInRow, weight);
 }

@@ -1,52 +1,52 @@
 #include "cell.h"
 
-Cell::Cell(int x, int y, int wall, int val):
+Cell::Cell(int x, int y, int wall, float weight):
     mX(x),
     mY(y),
-    wallMask(wall),
-    value(val),
-    wasCellVisited(false)
+    mWallMask(wall),
+    mWeight(weight),
+    mWasCellVisited(false)
     {}
 
 Cell::Cell(const Cell& cell) {
     mX = cell.mX;
     mY = cell.mY;
-    value = cell.value;
-    wallMask = cell.wallMask;
-    wasCellVisited = cell.wasCellVisited;
+    mWeight = cell.mWeight;
+    mWallMask = cell.mWallMask;
+    mWasCellVisited = cell.mWasCellVisited;
 }
 
-int Cell::getValue() const
+float Cell::getWeight() const
 {
-    return value;
+    return mWeight;
 }
 
-void Cell::setValue(int newValue)
+void Cell::setWeight(float newWeight)
 {
-    value = newValue;
+    mWeight = newWeight;
 }
 
 int Cell::getWallMask()
 {
-    return wallMask;
+    return mWallMask;
 }
 
 void Cell::setWallMask(int newMask)
 {
-    wallMask = newMask;
+    mWallMask = newMask;
 }
 
 bool Cell::isAccessible(CONSTS::Direction direction) const
 {
-    return !(wallMask & direction);
+    return !(mWallMask & direction);
 }
 
 void Cell::isVisited(bool isVisited)
 {
-    wasCellVisited = isVisited;
+    mWasCellVisited = isVisited;
 }
 
 bool Cell::getWasCellVisited()
 {
-    return wasCellVisited;
+    return mWasCellVisited;
 }

@@ -4,11 +4,11 @@
 
 class Cell {
     public:
-        Cell(int x, int y, int wall, int val = 0);
+        Cell(int x, int y, int wall, float weight = 0);
         Cell(const Cell& cell);
 
-        int getValue() const;
-        void setValue(int newValue);
+        float getWeight() const;
+        void setWeight(float newValue);
 
         int getX() const { return mX; }
         int getY() const { return mY; }
@@ -24,8 +24,8 @@ class Cell {
         int mX;
         int mY;
 
-        int wallMask;
-        int value;
+        int mWallMask;
+        float mWeight;
 
-        bool wasCellVisited{false};
+        bool mWasCellVisited{false};
 };
