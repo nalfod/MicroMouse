@@ -41,7 +41,8 @@ std::string LocationController::findRouteForSpeedRun()
 {
     toMid = !toMid;
     maze.reCalcMaze(toMid);
-    return maze.findShortestRoute(mCurrentPositionR.getPosX(),mCurrentPositionR.getPosY());
+    return maze.getShortestRoute2(mCurrentPositionR.getPosX(),mCurrentPositionR.getPosY());
+    //return maze.findShortestRoute(mCurrentPositionR.getPosX(),mCurrentPositionR.getPosY());
 }
 
 int LocationController::calcNextMovement()
@@ -60,6 +61,7 @@ int LocationController::calcNextMovement()
         }
         if(numOfFullCircles >= CONSTS::MODE_SPEED_RUN_ACTIVATION_LIMIT)
         {
+            maze.closeUnknownCells();
             toMid = !toMid;
             return -2;
         }
