@@ -179,4 +179,18 @@ float adjustAngleToAlignGridDirection( float currentOrientation )
     return currentOrientation;
 }
 
+inline
+float modifyAngleIfCircleOverflow( float input_deg )
+{
+    if( input_deg >= 180.0 )
+    {
+        input_deg -= 360.0;
+    }
+    else if( input_deg <= -180.0 )
+    {
+        input_deg += 360.0;
+    }
+    return input_deg;
+}
+
 }

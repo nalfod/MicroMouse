@@ -24,7 +24,7 @@ void MM::CellPosition::updatePosition(CommandResult movementResult)
     }
     else if( std::abs(movementResult.angle_turned_deg) > 0.0 )
     {
-        _updateDirection( movementResult.angle_turned_deg );
+        _updateDirection( CONSTS::adjustAngleToAlignGridDirection( movementResult.angle_turned_deg ) );
     }
     printMyself();
 }
