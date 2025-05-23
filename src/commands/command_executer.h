@@ -32,7 +32,7 @@ namespace MM
                 FORWARD_MOVEMENT_BY_CELL_NUMBER = 1,
                 FORWARD_MOVEMENT_FOR_ALIGNMENT = 2,
                 ROTATING = 3,
-                ROTATING_ON_GRID = 4
+                ROTATING_ON_GRID = 4 // need to be fixed!!!
             };
             // first pair value is the movement type, second one is the specific magnitude (eg.: distance or angle)
             using CommandToExecute = std::pair< MovementPrimitives, int >;

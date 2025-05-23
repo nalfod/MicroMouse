@@ -51,7 +51,7 @@ void MM::CommandExecuter::addCommandRelativeToCurrentPos(int directionToMove_deg
     if( directionToMove_deg != 0 )
     {
         mCommandsToExecute.push( CommandToExecute(FORWARD_MOVEMENT_FOR_ALIGNMENT, 0) );
-        mCommandsToExecute.push( CommandToExecute(ROTATING_ON_GRID, directionToMove_deg) );
+        mCommandsToExecute.push( CommandToExecute(ROTATING, directionToMove_deg) );
     }
     if( numberOfCellsToMove != 0)
     {
@@ -210,15 +210,17 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommand(Command
     }
     case ROTATING_ON_GRID:
     {
-        // dest orientation = myCurrentOriR_deg + commandParams.second
+        ///// ATTENTION!! this command assumes that current orientation is updated and eg.: 0 deg means North. But based on experiences, this is not the case
+        ///// if the IMU zero point is not updated frequently. Otherwise the etalone orientation will slip eventually, and this command will not rotate to grid directions
+        ///// but will cause error. Fix this if you want to use this.
+
         float rawAngleToTurn_deg = commandParams.second;
         float rawDestOrientation_deg = CONSTS::modifyAngleIfCircleOverflow( myCurrentOriR_deg + rawAngleToTurn_deg );
         float alignedDestOrientation_deg = CONSTS::adjustAngleToAlignGridDirection( rawDestOrientation_deg );
         float alignedAngleToTurn_deg = rawAngleToTurn_deg - ( rawDestOrientation_deg - alignedDestOrientation_deg);
-        
-        ///// DO NOT MERGE THIS, IT NOT WORKS!!!!!
+
         cmdToReturnP = std::make_unique<MM::RotationCommandPid>( alignedAngleToTurn_deg, myCurrentOriR_deg, mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV);
-        LOG_INFO("NEW AL_ROTATION CMD: rawdeg= %d curr_ori= %d al_deg= %d \n", static_cast<int>(rawAngleToTurn_deg), static_cast<int>(myCurrentOriR_deg), static_cast<int>(alignedAngleToTurn_deg) );
+        // LOG_INFO("NEW AL_ROTATION CMD: rawdeg= %d curr_ori= %d al_deg= %d \n", static_cast<int>(rawAngleToTurn_deg), static_cast<int>(myCurrentOriR_deg), static_cast<int>(alignedAngleToTurn_deg) );
         break;
     }
     default:
