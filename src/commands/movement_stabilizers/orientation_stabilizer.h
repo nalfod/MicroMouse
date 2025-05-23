@@ -11,7 +11,7 @@ public:
     OrientationStabilizer( float const& currentOriR );
     int16_t executeControlling() override;
     bool isApplicable() const override;
-    void refreshMyTarget();
+    void refreshMyTarget() override;
 
     void print() const override;
 private:

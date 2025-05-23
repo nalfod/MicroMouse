@@ -4,6 +4,9 @@
 #include "collision_avoidance_command.h"
 #include "rotation_command_pid.h"
 #include "utils/logging.h"
+#include "movement_stabilizers/two_wall_stabilizer.h"
+#include "movement_stabilizers/one_wall_stabilizer.h"
+#include "movement_stabilizers/orientation_stabilizer.h"
 
 MM::CommandExecuter::CommandExecuter( MM::CellPosition& cellPositionR, 
                                       uint16_t const& dist_left, 
@@ -186,6 +189,11 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommand(Command
             }
         }
 
+        std::vector<std::unique_ptr<MM::MovementStabilizerIF>> stabilizers;
+        stabilizers.push_back(std::make_unique<TwoWallStabilizer>(mDistFrontLeftR_mm, mDistFrontRightR_mm));
+        stabilizers.push_back(std::make_unique<OneWallStabilizer>(mDistFrontLeftR_mm, mDistFrontRightR_mm));
+        stabilizers.push_back(std::make_unique<OrientationStabilizer>(myCurrentOriR_deg));
+
         cmdToReturnP = std::make_unique<MM::CollisionAvoidanceCommand>
                       ( 
                         std::make_unique<MM::WallCenteringCommand>
@@ -194,7 +202,7 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommand(Command
                             (
                                 distanceToMove_mm, 500, 250, 500, encoderValueLeftR_rev, encoderValueRightR_rev, mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV
                             ), 
-                            mDistFrontLeftR_mm, mDistFrontRightR_mm, myCurrentOriR_deg, mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV 
+                            std::move( stabilizers ), mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV 
                         ),
                         mDistLeftR_mm, mDistRightR_mm, mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV
                       );

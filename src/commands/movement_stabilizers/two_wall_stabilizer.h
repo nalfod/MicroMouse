@@ -11,6 +11,7 @@ public:
     TwoWallStabilizer( uint16_t const& dist_frontleft, uint16_t const& dist_frontright );
     int16_t executeControlling() override;
     bool isApplicable() const override;
+    void refreshMyTarget() override { }
 
     void print() const override;
 protected:

@@ -24,12 +24,12 @@ int16_t MM::OneWallStabilizer::executeControlling()
     return static_cast<int16_t>( myPid.getOuput() );
 }
 
-bool MM::TwoWallStabilizer::isApplicable() const
+bool MM::OneWallStabilizer::isApplicable() const
 {
     return ( mDistFrontLeftR_mm < CONSTS::WALL_DISTANCE_LIMIT_FOR_CENTERING_MM || mDistFrontRightR_mm < CONSTS::WALL_DISTANCE_LIMIT_FOR_CENTERING_MM );
 }
 
-void MM::TwoWallStabilizer::print() const
+void MM::OneWallStabilizer::print() const
 {
     LOG_INFO("OneWallStabilizer applicable?= %d\n", static_cast<int>(isApplicable()));
 }
