@@ -31,5 +31,5 @@ bool MM::TwoWallStabilizer::isApplicable() const
 
 void MM::TwoWallStabilizer::print() const
 {
-    LOG_INFO("TwoWallStabilizer applicable?= %d\n", static_cast<int>(isApplicable()));
+    LOG_INFO("OneWallStabilizer applicable?= %d\n", static_cast<int>(isApplicable()));
 }
