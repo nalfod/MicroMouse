@@ -13,7 +13,7 @@ public:
     bool isApplicable() const override;
 
     void print() const override;
-private:
+protected:
     // measure points
     uint16_t const& mDistFrontLeftR_mm;
     uint16_t const& mDistFrontRightR_mm;
