@@ -21,6 +21,7 @@ constexpr std::chrono::duration<uint32_t, std::micro> MEASUREMENT_BLINK_TIME = 7
 // Encoder and wheel data
 constexpr uint16_t ENCODER_RESOULTION = 288; // no unit
 constexpr float WHEEL_DIAMETER_MM = 43.8;
+constexpr float WHEEL_BASE_MM = 100; // TODO: MEASURE THIS
 
 // speed - voltage function coeeffs in case of linear motion
 constexpr float K_SPEED_FF = 1.540; // mV / (mm/s)
