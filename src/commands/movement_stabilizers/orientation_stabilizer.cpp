@@ -36,7 +36,7 @@ void MM::OrientationStabilizer::refreshMyTarget()
 
 void MM::OrientationStabilizer::print() const
 {
-    LOG_INFO("OrientationStabilizer applicable?= %d\n", static_cast<int>(isApplicable()));
+    LOG_INFO("OrientationStabilizer - my target= %d\n", static_cast<int>( myPid.getTarget() ));
 }
 
 // for cases, when target orientation is close to +180° or -180°, overflow prevention

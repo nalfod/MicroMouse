@@ -16,7 +16,7 @@ int MM::WallDetector::getWallMaskOfCurrentCell( CellPosition const& currentPosit
 {
     // TODO FIX
     int newWallMask = 0;
-    LOG_INFO("UPDATE WALLS: %d ---  %d, ---- %d, ----  %d\n",mDistFrLeft, mDistFrRight, mDistLeft, mDistRight );
+    //LOG_INFO("UPDATE WALLS: %d ---  %d, ---- %d, ----  %d\n",mDistFrLeft, mDistFrRight, mDistLeft, mDistRight );
 
     if( mDistFrLeft < 90 )
     {
@@ -89,15 +89,16 @@ int MM::WallDetector::getWallMaskOfCurrentCellBayesian( CellPosition const& curr
         if (mProbWallFront1 > wallProbabilityThreshold && mProbWallFront2 > wallProbabilityThreshold) {
             wallMask |= currentPositionR.getCurrentDirection();
         }
-
+        /*
         // Commit the wall mask to the maze
         LOG_INFO("UPD_WALLS_B DONE: X= %d ---  Y= %d, --- WM= %d ---", static_cast<int>(currentPositionR.getPosX()), 
                                                                        static_cast<int>(currentPositionR.getPosY()),
                                                                        static_cast<int>(wallMask) );
         LOG_INFO(" L= %d ---  R= %d, --- F1= %d, ---  F2= %d\n", static_cast<int>( 100 * mProbWallOnLeft ), static_cast<int>( 100 * mProbWallOnRight ), 
                                                                  static_cast<int>( 100 * mProbWallFront1 ), static_cast<int>( 100 * mProbWallFront2 ) );
+        */
         retVal = wallMask;
-
+        
         // Reset probabilities for the next cell
         _resetWallProbabilities();
     }

@@ -4,6 +4,7 @@
 
 MM::WallCenteringCommand::WallCenteringCommand(std::unique_ptr<MotionCommandIF> commandToWrap, std::vector<std::unique_ptr<MM::MovementStabilizerIF>>&& stabilizers, int16_t& leftMotorVoltage_mV, int16_t& rightMotorVoltage_mV):
 myWrappedCommandP(std::move(commandToWrap)),
+myStabilizers(std::move(stabilizers)),
 mLeftMotorVoltageR_mV(leftMotorVoltage_mV),
 mRightMotorVoltageR_mV(rightMotorVoltage_mV)
 {
@@ -45,13 +46,14 @@ void MM::WallCenteringCommand::executeWallCenteringControl()
 {
     bool stabilizationDone = false;
     for (const auto& stabilizer : myStabilizers) {
+        stabilizer->refreshMyTarget(); // honestly only needed for the orientation strategy so might be omitted if encoder based strategy is introduced
         if (stabilizer->isApplicable() && !stabilizationDone) {
+            //stabilizer->print();
             int16_t output = stabilizer->executeControlling();
             mLeftMotorVoltageR_mV  += output;
             mRightMotorVoltageR_mV -= output;
             stabilizationDone = true;
         }
-        stabilizer->refreshMyTarget(); // honestly only needed for the orientation strategy so might be omitted if encoder based strategy is introduced
     }
 }
 

@@ -26,7 +26,7 @@ void MM::CellPosition::updatePosition(CommandResult movementResult)
     {
         _updateDirection( CONSTS::adjustAngleToAlignGridDirection( movementResult.angle_turned_deg ) );
     }
-    printMyself();
+    // printMyself();
 }
 
 void MM::CellPosition::_updateDirection(float rotDeg)
