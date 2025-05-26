@@ -61,7 +61,10 @@ void MM::CommandExecuter::addCommandRelativeToCurrentPos(int directionToMove_deg
     {
         if( radius_mm > CONSTS::EPSILON )
         {
+            
+            mCommandsToExecute.push( CommandToExecute(FORWARD_MOVEMENT_RAW, CONSTS::HALF_CELL_DISTANCE_MM) );
             mCommandsToExecute.push( CommandToExecute(ARC_MOVEMENT, directionToMove_deg) );
+            mCommandsToExecute.push( CommandToExecute(FORWARD_MOVEMENT_RAW, CONSTS::HALF_CELL_DISTANCE_MM) );
         }
         else
         {
@@ -298,6 +301,23 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommandUsingCur
     case ARC_MOVEMENT:
     {
         cmdToReturnP = std::make_unique<MM::ArcTravelCommand>( 180.0, commandParams.second, 500, 250, 500, encoderValueLeftR_rev, encoderValueRightR_rev, mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV);
+        //LOG_INFO("NEW ROTATION CMD: deg= %d \n", static_cast<int>(commandParams.second) );
+        break;
+    }
+    case FORWARD_MOVEMENT_RAW:
+        {
+        cmdToReturnP = std::make_unique<MM::CollisionAvoidanceCommand>
+                ( 
+                std::make_unique<MM::WallCenteringCommand>
+                ( 
+                    std::make_unique<MM::LinearTravelCommand>
+                    (
+                        commandParams.second, 500, 250, 500, encoderValueLeftR_rev, encoderValueRightR_rev, mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV
+                    ), 
+                    mDistFrontLeftR_mm, mDistFrontRightR_mm, myCurrentOriR_deg, mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV 
+                ),
+                mDistLeftR_mm, mDistRightR_mm, mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV
+                );
         //LOG_INFO("NEW ROTATION CMD: deg= %d \n", static_cast<int>(commandParams.second) );
         break;
     }
