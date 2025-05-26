@@ -28,7 +28,7 @@ void MM::OrientationStabilizer::refreshMyTarget()
 {
     if( !refreshIsLocked )
     {
-        myPid.setTarget( _adjustAngleToExactDirection( myCurrentOriR_deg ) );
+        myPid.setTarget( CONSTS::adjustAngleToAlignGridDirection( myCurrentOriR_deg ) );
     }
 
     refreshIsLocked = false;
@@ -53,30 +53,4 @@ double MM::OrientationStabilizer::_shiftOrientationValueRespectedToTarget(float 
         retVal += 360.0;
     }
     return retVal;
-}
-
-float MM::OrientationStabilizer::_adjustAngleToExactDirection( float currentOrientation )
-{
-    if( -30.0 < currentOrientation && currentOrientation < 30 )
-    {
-        currentOrientation = 0.0;
-    }
-    else if( 60.0 < currentOrientation && currentOrientation < 120.0 )
-    {
-        currentOrientation = 90.0;
-    }
-    else if( -120.0 < currentOrientation && currentOrientation < -60.0 )
-    {
-        currentOrientation = -90.0;
-    }
-    else if( -180.0 < currentOrientation && currentOrientation < -150.0 )
-    {
-        currentOrientation = -179.9;
-    }
-    else if( 150.0 < currentOrientation && currentOrientation < 180.0 )
-    {
-        currentOrientation = 179.9;
-    }
-
-    return currentOrientation;
 }

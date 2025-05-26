@@ -16,7 +16,6 @@ public:
     void print() const override;
 private:
     double _shiftOrientationValueRespectedToTarget(float currentOrientation);
-    float _adjustAngleToExactDirection( float currentOrientation ); // TODO: USE THE ONE IN CONSTS HEADER WHEN IT IS AVAILABLE!!!
     // measure points
     float const& myCurrentOriR_deg;
 
