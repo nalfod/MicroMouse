@@ -3,6 +3,7 @@
 #include "wall_centering_command.h"
 #include "collision_avoidance_command.h"
 #include "rotation_command_pid.h"
+#include "arc_travel_command.h"
 #include "stuck_avoidance_command.h"
 #include "ori_offset_update_command.h"
 #include "movement_stabilizers/two_wall_stabilizer.h"
@@ -54,18 +55,26 @@ void MM::CommandExecuter::execute()
     }
 }
 
-void MM::CommandExecuter::addCommandRelativeToCurrentPos(int directionToMove_deg, uint16_t numberOfCellsToMove)
+void MM::CommandExecuter::addCommandRelativeToCurrentPos(int directionToMove_deg, uint16_t numberOfCellsToMove, float radius_mm)
 {
     if( directionToMove_deg != 0 )
     {
-        mCommandsToExecute.push( CommandToExecute(FORWARD_MOVEMENT_FOR_ALIGNMENT, 0) );
-        mCommandsToExecute.push( CommandToExecute(ROTATING_ON_GRID, directionToMove_deg) );
-        if( directionToMove_deg > 179.99 || directionToMove_deg < -179.99 )
+        if( radius_mm > CONSTS::EPSILON )
         {
-            // we use the U turn to recenter the mouse!
-            mCommandsToExecute.push( CommandToExecute(BACKWARD_MOVEMENT_FOR_ALIGNMENT, CONSTS::HALF_CELL_DISTANCE_MM) );
-            mCommandsToExecute.push( CommandToExecute(UPD_ORI_OFFSET_AND_CELL_POS_AT_BACKWALL, 0) );
+            mCommandsToExecute.push( CommandToExecute(ARC_MOVEMENT, directionToMove_deg) );
         }
+        else
+        {
+            mCommandsToExecute.push( CommandToExecute(FORWARD_MOVEMENT_FOR_ALIGNMENT, 0) );
+            mCommandsToExecute.push( CommandToExecute(ROTATING_ON_GRID, directionToMove_deg) );
+            if( directionToMove_deg > 179.99 || directionToMove_deg < -179.99 )
+            {
+                // we use the U turn to recenter the mouse!
+                mCommandsToExecute.push( CommandToExecute(BACKWARD_MOVEMENT_FOR_ALIGNMENT, CONSTS::HALF_CELL_DISTANCE_MM) );
+                mCommandsToExecute.push( CommandToExecute(UPD_ORI_OFFSET_AND_CELL_POS_AT_BACKWALL, 0) );
+            }
+        }
+        
     }
     if( numberOfCellsToMove != 0)
     {
@@ -284,6 +293,12 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommandUsingCur
         cmdToReturnP = std::make_unique<MM::OriOffsetUpdater>(mOriOffsetFlag);
         mCurrentCellPositionR.updatePositionInCellIfBackwardTouched();
         LOG_INFO("NEW UPD_ORI_OFFSET_AND_CELL_POS_AT_BACKWALL CMD \n");
+        break;
+    }
+    case ARC_MOVEMENT:
+    {
+        cmdToReturnP = std::make_unique<MM::ArcTravelCommand>( 180.0, commandParams.second, 500, 250, 500, encoderValueLeftR_rev, encoderValueRightR_rev, mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV);
+        //LOG_INFO("NEW ROTATION CMD: deg= %d \n", static_cast<int>(commandParams.second) );
         break;
     }
     default:
