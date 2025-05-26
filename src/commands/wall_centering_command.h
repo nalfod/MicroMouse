@@ -26,9 +26,6 @@ private:
     // controlled units
     int16_t& mLeftMotorVoltageR_mV;
     int16_t& mRightMotorVoltageR_mV;
-
-    // state flags
-    bool mStarted{false};
 };
 
 } // namespace MM
