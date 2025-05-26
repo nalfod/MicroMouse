@@ -20,7 +20,7 @@ class Maze {
 
         void reCalcMaze(bool toMid);
 
-        int getWeightOfCell(int x, int y);
+        float getWeightOfCell(int x, int y);
 
         void closeMidCells(int x, int y);
         void closeUnknownCells();
@@ -33,7 +33,7 @@ class Maze {
         std::string getShortestRoute2(int x, int y);
 
         void calcForSpeedRun(bool toMid);
-        void floodDirectionSpeedRun(CONSTS::Direction checkDirection, int x, int y, CONSTS::Direction currentDir, int sameInRow, int weight);
+        void floodDirectionSpeedRun(CONSTS::Direction checkDirection, int x, int y, CONSTS::Direction currentDir, int sameInRow, float weight);
     private:
         void initMaze();
 

@@ -40,8 +40,18 @@ bool LocationController::updateWalls()
 std::string LocationController::findRouteForSpeedRun()
 {
     toMid = !toMid;
-
+    LOG_INFO("CALCFORSPEED START\n");
     maze.calcForSpeedRun(toMid);
+    LOG_INFO("CALCFORSPEED END\n");
+    for(int u = 0; u < 3; u++) {
+    for(int i = 7; i >= 0; i--)
+    {
+        for(int j = 0; j < 8; j++)
+        {
+            LOG_INFO("%d %d -- %F\n",i, j, maze.getWeightOfCell(i, j) );
+        }
+    }
+}
     return maze.findShortestRoute(mCurrentPositionR.getPosX(),mCurrentPositionR.getPosY());
 
     //maze.reCalcMaze(toMid);

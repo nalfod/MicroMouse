@@ -55,6 +55,7 @@ int Maze::calcBaseVal(int x, int y) {
 }
 
 void Maze::updateCellWallMask(int x, int y, int wall) {
+    LOG_INFO("VISITED %d %d\n", x, y);
     cells[x][y].isVisited(true);
     cells[x][y].setWallMask(wall);
     updateNeighbourWalls(x,y);
@@ -87,6 +88,9 @@ void Maze::updateNeighbourWalls(int x, int y)
 CONSTS::Direction Maze::simpleMove(int currx, int curry) {
     Cell& c = cells[currx][curry];
 
+    LOG_INFO("MY CELL:  %d  %d  %F\n", currx, curry, c.getWeight());
+    LOG_INFO("N: %d %d %F\n", static_cast<int>(c.isAccessible(CONSTS::Direction::NORTH)), static_cast<int>(isValidPos(currx+1)),
+    cells[currx+1][curry].getWeight());
     if( c.isAccessible(CONSTS::Direction::NORTH) && isValidPos(currx+1) &&
         (cells[currx+1][curry].getWeight() < c.getWeight())) 
     {
@@ -282,7 +286,7 @@ void Maze::floodMaze(int x, int y, int stepCount)
     }
 }
 
-int Maze::getWeightOfCell(int x, int y)
+float Maze::getWeightOfCell(int x, int y)
 {
     return cells[x][y].getWeight();
 }
@@ -297,6 +301,7 @@ void Maze::closeUnknownCells()
             {
                 int wallMask = (CONSTS::Direction::NORTH | CONSTS::Direction::EAST | CONSTS::Direction::SOUTH | CONSTS::Direction::WEST);
                 updateCellWallMask(i, j, wallMask);
+                LOG_INFO("CLOSE CELL: %d %d\n", i ,j);
             }
         }
     }
@@ -387,6 +392,7 @@ std::string Maze::findShortestRoute(int x, int y)
     while(currentCell->getWeight() != 0)
     {
         CONSTS::Direction toDirection = simpleMove(x,y);
+        LOG_INFO("STEP: %d   %d  %d  %d\n", x, y, step, static_cast<int>(toDirection));
         switch (toDirection)
         {
         case CONSTS::Direction::NORTH:
@@ -410,7 +416,6 @@ std::string Maze::findShortestRoute(int x, int y)
         }
         step++;
         currentCell = &cells[x][y];
-        LOG_INFO("STEP: %d\n", step);
         for(int i = 0; i < route.size(); ++i)
         {
             LOG_INFO("FIND SHORT ROUTE: %d,  %c\n",i,route[i]);
@@ -453,12 +458,25 @@ void Maze::calcForSpeedRun(bool toMid)
     }
     CONSTS::Direction startDir = (CONSTS::Direction)(cells[posx][posy].getWallMask()^15);
     floodMazeSpeedRun(posx,posy,0,0,startDir);
+    LOG_INFO("FLOOD END %d\n", static_cast<int>(startDir));
+    for(int u = 0; u < 3; u++) {
+    for(int i = 7; i >= 0; i--)
+    {
+        for(int j = 0; j < 8; j++)
+        {
+            LOG_INFO("FLOOD END %d\n", static_cast<int>(startDir));
+            LOG_INFO("%d %d -- %F %f %d\n",i, j, cells[i][j].getWeight(), cells[i][j].getWeight(), static_cast<int>(cells[i][j].getWeight()));
+        }
+    }
+    }
+    LOG_INFO("FLOOD END2\n");
 }
 
-void Maze::floodDirectionSpeedRun(CONSTS::Direction checkDirection, int x, int y, CONSTS::Direction currentDir, int sameInRow, int weight)
+void Maze::floodDirectionSpeedRun(CONSTS::Direction checkDirection, int x, int y, CONSTS::Direction currentDir, int sameInRow, float weight)
 {
     if( cells[x][y].isAccessible(checkDirection) )
     {
+        LOG_INFO("DIR AVA: %d   %d\n", static_cast<int>(checkDirection), cells[x][y].getWallMask());
         switch (checkDirection)
         {
             case CONSTS::Direction::NORTH:
@@ -493,7 +511,7 @@ void Maze::floodDirectionSpeedRun(CONSTS::Direction checkDirection, int x, int y
             else
             {
                 newSameInRow++;
-                newWeight += std::pow(0.6,newSameInRow);
+                newWeight += std::pow(0.5,newSameInRow);
             }
             floodMazeSpeedRun(x,y,newWeight,newSameInRow,newDir);
         }
@@ -504,12 +522,18 @@ void Maze::floodMazeSpeedRun(int x, int y, float weight, int sameInRow, CONSTS::
 {   
     if( cells[x][y].getWeight() <= weight)
     {
+        LOG_INFO("FLOOD OFF: %d, %d\n", x, y);
         return;
     }
+    LOG_INFO("FLOOD SPEED: %d, %d, %F, %f\n", x, y, weight, weight);
     cells[x][y].setWeight(weight);
 
+    LOG_INFO("TRY N %d %d %F\n", x, y,cells[x][y].getWeight());
     floodDirectionSpeedRun(CONSTS::Direction::NORTH, x, y, currentDir, sameInRow, weight);
+    LOG_INFO("TRY E\n");
     floodDirectionSpeedRun(CONSTS::Direction::EAST, x, y, currentDir, sameInRow, weight);
+    LOG_INFO("TRY S\n");
     floodDirectionSpeedRun(CONSTS::Direction::SOUTH, x, y, currentDir, sameInRow, weight);
+    LOG_INFO("TRY W\n");
     floodDirectionSpeedRun(CONSTS::Direction::WEST, x, y, currentDir, sameInRow, weight);
 }

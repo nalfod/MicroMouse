@@ -1,5 +1,5 @@
 #include "cell.h"
-
+#include "utils/logging.h"
 Cell::Cell(int x, int y, int wall, float weight):
     mX(x),
     mY(y),
@@ -24,6 +24,7 @@ float Cell::getWeight() const
 void Cell::setWeight(float newWeight)
 {
     mWeight = newWeight;
+    LOG_INFO("WEIGHT OF %d  %d to %F\n", mX, mY, mWeight);
 }
 
 int Cell::getWallMask()
