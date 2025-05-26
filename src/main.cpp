@@ -107,17 +107,10 @@ void setup()
   // Wait 5 sec to be able to connect with mobile!
   delay(5000);
 
-  if( g.mode_selector.get_current_mode() == CONSTS::MODES::SPEED_RUN )
+  if( g.mode_selector.get_current_mode() == CONSTS::MODES::TESTING )
   {
-      g.commandExecuter.addCommandRelativeToCurrentPos(0, 1);
-      g.commandExecuter.addCommandRelativeToCurrentPos(90, 2);
-      g.commandExecuter.addCommandRelativeToCurrentPos(180, 1);
-      g.commandExecuter.addCommandRelativeToCurrentPos(90, 1);
-      g.commandExecuter.addCommandRelativeToCurrentPos(180, 1);
-      g.commandExecuter.addCommandRelativeToCurrentPos(90, 1);
-      g.commandExecuter.addCommandRelativeToCurrentPos(180, 1);
-      g.commandExecuter.addCommandRelativeToCurrentPos(90, 1);
-      g.commandExecuter.addCommandRelativeToCurrentPos(180, 1);
+      g.commandExecuter.addCommandRelativeToCurrentPos(0, 2);
+      g.commandExecuter.addCommandRelativeToCurrentPos(90, 1, 180);
       //g.commandExecuter.addCommandRelativeToCurrentPos(90, 2);
       //g.commandExecuter.addCommandRelativeToCurrentPos(90, 1);
   }

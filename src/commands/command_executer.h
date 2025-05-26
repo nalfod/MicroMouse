@@ -24,7 +24,8 @@ namespace MM
                              bool& oriOffsetFlag);
             void execute();
             bool isFinished() const;
-            void addCommandRelativeToCurrentPos(int directionToMove_deg, uint16_t numberOfCellsToMove);
+            // TODO: refactor this, very ugly!
+            void addCommandRelativeToCurrentPos(int directionToMove_deg, uint16_t numberOfCellsToMove, float radius_mm = 0.0);
 
             void parseRouteForSpeedRun(std::string route);
 
@@ -35,7 +36,8 @@ namespace MM
                 FORWARD_MOVEMENT_BY_CELL_NUMBER = 1,
                 FORWARD_MOVEMENT_FOR_ALIGNMENT = 2,
                 ROTATING = 3,
-                ROTATING_ON_GRID = 4, // need to be fixed!!!
+                ROTATING_ON_GRID = 4, // need to be fixed!!!,
+                ARC_MOVEMENT = 5,
 
 
                 BACKWARD_MOVEMENT_FOR_ALIGNMENT = 7,

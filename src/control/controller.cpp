@@ -50,6 +50,13 @@ void MM::control()
       //delay(2000);
     }
   }
+  else if( g.mode_selector.get_current_mode() == CONSTS::MODES::TESTING )
+  {
+    if( !g.commandExecuter.isFinished() )
+    {
+      g.commandExecuter.execute();
+    }
+  }
 }
 
 void MM::check_mode_selector()
