@@ -38,8 +38,7 @@ namespace MM
                 ROTATING = 3,
                 ROTATING_ON_GRID = 4, // need to be fixed!!!,
                 ARC_MOVEMENT = 5,
-
-
+                FORWARD_MOVEMENT_RAW = 6,
                 BACKWARD_MOVEMENT_FOR_ALIGNMENT = 7,
                 UPD_ORI_OFFSET_AND_CELL_POS_AT_BACKWALL = 8
             };

@@ -109,7 +109,7 @@ void setup()
 
   if( g.mode_selector.get_current_mode() == CONSTS::MODES::TESTING )
   {
-      g.commandExecuter.addCommandRelativeToCurrentPos(0, 2);
+      g.commandExecuter.addCommandRelativeToCurrentPos(0, 1);
       g.commandExecuter.addCommandRelativeToCurrentPos(90, 1, 180);
       //g.commandExecuter.addCommandRelativeToCurrentPos(90, 2);
       //g.commandExecuter.addCommandRelativeToCurrentPos(90, 1);
