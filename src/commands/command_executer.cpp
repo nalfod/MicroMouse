@@ -62,9 +62,9 @@ void MM::CommandExecuter::addCommandRelativeToCurrentPos(int directionToMove_deg
         if( radius_mm > CONSTS::EPSILON )
         {
             
-            mCommandsToExecute.push( CommandToExecute(FORWARD_MOVEMENT_RAW, CONSTS::HALF_CELL_DISTANCE_MM) );
+            mCommandsToExecute.push( CommandToExecute(FORWARD_MOVEMENT_RAW, 30.0) );
             mCommandsToExecute.push( CommandToExecute(ARC_MOVEMENT, directionToMove_deg) );
-            mCommandsToExecute.push( CommandToExecute(FORWARD_MOVEMENT_RAW, CONSTS::HALF_CELL_DISTANCE_MM) );
+            mCommandsToExecute.push( CommandToExecute(FORWARD_MOVEMENT_RAW, 30.0) );
         }
         else
         {

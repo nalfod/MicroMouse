@@ -22,7 +22,8 @@ MM::ArcTravelCommand::ArcTravelCommand(float radius_mm, float angle_deg, float s
       mRightMotorVoltageR_mV(rightMotorVoltage_mV)
 {
     mTotalTimeOfTravel_ms = myTargetSpeedCalculator.getTotalTimeOfTravel_Ms();
-    myMovementCtrl.init(1, AUTOMATIC, -1000, 1000);
+    myMovementCtrlLeft.init(1, AUTOMATIC, -1000, 1000);
+    myMovementCtrlRight.init(1, AUTOMATIC, -1000, 1000);
 }
 
 void MM::ArcTravelCommand::execute()
@@ -51,25 +52,30 @@ void MM::ArcTravelCommand::execute()
     else
     {
         // Target speed along the arc
-        float outputSpeed_mm_per_s = myTargetSpeedCalculator.calcCurrentTargetSpeed_mmPerS(mElapsedTime_ms);
-        mDesiredCurrentPosition_mm += static_cast<float>(outputSpeed_mm_per_s * timeChange_ms) / 1000.0f;
+        // V_left = V * (R + W/2) / R, V_right = V * (R - W/2) / R
+        float outputSpeedCenter_mm_per_s = myTargetSpeedCalculator.calcCurrentTargetSpeed_mmPerS(mElapsedTime_ms);
+        float outputSpeedLeft_mm_per_s = outputSpeedCenter_mm_per_s * (mRadius_mm + mDirection * CONSTS::WHEEL_BASE_MM / 2.0f) / mRadius_mm;
+        float outputSpeedRight_mm_per_s = outputSpeedCenter_mm_per_s * (mRadius_mm - mDirection * CONSTS::WHEEL_BASE_MM / 2.0f) / mRadius_mm;
+        mDesiredCurrentPositionLeft_mm += static_cast<float>(outputSpeedLeft_mm_per_s * timeChange_ms) / 1000.0f;
+        mDesiredCurrentPositionRight_mm += static_cast<float>(outputSpeedRight_mm_per_s * timeChange_ms) / 1000.0f;
 
         // Real distance traveled (average of both wheels)
         float traveledLeft_mm = myEncIntegratorLeft.getTraveledDistanceSinceLastInvoke_mm();
         float traveledRight_mm = myEncIntegratorRight.getTraveledDistanceSinceLastInvoke_mm();
         float traveledDistance_mm = (traveledLeft_mm + traveledRight_mm) / 2.0f;
-        mRealCurrentPosition_mm += traveledDistance_mm;
+        mRealCurrentPositionLeft_mm += traveledLeft_mm;
+        mRealCurrentPositionRight_mm += traveledRight_mm;
 
         // PID controlling
-        myMovementCtrl.setTarget(static_cast<double>(mDesiredCurrentPosition_mm));
-        myMovementCtrl.compute(static_cast<double>(mRealCurrentPosition_mm));
+        myMovementCtrlLeft.setTarget(static_cast<double>(mDesiredCurrentPositionLeft_mm));
+        myMovementCtrlLeft.compute(static_cast<double>(mRealCurrentPositionLeft_mm));
+        myMovementCtrlRight.setTarget(static_cast<double>(mDesiredCurrentPositionRight_mm));
+        myMovementCtrlRight.compute(static_cast<double>(mRealCurrentPositionRight_mm));
 
         // Calculate wheel speeds for arc
-        // V_left = V * (R + W/2) / R, V_right = V * (R - W/2) / R
-        constexpr float WHEEL_BASE_MM = CONSTS::WHEEL_BASE_MM; // define in constants.h
-        float v = outputSpeed_mm_per_s + static_cast<float>(myMovementCtrl.getOuput());
-        float v_left = v * (mRadius_mm + mDirection * WHEEL_BASE_MM / 2.0f) / mRadius_mm;
-        float v_right = v * (mRadius_mm - mDirection * WHEEL_BASE_MM / 2.0f) / mRadius_mm;
+        
+        float v_left = outputSpeedLeft_mm_per_s + static_cast<float>(myMovementCtrlLeft.getOuput());
+        float v_right = outputSpeedRight_mm_per_s + static_cast<float>(myMovementCtrlRight.getOuput());
 
         int16_t voltageLeft = calcVoltageFromSpeed_mV(v_left);
         int16_t voltageRight = calcVoltageFromSpeed_mV(v_right);
@@ -99,6 +105,7 @@ int16_t MM::ArcTravelCommand::calcVoltageFromSpeed_mV(float setSpeed_mm_per_s)
 
 void MM::ArcTravelCommand::print() const
 {
+    /*
     LOG_INFO("ARC_TRAV_CMD: TOT_T: %d ELAPS_T: %d DDIST: %d RDIST: %d PID_OUT: %d ANGLE: %d RADIUS: %d\n",
         mTotalTimeOfTravel_ms,
         mElapsedTime_ms,
@@ -107,13 +114,13 @@ void MM::ArcTravelCommand::print() const
         static_cast<int>(myMovementCtrl.getOuput()),
         static_cast<int>(mAngle_deg),
         static_cast<int>(mRadius_mm)
-    );
+    );*/
 }
 
 MM::CommandResult MM::ArcTravelCommand::getResult()
 {
     // Distance and angle actually traveled
-    float avgDistance = mRealCurrentPosition_mm;
+    float avgDistance = 0;
     float angle = mAngle_deg; // Could be refined using encoders if needed
     // TODO: HANDLE THIS CASE IN CELL POSITION AS WELL SOMEHOW!!!!!
     return CommandResult(avgDistance, angle);
