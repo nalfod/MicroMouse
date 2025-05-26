@@ -34,7 +34,8 @@ private:
     TargetSpeedCalculator myTargetSpeedCalculator;
     EncoderValueIntegrator myEncIntegratorLeft;
     EncoderValueIntegrator myEncIntegratorRight;
-    PidWrapper myMovementCtrl{30, 300, 0.1};
+    PidWrapper myMovementCtrlLeft{30, 300, 0.1};
+    PidWrapper myMovementCtrlRight{30, 300, 0.1};
 
     int16_t& mLeftMotorVoltageR_mV;
     int16_t& mRightMotorVoltageR_mV;
@@ -49,8 +50,10 @@ private:
     unsigned long mTotalTimeOfTravel_ms{0};
 
     // distance variables
-    float mRealCurrentPosition_mm{0}; // average of both wheels
-    float mDesiredCurrentPosition_mm{0};
+    float mRealCurrentPositionLeft_mm{0};
+    float mRealCurrentPositionRight_mm{0};
+    float mDesiredCurrentPositionLeft_mm{0};
+    float mDesiredCurrentPositionRight_mm{0};
 };
 
 } // namespace MM
