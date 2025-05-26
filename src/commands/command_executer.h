@@ -34,7 +34,8 @@ namespace MM
                 FORWARD_MOVEMENT_FOR_ALIGNMENT = 2,
                 ROTATING = 3,
                 ROTATING_ON_GRID = 4, // need to be fixed!!!,
-                ARC_MOVEMENT = 5
+                ARC_MOVEMENT = 5,
+                FORWARD_MOVEMENT_RAW = 6
             };
             // first pair value is the movement type, second one is the specific magnitude (eg.: distance or angle)
             using CommandToExecute = std::pair< MovementPrimitives, int >;
