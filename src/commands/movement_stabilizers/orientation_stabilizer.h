@@ -21,6 +21,7 @@ private:
     float const& myCurrentOriR_deg;
 
     PidWrapper myPid;
+    bool refreshIsLocked{false};
 };
 
 }

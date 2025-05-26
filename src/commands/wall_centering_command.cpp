@@ -12,11 +12,6 @@ mRightMotorVoltageR_mV(rightMotorVoltage_mV)
 
 void MM::WallCenteringCommand::execute()
 {
-    if( !mStarted )
-    {
-        mStarted = true;
-    }
-
     if( myWrappedCommandP.get() != nullptr )
     {
         myWrappedCommandP->execute();
@@ -41,7 +36,7 @@ bool MM::WallCenteringCommand::isFinished() const
     }
     else
     {
-        // without wrapped command runs forever
+        // without wrapped command, runs forever
         return false;
     }
 }

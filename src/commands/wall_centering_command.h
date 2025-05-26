@@ -19,14 +19,10 @@ public:
     void print() const override;
 private:
     void executeWallCenteringControl();
-    void executeCenteringUsingWallDistance();
-    void executeCenteringUsingOrientation();
-    bool isCenteringWithWallsPossible() const;
-    double shiftOrientationValueRespectedToTarget(float currentOrientation);
 
     std::unique_ptr<MotionCommandIF> myWrappedCommandP;
     std::vector<std::unique_ptr<MM::MovementStabilizerIF>> myStabilizers;
-    
+
     // controlled units
     int16_t& mLeftMotorVoltageR_mV;
     int16_t& mRightMotorVoltageR_mV;

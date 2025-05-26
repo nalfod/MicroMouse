@@ -14,6 +14,7 @@ int16_t MM::OrientationStabilizer::executeControlling()
 {
     float currentOriShifetd = _shiftOrientationValueRespectedToTarget( myCurrentOriR_deg );
     myPid.compute( currentOriShifetd );
+    refreshIsLocked = true;
     return static_cast<int16_t>( myPid.getOuput() );
 }
 
@@ -25,7 +26,12 @@ bool MM::OrientationStabilizer::isApplicable() const
 
 void MM::OrientationStabilizer::refreshMyTarget()
 {
-    myPid.setTarget( _adjustAngleToExactDirection( myCurrentOriR_deg ) );
+    if( !refreshIsLocked )
+    {
+        myPid.setTarget( _adjustAngleToExactDirection( myCurrentOriR_deg ) );
+    }
+
+    refreshIsLocked = false;
 }
 
 void MM::OrientationStabilizer::print() const
