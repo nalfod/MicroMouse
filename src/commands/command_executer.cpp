@@ -250,7 +250,12 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommand(Command
         break;
     }
     case FORWARD_MOVEMENT_RAW:
-        {
+    {
+        std::vector<std::unique_ptr<MM::MovementStabilizerIF>> stabilizers;
+        stabilizers.push_back(std::make_unique<TwoWallStabilizer>(mDistFrontLeftR_mm, mDistFrontRightR_mm));
+        stabilizers.push_back(std::make_unique<OneWallStabilizer>(mDistFrontLeftR_mm, mDistFrontRightR_mm));
+        stabilizers.push_back(std::make_unique<OrientationStabilizer>(myCurrentOriR_deg));
+
         cmdToReturnP = std::make_unique<MM::CollisionAvoidanceCommand>
                 ( 
                 std::make_unique<MM::WallCenteringCommand>
@@ -259,7 +264,7 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommand(Command
                     (
                         commandParams.second, 500, 250, 500, encoderValueLeftR_rev, encoderValueRightR_rev, mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV
                     ), 
-                    mDistFrontLeftR_mm, mDistFrontRightR_mm, myCurrentOriR_deg, mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV 
+                    std::move( stabilizers ), mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV 
                 ),
                 mDistLeftR_mm, mDistRightR_mm, mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV
                 );
