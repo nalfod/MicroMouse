@@ -23,8 +23,10 @@ class CellPosition
         void printMyself();
     private:
         void _updateDirection(float rotDeg);
-        void _increasePositionInCell(float traveled_distance_magnitude);
-        void _setCurrentDirection(CONSTS::Direction direction);
+        void _nullPositionInCellAfterRotation();
+
+        void _updatePositionInCell(float parallel_trav_dist_mm, float perpendicular_trav_dist_mm);
+        
         
 
         
