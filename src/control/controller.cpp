@@ -27,7 +27,7 @@ void MM::control()
         int nextMovement = g.locController.calcNextMovement();
         if( nextMovement != -2)
         {
-          g.commandExecuter.addCommandRelativeToCurrentPos( nextMovement , 1);
+          g.commandExecuter.addTravelCommandRelativeToActualPos( nextMovement , 1);
         }
         else
         {

@@ -50,28 +50,27 @@ void MM::CommandExecuter::execute()
     }
 }
 
-void MM::CommandExecuter::addCommandRelativeToCurrentPos(int directionToMove_deg, uint16_t numberOfCellsToMove, float radius_mm)
+void MM::CommandExecuter::addTravelCommandRelativeToActualPos(int directionToMove_deg, uint16_t numberOfCellsToMove)
 {
     if( directionToMove_deg != 0 )
     {
-        if( radius_mm > CONSTS::EPSILON )
-        {
-            
-            mCommandsToExecute.push( CommandToExecute(FORWARD_MOVEMENT_RAW, 80.0) );
-            mCommandsToExecute.push( CommandToExecute(ARC_MOVEMENT, directionToMove_deg) );
-            mCommandsToExecute.push( CommandToExecute(FORWARD_MOVEMENT_RAW, 80.0) );
-        }
-        else
-        {
-            mCommandsToExecute.push( CommandToExecute(FORWARD_MOVEMENT_FOR_ALIGNMENT, 0) );
-            mCommandsToExecute.push( CommandToExecute(ROTATING, directionToMove_deg) );
-        }
-        
+        mCommandsToExecute.push( CommandToExecute(FORWARD_MOVEMENT_FOR_ALIGNMENT, 0) );
+        mCommandsToExecute.push( CommandToExecute(ROTATING, directionToMove_deg) );
     }
     if( numberOfCellsToMove != 0)
     {
         mCommandsToExecute.push( CommandToExecute(FORWARD_MOVEMENT_BY_CELL_NUMBER, numberOfCellsToMove ) );
     }
+}
+
+void MM::CommandExecuter::addHalfCellTravelCommand()
+{
+    mCommandsToExecute.push( CommandToExecute(FORWARD_MOVEMENT_RAW, 90.0) );
+}
+
+void MM::CommandExecuter::addArcTravelCommand( float angleToTurn_deg )
+{
+    mCommandsToExecute.push( CommandToExecute(ARC_MOVEMENT, angleToTurn_deg) );
 }
 
 bool MM::CommandExecuter::isFinished() const
@@ -146,7 +145,7 @@ void  MM::CommandExecuter::parseRouteForSpeedRun(std::string route)
         {
             moveCellNo = 0;
         }
-        addCommandRelativeToCurrentPos( CONSTS::getRotationAngle( currentDir, toDirection ), moveCellNo);
+        addTravelCommandRelativeToActualPos( CONSTS::getRotationAngle( currentDir, toDirection ), moveCellNo);
         currentDir = toDirection;
     }
 }
@@ -245,8 +244,7 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommand(Command
     }
     case ARC_MOVEMENT:
     {
-        cmdToReturnP = std::make_unique<MM::ArcTravelCommand>( 100.0, commandParams.second, 500, 250, 500, encoderValueLeftR_rev, encoderValueRightR_rev, mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV);
-        //LOG_INFO("NEW ROTATION CMD: deg= %d \n", static_cast<int>(commandParams.second) );
+        cmdToReturnP = std::make_unique<MM::ArcTravelCommand>( 90.0, commandParams.second, 500, 250, 500, encoderValueLeftR_rev, encoderValueRightR_rev, mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV);
         break;
     }
     case FORWARD_MOVEMENT_RAW:
@@ -268,7 +266,6 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommand(Command
                 ),
                 mDistLeftR_mm, mDistRightR_mm, mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV
                 );
-        //LOG_INFO("NEW ROTATION CMD: deg= %d \n", static_cast<int>(commandParams.second) );
         break;
     }
     default:
