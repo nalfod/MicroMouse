@@ -34,7 +34,8 @@ struct Globals {
     int16_t rightMotorVoltage{0};
 
 // Position and location control
-    CellPosition currentCellPosition{-35.0, 0.0, CONSTS::Direction::NORTH};
+    //CellPosition currentCellPosition{-35.0, 0.0, CONSTS::Direction::NORTH};
+    CellPosition currentCellPosition{0.0, 0.0, CONSTS::Direction::NORTH};
     LocationController locController{7, currentCellPosition, dist_left_mm, dist_right_mm, dist_frontleft_mm, dist_frontright_mm};
 
 // Mode selector =================================================
