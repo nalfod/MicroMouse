@@ -109,14 +109,27 @@ void setup()
 
   if( g.mode_selector.get_current_mode() == CONSTS::MODES::TESTING )
   {
-      g.commandExecuter.addCommandRelativeToCurrentPos(0, 1);
-      g.commandExecuter.addCommandRelativeToCurrentPos(90, 0, 180);
-      g.commandExecuter.addCommandRelativeToCurrentPos(90, 0, 180);
-      g.commandExecuter.addCommandRelativeToCurrentPos(-90, 0, 180);
-      g.commandExecuter.addCommandRelativeToCurrentPos(-90, 0, 180);
-      g.commandExecuter.addCommandRelativeToCurrentPos(90, 0, 180);
-      //g.commandExecuter.addCommandRelativeToCurrentPos(90, 2);
-      //g.commandExecuter.addCommandRelativeToCurrentPos(90, 1);
+      g.commandExecuter.addTravelCommandRelativeToActualPos(0, 1);
+
+      g.commandExecuter.addHalfCellTravelCommand();
+      g.commandExecuter.addArcTravelCommand(90);
+      g.commandExecuter.addHalfCellTravelCommand();
+
+      g.commandExecuter.addHalfCellTravelCommand();
+      g.commandExecuter.addArcTravelCommand(90);
+      g.commandExecuter.addHalfCellTravelCommand();
+
+      g.commandExecuter.addHalfCellTravelCommand();
+      g.commandExecuter.addArcTravelCommand(-90);
+      g.commandExecuter.addHalfCellTravelCommand();
+
+      g.commandExecuter.addHalfCellTravelCommand();
+      g.commandExecuter.addArcTravelCommand(-90);
+      g.commandExecuter.addHalfCellTravelCommand();
+
+      g.commandExecuter.addHalfCellTravelCommand();
+      g.commandExecuter.addArcTravelCommand(90);
+      g.commandExecuter.addHalfCellTravelCommand();
   }
   //mouse.accelerometer.myAngRotMeter.startMeasurement();
   LOG_INFO("Setup Done\n");

@@ -25,7 +25,10 @@ namespace MM
             void execute();
             bool isFinished() const;
             // TODO: refactor this, very ugly!
-            void addCommandRelativeToCurrentPos(int directionToMove_deg, uint16_t numberOfCellsToMove, float radius_mm = 0.0);
+            void addTravelCommandRelativeToActualPos(int directionToMove_deg, uint16_t numberOfCellsToMove);
+
+            void addHalfCellTravelCommand();
+            void addArcTravelCommand( float angleToTurn_deg );
 
             void parseRouteForSpeedRun(std::string route);
 
