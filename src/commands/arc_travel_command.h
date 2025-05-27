@@ -23,6 +23,7 @@ public:
 
 private:
     int16_t calcVoltageFromSpeed_mV(float setSpeed_mm_per_s);
+    std::pair<float, float> _calculateMyResult();
 
     // Arc parameters
     float mRadius_mm;

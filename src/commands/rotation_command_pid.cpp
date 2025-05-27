@@ -82,5 +82,5 @@ MM::CommandResult MM::RotationCommandPid::getResult()
 {
     // This is not quite true since we are using the target value and not the measured one, but it is good for now
     // FIXME: If a wrapper is added which can interrupt the rotation, this should be fixed nevertheless!
-    return CommandResult(0.0, myTargetMagnitude_deg );
+    return CommandResult(0.0, 0.0, myTargetMagnitude_deg );
 }

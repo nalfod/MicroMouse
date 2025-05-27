@@ -12,78 +12,81 @@ mYPositionInCell_mm(startYPosInCell)
 void MM::CellPosition::updatePosition(CommandResult movementResult)
 {
     movementResult.print();
-    if( std::abs(movementResult.distance_traveled_mm) > 0.0 && std::abs(movementResult.angle_turned_deg) > 0.0 )
-    {
-        // Wrong input, only one of the values should be changed at once
-        return;
-    }
 
-    if( std::abs(movementResult.distance_traveled_mm) > 0.0 )
+    if( std::abs(movementResult.dist_traveled_parallel_mm) > 0.0 || std::abs(movementResult.dist_traveled_perpendicular_mm) > 0.0 )
     {
-        _increasePositionInCell( movementResult.distance_traveled_mm );
+        _updatePositionInCell( movementResult.dist_traveled_parallel_mm, movementResult.dist_traveled_perpendicular_mm );
     }
-    else if( std::abs(movementResult.angle_turned_deg) > 0.0 )
+    
+    if( std::abs(movementResult.angle_turned_deg) > 0.0 )
     {
         _updateDirection( CONSTS::adjustAngleToAlignGridDirection( movementResult.angle_turned_deg ) );
+        if ( std::abs(movementResult.dist_traveled_parallel_mm) < CONSTS::EPSILON && std::abs(movementResult.dist_traveled_perpendicular_mm) < CONSTS::EPSILON )
+        {
+            // pure rotation
+            _nullPositionInCellAfterRotation();
+        }
     }
     printMyself();
 }
 
 void MM::CellPosition::_updateDirection(float rotDeg)
 {
-    _setCurrentDirection( CONSTS::getDirectionAfterRotation(mCurrentDirection, rotDeg) );
-}
-
-void MM::CellPosition::_setCurrentDirection(CONSTS::Direction direction) 
-{
-    if( direction != mCurrentDirection )
+    CONSTS::Direction newDirection = CONSTS::getDirectionAfterRotation(mCurrentDirection, rotDeg);
+    if( newDirection != mCurrentDirection )
     {
-        mCurrentDirection = direction;
-        // This is a huge cheat which basically corrects the behavior that after turning the mouse is not in the middle
-        // Now this treats 90 deg and 180 deg turns equally, which is probably not true --> more precise measurement is needed!
-        switch (mCurrentDirection)
-        {
-            case CONSTS::Direction::NORTH:
-                mXPositionInCell_mm = 30.00;
-                mYPositionInCell_mm = 0;
-                break;
-            case CONSTS::Direction::SOUTH:
-                mXPositionInCell_mm = -30.00;
-                mYPositionInCell_mm = 0;
-                break;
-            case CONSTS::Direction::EAST:
-                mXPositionInCell_mm = 0;
-                mYPositionInCell_mm = 30.00;
-                break;
-            case CONSTS::Direction::WEST:
-                mXPositionInCell_mm = 0;
-                mYPositionInCell_mm = -30.00;
-                break;
-            default:
-                // Nope
-                break;
-        }
+        mCurrentDirection = newDirection;
     }
 }
 
-void MM::CellPosition::_increasePositionInCell(float traveled_distance_magnitude) 
-{
-    // NOTE: the function cannot be used with negative traveled ditance, hence the argument name!
-    traveled_distance_magnitude = std::abs(traveled_distance_magnitude);
-
+void MM::CellPosition::_nullPositionInCellAfterRotation() 
+{   
+    // This is a huge cheat which basically corrects the behavior that after turning the mouse is not in the middle
+    // Now this treats 90 deg and 180 deg turns equally, which is probably not true --> more precise measurement is needed!
+    // TODO: refactor, if possible, so this happens through the regular updatePositionInCell
     switch (mCurrentDirection)
     {
         case CONSTS::Direction::NORTH:
-            mXPositionInCell_mm += traveled_distance_magnitude;
+            mXPositionInCell_mm = 30.00;
+            mYPositionInCell_mm = 0;
             break;
         case CONSTS::Direction::SOUTH:
-            mXPositionInCell_mm -= traveled_distance_magnitude;
+            mXPositionInCell_mm = -30.00;
+            mYPositionInCell_mm = 0;
             break;
         case CONSTS::Direction::EAST:
-            mYPositionInCell_mm += traveled_distance_magnitude;
+            mXPositionInCell_mm = 0;
+            mYPositionInCell_mm = 30.00;
             break;
         case CONSTS::Direction::WEST:
-            mYPositionInCell_mm -= traveled_distance_magnitude;
+            mXPositionInCell_mm = 0;
+            mYPositionInCell_mm = -30.00;
+            break;
+        default:
+            // Nope
+            break;
+    }
+}
+
+void MM::CellPosition::_updatePositionInCell(float parallel_trav_dist_mm, float perpendicular_trav_dist_mm) 
+{
+    switch (mCurrentDirection)
+    {
+        case CONSTS::Direction::NORTH:
+            mXPositionInCell_mm += parallel_trav_dist_mm;
+            mYPositionInCell_mm += perpendicular_trav_dist_mm;
+            break;
+        case CONSTS::Direction::SOUTH:
+            mXPositionInCell_mm -= parallel_trav_dist_mm;
+            mYPositionInCell_mm -= perpendicular_trav_dist_mm;
+            break;
+        case CONSTS::Direction::EAST:
+            mXPositionInCell_mm -= perpendicular_trav_dist_mm;
+            mYPositionInCell_mm += parallel_trav_dist_mm;
+            break;
+        case CONSTS::Direction::WEST:
+            mXPositionInCell_mm += perpendicular_trav_dist_mm;
+            mYPositionInCell_mm -= parallel_trav_dist_mm;
             break;
         default:
             // Nope
@@ -92,7 +95,7 @@ void MM::CellPosition::_increasePositionInCell(float traveled_distance_magnitude
 
     // Handle overflow for X and Y positions, possibly for multiple cells
     // TODO: written by copilot, prove if it works!
-    while (std::abs(mXPositionInCell_mm) >= CONSTS::HALF_CELL_DISTANCE_MM) {
+    while (std::abs(mXPositionInCell_mm) > CONSTS::HALF_CELL_DISTANCE_MM) {
         if (mXPositionInCell_mm > 0) {
             mXPositionInCell_mm -= 2 * CONSTS::HALF_CELL_DISTANCE_MM;
             mPosX += 1;
@@ -102,7 +105,7 @@ void MM::CellPosition::_increasePositionInCell(float traveled_distance_magnitude
         }
     }
 
-    while (std::abs(mYPositionInCell_mm) >= CONSTS::HALF_CELL_DISTANCE_MM) {
+    while (std::abs(mYPositionInCell_mm) > CONSTS::HALF_CELL_DISTANCE_MM) {
         if (mYPositionInCell_mm > 0) {
             mYPositionInCell_mm -= 2 * CONSTS::HALF_CELL_DISTANCE_MM;
             mPosY += 1;

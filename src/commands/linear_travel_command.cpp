@@ -125,12 +125,12 @@ MM::CommandResult MM::LinearTravelCommand::getResult()
 {
     if( direction > 0 )
     {
-        return CommandResult(mRealCurrentPosition_mm, 0.0);
+        return CommandResult(mRealCurrentPosition_mm, 0.0, 0.0);
     }
     else
     {
         //FIXME: we dont log backward linear travel since it is towards a wall and it will be followed by a manual cell update
         //       but this is not ideal, because it reduce the available use-cases of this command
-        return CommandResult(0, 0.0);
+        return CommandResult(0, 0.0, 0.0);
     }
 }

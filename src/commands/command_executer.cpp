@@ -76,7 +76,7 @@ void MM::CommandExecuter::addTravelCommandRelativeToActualPos(int directionToMov
 
 void MM::CommandExecuter::addHalfCellTravelCommand()
 {
-    mCommandsToExecute.push( CommandToExecute(FORWARD_MOVEMENT_RAW, 90.0) );
+    mCommandsToExecute.push( CommandToExecute(FORWARD_MOVEMENT_RAW, CONSTS::HALF_CELL_DISTANCE_MM) );
 }
 
 void MM::CommandExecuter::addArcTravelCommand( float angleToTurn_deg )
@@ -299,6 +299,7 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommandUsingCur
     case ARC_MOVEMENT:
     {
         cmdToReturnP = std::make_unique<MM::ArcTravelCommand>( 90.0, commandParams.second, 500, 250, 500, encoderValueLeftR_rev, encoderValueRightR_rev, mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV);
+        LOG_INFO("NEW ARC_MOVEMENT CMD: deg= %d \n", static_cast<int>(commandParams.second) );
         break;
     }
     case FORWARD_MOVEMENT_RAW:
@@ -320,6 +321,7 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommandUsingCur
                 ),
                 mDistLeftR_mm, mDistRightR_mm, mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV
                 );
+        LOG_INFO("NEW FORWARD_MOVEMENT_RAW CMD: dist= %d \n", static_cast<int>(commandParams.second) );
         break;
     }
     default:
