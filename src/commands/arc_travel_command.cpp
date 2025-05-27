@@ -120,8 +120,42 @@ void MM::ArcTravelCommand::print() const
 MM::CommandResult MM::ArcTravelCommand::getResult()
 {
     // Distance and angle actually traveled
-    float avgDistance = 0;
-    float angle = mAngle_deg; // Could be refined using encoders if needed
-    // TODO: HANDLE THIS CASE IN CELL POSITION AS WELL SOMEHOW!!!!!
-    return CommandResult(avgDistance, angle);
+    auto traveledDistances_mm = _calculateMyResult();
+    float angle_deg = mAngle_deg;   
+
+    return CommandResult(traveledDistances_mm.second, traveledDistances_mm.first, angle_deg);
+}
+
+std::pair<float, float> MM::ArcTravelCommand::_calculateMyResult()
+{
+    float x = 0.0;
+    float y = 0.0;
+    float R_mm = 90.0;
+    
+    float absAngle_deg = std::abs(mAngle_deg);
+    
+    float absAngle_rad = absAngle_deg * ( 3.141592654 / 180.0 );
+    
+    if( 0.0 < absAngle_deg && absAngle_deg <= 90.0 )
+    {
+        x += mRadius_mm * (1 - std::cos(absAngle_rad));
+        y += mRadius_mm * std::sin(absAngle_rad);
+    }
+    else if( 90.0 < absAngle_deg && absAngle_deg <= 180.0 )
+    {
+        x += mRadius_mm + mRadius_mm * std::cos(3.141592654 - absAngle_rad);
+        y += mRadius_mm * std::sin(absAngle_rad);        
+    }
+    else if( 180.0 < absAngle_deg && absAngle_deg <= 270.0 )
+    {
+        x += mRadius_mm + mRadius_mm * std::cos(absAngle_rad - 3.141592654);
+        y += mRadius_mm * std::sin(absAngle_rad); 
+    }
+    
+    if( mAngle_deg < 0.0 )
+    {
+        x *= -1;
+    }
+    
+    return std::pair<float, float>(x, y);
 }

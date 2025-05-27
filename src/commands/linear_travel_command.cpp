@@ -121,5 +121,5 @@ void MM::LinearTravelCommand::print() const
 
 MM::CommandResult MM::LinearTravelCommand::getResult()
 {
-    return CommandResult(mRealCurrentPosition_mm, 0.0);
+    return CommandResult(mRealCurrentPosition_mm, 0.0, 0.0);
 }
