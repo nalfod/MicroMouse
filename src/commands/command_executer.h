@@ -47,6 +47,8 @@ namespace MM
             bool _isFrontBlocked();
             std::unique_ptr<MotionCommandIF> _createCommand(CommandToExecute commandParams);
             
+            bool _isAbleToStartWithSpeed( MovementPrimitives movementType );
+            
             std::unique_ptr<MotionCommandIF> mCurrCommandToExecute;
             std::queue< CommandToExecute > mCommandsToExecute;
             
@@ -64,5 +66,7 @@ namespace MM
             // controlled units
             int16_t& mLeftMotorVoltageR_mV;
             int16_t& mRightMotorVoltageR_mV;
+
+            float lastMovementEndSpeed_mm_per_s{0.0};
     };
 }

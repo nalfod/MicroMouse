@@ -85,6 +85,11 @@ void MM::LinearTravelCommand::execute()
     if( mElapsedTime_ms >= mTotalTimeOfTravel_ms )
     {
         mFinished = true;
+        if( myTargetSpeedCalculator.isMovementEndsWithStop() )
+        {
+            mLeftMotorVoltageR_mV = 0;
+            mRightMotorVoltageR_mV = 0;
+        }
     }
     else
     {
@@ -138,5 +143,5 @@ void MM::LinearTravelCommand::print() const
 
 MM::CommandResult MM::LinearTravelCommand::getResult()
 {
-    return CommandResult(mRealCurrentPosition_mm, 0.0, 0.0);
+    return CommandResult(mRealCurrentPosition_mm, 0.0, 0.0, myTargetSpeedCalculator.calcCurrentTargetSpeed_mmPerS(mElapsedTime_ms));
 }

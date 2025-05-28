@@ -108,7 +108,9 @@ void setup()
   if( g.mode_selector.get_current_mode() == CONSTS::MODES::TESTING )
   {
       g.commandExecuter.addHalfCellTravelCommand();
-      g.commandExecuter.addArcTravelCommand(90);
+      g.commandExecuter.addHalfCellTravelCommand();
+      g.commandExecuter.addHalfCellTravelCommand();
+      /*g.commandExecuter.addArcTravelCommand(90);
       g.commandExecuter.addHalfCellTravelCommand();
 
       g.commandExecuter.addHalfCellTravelCommand();
@@ -119,7 +121,7 @@ void setup()
       g.commandExecuter.addArcTravelCommand(90);
       g.commandExecuter.addArcTravelCommand(-90);
       g.commandExecuter.addArcTravelCommand(90);
-      g.commandExecuter.addHalfCellTravelCommand();
+      g.commandExecuter.addHalfCellTravelCommand();*/
   }
   //mouse.accelerometer.myAngRotMeter.startMeasurement();
   LOG_INFO("Setup Done\n");

@@ -1,5 +1,6 @@
 #pragma once
 #include <cstdint>
+#include "constants.h"
 
 namespace MM {
 
@@ -9,6 +10,7 @@ public:
     TargetSpeedCalculator(float dist_mm, float speed_mm_per_s, float acc_mm_per_s2, float dec_mm_per_s2, float start_speed_mm_per_s = 0.0, float end_speed_mm_per_s = 0.0);
     float calcCurrentTargetSpeed_mmPerS(unsigned long  elapsedTime_ms);
     unsigned long getTotalTimeOfTravel_Ms() { return mAccelerationTime_ms + mUniformTravelTime_ms + mDecelerationTime_ms; }
+    bool isMovementEndsWithStop() { return mEndSpeed_mm_per_s < CONSTS::EPSILON; }
 private:
     float getSpeedInAcc_mmPerS(unsigned long accElapsedTime_ms);
     float getSpeedInDec_mmPerS(unsigned long decElapsedTime_ms);
