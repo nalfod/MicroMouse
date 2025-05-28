@@ -46,6 +46,7 @@ void MM::CommandExecuter::execute()
         if( mCurrCommandToExecute->isFinished() )
         {
             mCurrentCellPositionR.updatePosition( mCurrCommandToExecute->getResult() );
+            lastMovementEndSpeed_mm_per_s = mCurrCommandToExecute->getResult().end_speed_mm_per_s;
             _actualizeCurrentCommand();
         }
     }
@@ -174,6 +175,19 @@ void  MM::CommandExecuter::parseRouteForSpeedRun(std::string route)
 std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommandUsingCurrentPosition(CommandToExecute commandParams)
 {
     LOG_INFO("\n");
+    float startSpeed_mm_per_s = 0.0;
+    float endSpeed_mm_per_s = 0.0;
+
+    if( lastMovementEndSpeed_mm_per_s > 0.0  && _isAbleToStartWithSpeed( commandParams.first ) )
+    {
+        startSpeed_mm_per_s = lastMovementEndSpeed_mm_per_s;
+    }
+
+    if( !mCommandsToExecute.empty() && _isAbleToStartWithSpeed( mCommandsToExecute.front().first ) )
+    {
+        endSpeed_mm_per_s = 50.0;
+    }
+
     std::unique_ptr<MM::MotionCommandIF> cmdToReturnP;
     switch ( commandParams.first )
     {
@@ -210,7 +224,8 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommandUsingCur
                         ( 
                             std::make_unique<MM::LinearTravelCommand>
                             (
-                                distanceToMove_mm, 500, 250, 500, encoderValueLeftR_rev, encoderValueRightR_rev, mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV
+                                distanceToMove_mm, 500, 250, 500, startSpeed_mm_per_s, endSpeed_mm_per_s,
+                                encoderValueLeftR_rev, encoderValueRightR_rev, mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV
                             ), 
                             std::move( stabilizers ), mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV 
                         ),
@@ -298,7 +313,7 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommandUsingCur
     }
     case ARC_MOVEMENT:
     {
-        cmdToReturnP = std::make_unique<MM::ArcTravelCommand>( 90.0, commandParams.second, 500, 250, 500, encoderValueLeftR_rev, encoderValueRightR_rev, mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV);
+        cmdToReturnP = std::make_unique<MM::ArcTravelCommand>( 90.0, commandParams.second, 500, 250, 500, startSpeed_mm_per_s, endSpeed_mm_per_s, encoderValueLeftR_rev, encoderValueRightR_rev, mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV);
         LOG_INFO("NEW ARC_MOVEMENT CMD: deg= %d \n", static_cast<int>(commandParams.second) );
         break;
     }
@@ -315,13 +330,16 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommandUsingCur
                 ( 
                     std::make_unique<MM::LinearTravelCommand>
                     (
-                        commandParams.second, 500, 250, 500, encoderValueLeftR_rev, encoderValueRightR_rev, mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV
+                        commandParams.second, 500, 250, 500, startSpeed_mm_per_s, endSpeed_mm_per_s,
+                        encoderValueLeftR_rev, encoderValueRightR_rev, mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV
                     ), 
                     std::move( stabilizers ), mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV 
                 ),
                 mDistLeftR_mm, mDistRightR_mm, mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV
                 );
-        LOG_INFO("NEW FORWARD_MOVEMENT_RAW CMD: dist= %d \n", static_cast<int>(commandParams.second) );
+        LOG_INFO("NEW FORWARD_MOVEMENT_RAW CMD: dist= %d start= %d end= %d \n", static_cast<int>(commandParams.second), 
+                                                                                static_cast<int>(startSpeed_mm_per_s), 
+                                                                                static_cast<int>(endSpeed_mm_per_s) );
         break;
     }
     default:
@@ -360,4 +378,25 @@ float MM::CommandExecuter::_getOffsetFromHomeInCellInCurrDir()
     }
 
     return offset_mm;
+}
+
+bool MM::CommandExecuter::_isAbleToStartWithSpeed( MovementPrimitives movementType )
+{
+    switch (movementType)
+    {
+        case FORWARD_MOVEMENT_BY_CELL_NUMBER:
+        case FORWARD_MOVEMENT_FOR_ALIGNMENT:
+        case ARC_MOVEMENT:
+        case FORWARD_MOVEMENT_RAW:
+            return true;
+            break;
+        case ROTATING:
+        case ROTATING_ON_GRID:
+            return false;
+            break;
+        
+        default:
+            return false;
+            break;
+    }
 }

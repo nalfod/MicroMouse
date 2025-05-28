@@ -66,6 +66,11 @@ void MM::ArcTravelCommand::execute()
     if (mElapsedTime_ms >= mTotalTimeOfTravel_ms)
     {
         mFinished = true;
+        if( myTargetSpeedCalculator.isMovementEndsWithStop() )
+        {
+            mLeftMotorVoltageR_mV = 0;
+            mRightMotorVoltageR_mV = 0;
+        }
     }
     else
     {
@@ -141,7 +146,7 @@ MM::CommandResult MM::ArcTravelCommand::getResult()
     auto traveledDistances_mm = _calculateMyResult();
     float angle_deg = mAngle_deg;   
 
-    return CommandResult(traveledDistances_mm.second, traveledDistances_mm.first, angle_deg);
+    return CommandResult( traveledDistances_mm.second, traveledDistances_mm.first, angle_deg, myTargetSpeedCalculator.calcCurrentTargetSpeed_mmPerS(mElapsedTime_ms) );
 }
 
 std::pair<float, float> MM::ArcTravelCommand::_calculateMyResult()
