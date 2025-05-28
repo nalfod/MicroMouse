@@ -1,5 +1,6 @@
 #include "accerelometer.h"
 #include "hal/micromouse.h"
+#include "constants.h"
 
 volatile bool MM::Accelerometer::MPUInterrupt = false;
 
@@ -104,7 +105,14 @@ bool MM::Accelerometer::loadSensorValues()
 
 float MM::Accelerometer::getCurrentYawValue()
 {
-    return yawPithRoll_rad[0] * 180/M_PI;
+    return _getCurrentYawValue_deg() - currentOffset_deg;
+}
+
+void MM::Accelerometer::refreshYawOffset()
+{
+    float currentYawValue_deg = _getCurrentYawValue_deg();
+    float theoreticalYawValue_deg = CONSTS::adjustAngleToAlignGridDirection( currentYawValue_deg );
+    currentOffset_deg = currentYawValue_deg - theoreticalYawValue_deg;
 }
 
 void MM::Accelerometer::serialPrint()
@@ -123,4 +131,9 @@ void MM::Accelerometer::serialPrint()
     Serial.print("\t");
     Serial.println(myGravFreeAccelSensorMeasurmentVec.z);
     */
+}
+
+float MM::Accelerometer::_getCurrentYawValue_deg()
+{
+    return yawPithRoll_rad[0] * 180/M_PI;
 }

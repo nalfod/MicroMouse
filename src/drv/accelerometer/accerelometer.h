@@ -69,6 +69,8 @@ class Accelerometer
         VectorFloat myGravityVec;    // [x, y, z]            Gravity vector
         //float euler[3];         // [psi, theta, phi]    Euler angle container
         float yawPithRoll_rad[3];           // [yaw, pitch, roll]   Yaw/Pitch/Roll container and gravity vector
+
+        float currentOffset_deg{0};
         
 };
 
