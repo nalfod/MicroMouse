@@ -289,7 +289,7 @@ float Maze::getWeightOfCell(int x, int y)
 
 void Maze::closeUnknownCells()
 {
-    for(int i = 0; i < this->numOfRows; i++)
+    for(int i = 0; i < numOfRows; i++)
     {
         for(int j = 0; j < numOfRows; j++) 
         {
@@ -421,7 +421,8 @@ void Maze::calcForSpeedRun(bool toMid)
             {
                 for(int j = 0; j < 2; j++)
                 {
-                    if ( cells[numOfRows/2 - 1 + i][numOfRows/2 - 1 + j].getWallMask() < 15) {
+                    if ( cells[numOfRows/2 - 1 + i][numOfRows/2 - 1 + j].getWallMask() < 15) 
+                    {
                         posx = numOfRows/2 - 1 + i;
                         posy = numOfRows/2 - 1 + j;
                     }
