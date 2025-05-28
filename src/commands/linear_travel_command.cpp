@@ -7,14 +7,14 @@
 ////////////////////
 
 MM::LinearTravelCommand::LinearTravelCommand(float dist_mm, 
-                                             float speed_mm_per_s, 
+                                             float set_speed_mm_per_s, 
                                              float acc_mm_per_s2, 
                                              float dec_mm_per_s2, 
                                              int64_t const& encoderValue1R, 
                                              int64_t const& encoderValue2R,
                                              int16_t& leftMotorVoltageR_mV,
                                              int16_t& rightMotorVoltageR_mV):
-myTargetSpeedCalculator(std::abs(dist_mm), speed_mm_per_s, acc_mm_per_s2, dec_mm_per_s2),
+myTargetSpeedCalculator(std::abs(dist_mm), set_speed_mm_per_s, acc_mm_per_s2, dec_mm_per_s2),
 myEncIntegrator1(encoderValue1R),
 myEncIntegrator2(encoderValue2R),
 mLeftMotorVoltageR_mV(leftMotorVoltageR_mV),
@@ -26,7 +26,7 @@ direction( dist_mm >= 0.0 ? 1 : -1)
 }
 
 MM::LinearTravelCommand::LinearTravelCommand(float dist_mm, 
-                                             float speed_mm_per_s, 
+                                             float set_speed_mm_per_s, 
                                              float acc_mm_per_s2, 
                                              float dec_mm_per_s2, 
                                              int64_t const& encoderValue1R, 
@@ -34,7 +34,7 @@ MM::LinearTravelCommand::LinearTravelCommand(float dist_mm,
                                              int16_t& leftMotorVoltageR_mV,
                                              int16_t& rightMotorVoltageR_mV, 
                                              double Kp, double Ki, double Kd):
-myTargetSpeedCalculator(std::abs(dist_mm), speed_mm_per_s, acc_mm_per_s2, dec_mm_per_s2),
+myTargetSpeedCalculator(std::abs(dist_mm), set_speed_mm_per_s, acc_mm_per_s2, dec_mm_per_s2),
 myEncIntegrator1(encoderValue1R),
 myEncIntegrator2(encoderValue2R),
 mLeftMotorVoltageR_mV(leftMotorVoltageR_mV),
@@ -46,6 +46,25 @@ direction( dist_mm >= 0.0 ? 1 : -1)
     myMovementCtrl.init(1, AUTOMATIC, -1000, 1000); // QUESTION: should the min and the max value be bounded to the current voltage somehow??
 }
 
+MM::LinearTravelCommand::LinearTravelCommand(float dist_mm, 
+                                             float set_speed_mm_per_s, 
+                                             float acc_mm_per_s2, 
+                                             float dec_mm_per_s2,
+                                             float start_speed_mm_per_s, 
+                                             float end_speed_mm_per_s, 
+                                             int64_t const& encoderValue1R, 
+                                             int64_t const& encoderValue2R,
+                                             int16_t& leftMotorVoltageR_mV,
+                                             int16_t& rightMotorVoltageR_mV):
+myTargetSpeedCalculator(dist_mm, set_speed_mm_per_s, acc_mm_per_s2, dec_mm_per_s2, start_speed_mm_per_s, end_speed_mm_per_s),
+myEncIntegrator1(encoderValue1R),
+myEncIntegrator2(encoderValue2R),
+mLeftMotorVoltageR_mV(leftMotorVoltageR_mV),
+mRightMotorVoltageR_mV(rightMotorVoltageR_mV)
+{
+    mTotalTimeOfTravel_ms = myTargetSpeedCalculator.getTotalTimeOfTravel_Ms();
+    myMovementCtrl.init(1, AUTOMATIC, -1000, 1000); // QUESTION: should the min and the max value be bounded to the current voltage somehow??
+}
 
 void MM::LinearTravelCommand::execute()
 {
@@ -67,8 +86,6 @@ void MM::LinearTravelCommand::execute()
 
     if( mElapsedTime_ms >= mTotalTimeOfTravel_ms )
     {
-        mLeftMotorVoltageR_mV = 0;
-        mRightMotorVoltageR_mV = 0;
         mFinished = true;
     }
     else
