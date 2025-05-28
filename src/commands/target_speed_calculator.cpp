@@ -8,17 +8,21 @@
 MM::TargetSpeedCalculator::TargetSpeedCalculator(float dist_mm, 
                                                  float speed_mm_per_s, 
                                                  float acc_mm_per_s2, 
-                                                 float dec_mm_per_s2):
+                                                 float dec_mm_per_s2,
+                                                 float start_speed_mm_per_s, 
+                                                 float end_speed_mm_per_s):
 mDistance_mm(dist_mm),
 mSetSpeed_mm_per_s(speed_mm_per_s),
 mAcceleration_mm_per_s2(acc_mm_per_s2),
-mDeceleration_mm_per_s2(dec_mm_per_s2)
+mDeceleration_mm_per_s2(dec_mm_per_s2),
+mStartSpeed_mm_per_s(start_speed_mm_per_s),
+mEndSpeed_mm_per_s(end_speed_mm_per_s)
 {
     while( true )
     {
         
-        mAccelerationTime_ms = ( mSetSpeed_mm_per_s / mAcceleration_mm_per_s2 ) * 1000;
-        mDecelerationTime_ms = ( mSetSpeed_mm_per_s / mDeceleration_mm_per_s2 ) * 1000;
+        mAccelerationTime_ms = ( ( mSetSpeed_mm_per_s - mStartSpeed_mm_per_s ) / mAcceleration_mm_per_s2 ) * 1000;
+        mDecelerationTime_ms = ( ( mSetSpeed_mm_per_s - mEndSpeed_mm_per_s ) / mDeceleration_mm_per_s2 ) * 1000;
         long tmpUniformTravelTime_ms =  ( (mDistance_mm - 0.5 * mSetSpeed_mm_per_s * mSetSpeed_mm_per_s * ( 1 / mAcceleration_mm_per_s2 + 1 / mDeceleration_mm_per_s2 ) ) / (mSetSpeed_mm_per_s) ) * 1000;
 
         if( tmpUniformTravelTime_ms > 0 )
@@ -73,7 +77,7 @@ float MM::TargetSpeedCalculator::calcCurrentTargetSpeed_mmPerS(unsigned long ela
 
 float MM::TargetSpeedCalculator::getSpeedInAcc_mmPerS(unsigned long accElapsedTime_ms)
 {
-    return static_cast<float>( accElapsedTime_ms ) / 1000 * mAcceleration_mm_per_s2;
+    return static_cast<float>( accElapsedTime_ms ) / 1000 * mAcceleration_mm_per_s2 + mStartSpeed_mm_per_s;
 }
 
 float MM::TargetSpeedCalculator::getSpeedInDec_mmPerS(unsigned long decElapsedTime_ms)
