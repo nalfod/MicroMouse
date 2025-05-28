@@ -9,17 +9,37 @@
 
 MM::ArcTravelCommand::ArcTravelCommand(float radius_mm, float angle_deg, float speed_mm_per_s, float acc_mm_per_s2, float dec_mm_per_s2,
                                     int64_t const& encoderValueLeft, int64_t const& encoderValueRight,
-                                    int16_t& leftMotorVoltage_mV, int16_t& rightMotorVoltage_mV)
-    : mRadius_mm(radius_mm),
-      mAngle_deg(angle_deg),
-      mSpeed_mm_per_s(speed_mm_per_s),
-      mArcLength_mm( std::abs(angle_deg) * M_PI / 180.0f * radius_mm ),
-      mDirection(angle_deg >= 0 ? 1.0f : -1.0f),
-      myTargetSpeedCalculator(mArcLength_mm, speed_mm_per_s, acc_mm_per_s2, dec_mm_per_s2),
-      myEncIntegratorLeft(encoderValueLeft),
-      myEncIntegratorRight(encoderValueRight),
-      mLeftMotorVoltageR_mV(leftMotorVoltage_mV),
-      mRightMotorVoltageR_mV(rightMotorVoltage_mV)
+                                    int16_t& leftMotorVoltage_mV, int16_t& rightMotorVoltage_mV):
+mRadius_mm(radius_mm),
+mAngle_deg(angle_deg),
+mSpeed_mm_per_s(speed_mm_per_s),
+mArcLength_mm( std::abs(angle_deg) * M_PI / 180.0f * radius_mm ),
+mDirection(angle_deg >= 0 ? 1.0f : -1.0f),
+myTargetSpeedCalculator(mArcLength_mm, speed_mm_per_s, acc_mm_per_s2, dec_mm_per_s2),
+myEncIntegratorLeft(encoderValueLeft),
+myEncIntegratorRight(encoderValueRight),
+mLeftMotorVoltageR_mV(leftMotorVoltage_mV),
+mRightMotorVoltageR_mV(rightMotorVoltage_mV)
+{
+    mTotalTimeOfTravel_ms = myTargetSpeedCalculator.getTotalTimeOfTravel_Ms();
+    myMovementCtrlLeft.init(1, AUTOMATIC, -1000, 1000);
+    myMovementCtrlRight.init(1, AUTOMATIC, -1000, 1000);
+}
+
+MM::ArcTravelCommand::ArcTravelCommand(float radius_mm, float angle_deg, float speed_mm_per_s, float acc_mm_per_s2, float dec_mm_per_s2,
+                                       float start_speed_mm_per_s, float end_speed_mm_per_s,                                
+                                       int64_t const& encoderValueLeft, int64_t const& encoderValueRight,
+                                       int16_t& leftMotorVoltage_mV, int16_t& rightMotorVoltage_mV):
+mRadius_mm(radius_mm),
+mAngle_deg(angle_deg),
+mSpeed_mm_per_s(speed_mm_per_s),
+mArcLength_mm( std::abs(angle_deg) * M_PI / 180.0f * radius_mm ),
+mDirection(angle_deg >= 0 ? 1.0f : -1.0f),
+myTargetSpeedCalculator(mArcLength_mm, speed_mm_per_s, acc_mm_per_s2, dec_mm_per_s2, start_speed_mm_per_s, end_speed_mm_per_s),
+myEncIntegratorLeft(encoderValueLeft),
+myEncIntegratorRight(encoderValueRight),
+mLeftMotorVoltageR_mV(leftMotorVoltage_mV),
+mRightMotorVoltageR_mV(rightMotorVoltage_mV)
 {
     mTotalTimeOfTravel_ms = myTargetSpeedCalculator.getTotalTimeOfTravel_Ms();
     myMovementCtrlLeft.init(1, AUTOMATIC, -1000, 1000);
@@ -45,8 +65,6 @@ void MM::ArcTravelCommand::execute()
 
     if (mElapsedTime_ms >= mTotalTimeOfTravel_ms)
     {
-        mLeftMotorVoltageR_mV = 0;
-        mRightMotorVoltageR_mV = 0;
         mFinished = true;
     }
     else

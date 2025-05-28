@@ -13,8 +13,13 @@ class ArcTravelCommand : public MotionCommandIF
 public:
     // angle_deg: positive = right turn, negative = left turn
     ArcTravelCommand(float radius_mm, float angle_deg, float speed_mm_per_s, float acc_mm_per_s2, float dec_mm_per_s2,
-                    int64_t const& encoderValueLeft, int64_t const& encoderValueRight,
-                    int16_t& leftMotorVoltage_mV, int16_t& rightMotorVoltage_mV);
+                     int64_t const& encoderValueLeft, int64_t const& encoderValueRight,
+                     int16_t& leftMotorVoltage_mV, int16_t& rightMotorVoltage_mV);
+
+    ArcTravelCommand(float radius_mm, float angle_deg, float speed_mm_per_s, float acc_mm_per_s2, float dec_mm_per_s2,
+                     float start_speed_mm_per_s, float end_speed_mm_per_s,
+                     int64_t const& encoderValueLeft, int64_t const& encoderValueRight,
+                     int16_t& leftMotorVoltage_mV, int16_t& rightMotorVoltage_mV);
 
     void execute() override;
     bool isFinished() const override { return mFinished; }

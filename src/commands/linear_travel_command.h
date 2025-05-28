@@ -11,12 +11,16 @@ namespace MM {
 class LinearTravelCommand : public MotionCommandIF
 {
 public:
-    LinearTravelCommand(float dist_mm, float speed_mm_per_s, float acc_mm_per_s2, float dec_mm_per_s2, 
+    LinearTravelCommand(float dist_mm, float set_speed_mm_per_s, float acc_mm_per_s2, float dec_mm_per_s2, 
                         int64_t const& encoderValue1, int64_t const& encoderValue2, int16_t& leftMotorVoltage_mV, int16_t& rightMotorVoltage_mV);
 
-    LinearTravelCommand(float dist_um, float speed_um_per_ms, float acc_um_per_ms2, float dec_um_per_ms2, 
+    // Used for debug
+    LinearTravelCommand(float dist_um, float set_speed_mm_per_s, float acc_um_per_ms2, float dec_um_per_ms2, 
                         int64_t const& encoderValue1, int64_t const& encoderValue2, int16_t& leftMotorVoltage_mV, int16_t& rightMotorVoltage_mV, 
                         double Kp, double Ki, double Kd);
+
+    LinearTravelCommand(float dist_mm, float set_speed_mm_per_s, float acc_mm_per_s2, float dec_mm_per_s2, float start_speed_mm_per_s, float end_speed_mm_per_s, 
+                        int64_t const& encoderValue1, int64_t const& encoderValue2, int16_t& leftMotorVoltage_mV, int16_t& rightMotorVoltage_mV);
     
     void execute() override;
     CommandResult getResult() override;
