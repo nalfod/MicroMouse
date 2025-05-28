@@ -63,13 +63,9 @@ float MM::TargetSpeedCalculator::calcCurrentTargetSpeed_mmPerS(unsigned long ela
     {
         targetSpeed_mm_per_s = mSetSpeed_mm_per_s;
     }
-    else if( elapsedTime_ms <= (mAccelerationTime_ms + mUniformTravelTime_ms + mDecelerationTime_ms) )
-    {
-        targetSpeed_mm_per_s = getSpeedInDec_mmPerS( elapsedTime_ms - (mAccelerationTime_ms + mUniformTravelTime_ms) );
-    }
     else
     {
-        targetSpeed_mm_per_s = 0;
+        targetSpeed_mm_per_s = getSpeedInDec_mmPerS( elapsedTime_ms - (mAccelerationTime_ms + mUniformTravelTime_ms) );
     }
 
     return targetSpeed_mm_per_s;

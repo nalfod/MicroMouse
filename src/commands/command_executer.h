@@ -53,6 +53,8 @@ namespace MM
             std::unique_ptr<MotionCommandIF> _createCommandUsingCurrentPosition(CommandToExecute commandParams);
             float _getOffsetFromHomeInCellInCurrDir();
             
+            bool _isAbleToStartWithSpeed( MovementPrimitives movementType );
+            
             std::unique_ptr<MotionCommandIF> mCurrCommandToExecute;
             std::queue< CommandToExecute > mCommandsToExecute;
             
@@ -71,5 +73,7 @@ namespace MM
             int16_t& mLeftMotorVoltageR_mV;
             int16_t& mRightMotorVoltageR_mV;
             bool& mOriOffsetFlag;
+
+            float lastMovementEndSpeed_mm_per_s{0.0};
     };
 }
