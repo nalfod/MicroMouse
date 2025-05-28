@@ -14,11 +14,12 @@ MM::LinearTravelCommand::LinearTravelCommand(float dist_mm,
                                              int64_t const& encoderValue2R,
                                              int16_t& leftMotorVoltageR_mV,
                                              int16_t& rightMotorVoltageR_mV):
-myTargetSpeedCalculator(dist_mm, speed_mm_per_s, acc_mm_per_s2, dec_mm_per_s2),
+myTargetSpeedCalculator(std::abs(dist_mm), speed_mm_per_s, acc_mm_per_s2, dec_mm_per_s2),
 myEncIntegrator1(encoderValue1R),
 myEncIntegrator2(encoderValue2R),
 mLeftMotorVoltageR_mV(leftMotorVoltageR_mV),
-mRightMotorVoltageR_mV(rightMotorVoltageR_mV)
+mRightMotorVoltageR_mV(rightMotorVoltageR_mV),
+direction( dist_mm >= 0.0 ? 1 : -1)
 {
     mTotalTimeOfTravel_ms = myTargetSpeedCalculator.getTotalTimeOfTravel_Ms();
     myMovementCtrl.init(1, AUTOMATIC, -1000, 1000); // QUESTION: should the min and the max value be bounded to the current voltage somehow??
@@ -33,12 +34,13 @@ MM::LinearTravelCommand::LinearTravelCommand(float dist_mm,
                                              int16_t& leftMotorVoltageR_mV,
                                              int16_t& rightMotorVoltageR_mV, 
                                              double Kp, double Ki, double Kd):
-myTargetSpeedCalculator(dist_mm, speed_mm_per_s, acc_mm_per_s2, dec_mm_per_s2),
+myTargetSpeedCalculator(std::abs(dist_mm), speed_mm_per_s, acc_mm_per_s2, dec_mm_per_s2),
 myEncIntegrator1(encoderValue1R),
 myEncIntegrator2(encoderValue2R),
 mLeftMotorVoltageR_mV(leftMotorVoltageR_mV),
 mRightMotorVoltageR_mV(rightMotorVoltageR_mV),
-myMovementCtrl(Kp, Ki, Kd)
+myMovementCtrl(Kp, Ki, Kd),
+direction( dist_mm >= 0.0 ? 1 : -1)
 {
     mTotalTimeOfTravel_ms = myTargetSpeedCalculator.getTotalTimeOfTravel_Ms();
     myMovementCtrl.init(1, AUTOMATIC, -1000, 1000); // QUESTION: should the min and the max value be bounded to the current voltage somehow??
@@ -85,8 +87,8 @@ void MM::LinearTravelCommand::execute()
 
         // Determining output voltage
         int16_t outputVoltage = static_cast<int16_t>( calcVoltageFromSpeed_mV( outputSpeed_mm_per_s + static_cast<float>( myMovementCtrl.getOuput() ) ) );
-        mLeftMotorVoltageR_mV = outputVoltage;
-        mRightMotorVoltageR_mV = outputVoltage;
+        mLeftMotorVoltageR_mV = direction * outputVoltage;
+        mRightMotorVoltageR_mV = direction * outputVoltage;
     }
 }
 
