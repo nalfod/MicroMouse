@@ -51,6 +51,9 @@ private:
     // controlled units
     int16_t& mLeftMotorVoltageR_mV;
     int16_t& mRightMotorVoltageR_mV;
+
+    // Direction changer
+    int16_t const direction;
 };
 
 } // namespace MM
