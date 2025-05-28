@@ -121,9 +121,9 @@ void loop()
   if( MM::Accelerometer::MPUInterrupt )
   {
       // for debugging the cycle time
-      //Serial.print("Current time: ");
-      //Serial.print(millis());
-      //Serial.print("\t");
+      Serial.print("Current time: ");
+      Serial.print(millis());
+      Serial.print("\t");
       task_read_sensors();
       task_measure_distances();
       task_update_battery();
