@@ -29,6 +29,7 @@ private:
 
     bool mStarted{false};
     bool mFinished{false};
+    u_int16_t stuck_counter{0};
 };
 
 } // namespace MM
