@@ -53,8 +53,8 @@ void debug()
   {
     // MM::log_current_mm_values();
     // MM::log_mode_selector();
-    MM::log_active_command();
-    MM::log_current_motor_voltages_and_revs();
+    //MM::log_active_command();
+    //MM::log_current_motor_voltages_and_revs();
   }
   else
   {

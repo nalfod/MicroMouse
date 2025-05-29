@@ -38,17 +38,16 @@ namespace MM
                 ROTATING_ON_GRID = 4, // need to be fixed!!!
 
 
-                BACKWARD_MOVEMENT = 7,
-                UPD_ORI_OFFSET = 8,
-                UPD_CELL_POS_IF_AT_BACK_WALL = 9,
-                MOVEMENT_TO_CENTER_OF_CELL = 10
+                BACKWARD_MOVEMENT_FOR_ALIGNMENT = 7,
+                UPD_ORI_OFFSET_AND_CELL_POS_AT_BACKWALL = 8,
+                MOVEMENT_TO_CENTER_OF_CELL = 9
             };
             // first pair value is the movement type, second one is the specific magnitude (eg.: distance or angle)
             using CommandToExecute = std::pair< MovementPrimitives, int >;
 
             void _actualizeCurrentCommand();
             bool _isFrontBlocked();
-            std::unique_ptr<MotionCommandIF> _createCommand(CommandToExecute commandParams);
+            std::unique_ptr<MotionCommandIF> _createCommandUsingCurrentPosition(CommandToExecute commandParams);
             float _getOffsetInCellRespectedToCurrDir();
             
             std::unique_ptr<MotionCommandIF> mCurrCommandToExecute;
