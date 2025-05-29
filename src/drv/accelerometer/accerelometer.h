@@ -51,7 +51,8 @@ class Accelerometer
 
         /*------FIFO loader and getters------*/
         bool loadSensorValues();
-        float getCurrentYawValue();
+        float getCurrentOrientation();
+        float getYawOffsetValue() const { return currentOffset_deg; }
 
         /*------Offset refresher------*/
         void refreshYawOffset();
@@ -61,7 +62,7 @@ class Accelerometer
         AngularRotationComputer myAngRotMeter{yawPithRoll_rad[0]};
 
     private:
-        float _getCurrentYawValue_deg();
+        float _getCurrentRawYawValue_deg();
 
         MPU6050 myMpu{};
         uint8_t myFIFOBuffer[64]; // FIFO storage buffer

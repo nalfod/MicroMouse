@@ -2,6 +2,8 @@
 #include "hal/micromouse.h"
 #include "constants.h"
 
+#include "utils/logging.h"
+
 volatile bool MM::Accelerometer::MPUInterrupt = false;
 
 void MM::Accelerometer::DMPDataReady()
@@ -103,16 +105,19 @@ bool MM::Accelerometer::loadSensorValues()
     return (bufferReadResult == 1);
 }
 
-float MM::Accelerometer::getCurrentYawValue()
+float MM::Accelerometer::getCurrentOrientation()
 {
-    return _getCurrentYawValue_deg() - currentOffset_deg;
+    return _getCurrentRawYawValue_deg() - currentOffset_deg;
 }
 
 void MM::Accelerometer::refreshYawOffset()
 {
-    float currentYawValue_deg = _getCurrentYawValue_deg();
+    float currentYawValue_deg = _getCurrentRawYawValue_deg();
     float theoreticalYawValue_deg = CONSTS::adjustAngleToAlignGridDirection( currentYawValue_deg );
     currentOffset_deg = currentYawValue_deg - theoreticalYawValue_deg;
+    LOG_INFO("NEW_OFFSET currentYawValue_deg: %d theoreticalYawValue_deg: %d NEW OFFSET: %d \n", static_cast<int>(currentYawValue_deg), 
+                                                                                                 static_cast<int>(theoreticalYawValue_deg), 
+                                                                                                 static_cast<int>(currentOffset_deg));
 }
 
 void MM::Accelerometer::serialPrint()
@@ -133,7 +138,7 @@ void MM::Accelerometer::serialPrint()
     */
 }
 
-float MM::Accelerometer::_getCurrentYawValue_deg()
+float MM::Accelerometer::_getCurrentRawYawValue_deg()
 {
     return yawPithRoll_rad[0] * 180/M_PI;
 }

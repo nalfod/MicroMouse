@@ -26,7 +26,7 @@ void MM::CellPosition::updatePosition(CommandResult movementResult)
     {
         _updateDirection( CONSTS::adjustAngleToAlignGridDirection( movementResult.angle_turned_deg ) );
     }
-    // printMyself();
+    printMyself();
 }
 
 void MM::CellPosition::_updateDirection(float rotDeg)
@@ -111,6 +111,9 @@ void MM::CellPosition::_increasePositionInCell(float traveled_distance_magnitude
             mPosY -= 1;
         }
     }
+
+    if( mPosX < 0 ) mPosX = 0;
+    if( mPosY < 0 ) mPosY = 0;
 }
 
 void MM::CellPosition::updatePositionInCellIfBackwardTouched()
@@ -118,20 +121,20 @@ void MM::CellPosition::updatePositionInCellIfBackwardTouched()
     switch (mCurrentDirection)
     {
         case CONSTS::Direction::NORTH:
-            mXPositionInCell_mm = -35.00;
+            mXPositionInCell_mm = -31.5;
             mYPositionInCell_mm = 0;
             break;
         case CONSTS::Direction::SOUTH:
-            mXPositionInCell_mm = 35.00;
+            mXPositionInCell_mm = 31.5;
             mYPositionInCell_mm = 0;
             break;
         case CONSTS::Direction::EAST:
             mXPositionInCell_mm = 0;
-            mYPositionInCell_mm = -35.00;
+            mYPositionInCell_mm = -31.5;
             break;
         case CONSTS::Direction::WEST:
             mXPositionInCell_mm = 0;
-            mYPositionInCell_mm = 35.00;
+            mYPositionInCell_mm = 31.5;
             break;
         default:
             // Nope

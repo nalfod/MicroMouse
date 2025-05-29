@@ -55,6 +55,7 @@ void debug()
     // MM::log_mode_selector();
     //MM::log_active_command();
     //MM::log_current_motor_voltages_and_revs();
+    // MM::log_current_orientation();
   }
   else
   {
@@ -109,6 +110,13 @@ void setup()
   if( g.mode_selector.get_current_mode() == CONSTS::MODES::SPEED_RUN )
   {
       g.commandExecuter.addCommandRelativeToCurrentPos(0, 1);
+      g.commandExecuter.addCommandRelativeToCurrentPos(90, 2);
+      g.commandExecuter.addCommandRelativeToCurrentPos(180, 1);
+      g.commandExecuter.addCommandRelativeToCurrentPos(90, 1);
+      g.commandExecuter.addCommandRelativeToCurrentPos(180, 1);
+      g.commandExecuter.addCommandRelativeToCurrentPos(90, 1);
+      g.commandExecuter.addCommandRelativeToCurrentPos(180, 1);
+      g.commandExecuter.addCommandRelativeToCurrentPos(90, 1);
       g.commandExecuter.addCommandRelativeToCurrentPos(180, 1);
       //g.commandExecuter.addCommandRelativeToCurrentPos(90, 2);
       //g.commandExecuter.addCommandRelativeToCurrentPos(90, 1);
