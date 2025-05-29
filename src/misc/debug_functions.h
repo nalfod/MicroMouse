@@ -8,11 +8,7 @@ namespace MM {
 
 void log_active_command()
 {
-    /*
-    if( !g.commandBuffer.empty() )
-    {
-      g.commandBuffer.front()->print();
-    }*/
+    g.commandExecuter.printActiveCommand();
 }
 
 void log_current_led_values()

@@ -113,6 +113,32 @@ void MM::CellPosition::_increasePositionInCell(float traveled_distance_magnitude
     }
 }
 
+void MM::CellPosition::updatePositionInCellIfBackwardTouched()
+{
+    switch (mCurrentDirection)
+    {
+        case CONSTS::Direction::NORTH:
+            mXPositionInCell_mm = -35.00;
+            mYPositionInCell_mm = 0;
+            break;
+        case CONSTS::Direction::SOUTH:
+            mXPositionInCell_mm = 35.00;
+            mYPositionInCell_mm = 0;
+            break;
+        case CONSTS::Direction::EAST:
+            mXPositionInCell_mm = 0;
+            mYPositionInCell_mm = -35.00;
+            break;
+        case CONSTS::Direction::WEST:
+            mXPositionInCell_mm = 0;
+            mYPositionInCell_mm = 35.00;
+            break;
+        default:
+            // Nope
+            break;
+    }
+}
+
 void MM::CellPosition::printMyself()
 {
     LOG_INFO("I am in cell x= %d y= %d in the cell: x= %d y= %d ori= %d\n", mPosX, mPosY, 

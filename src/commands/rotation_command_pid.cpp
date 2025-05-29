@@ -70,7 +70,7 @@ float MM::RotationCommandPid::shiftOrientationValue(float orientationValue)
 
 void MM::RotationCommandPid::print() const
 {
-    LOG_INFO("GOAL_MAGN: %d GOAL_ORI: %d CURRENT_ORI: %d PID_OUT: %d ",
+    LOG_INFO("GOAL_MAGN: %d GOAL_ORI: %d CURRENT_ORI: %d PID_OUT: %d \n",
         static_cast<int> ( myTargetMagnitude_deg ),
         static_cast<int> ( myTargetOrientation_deg ),
         static_cast<int> ( myCurrentOriR_deg ), 
