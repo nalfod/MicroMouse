@@ -20,19 +20,28 @@ namespace MM
                              int64_t const& encoderValue2, 
                              float const& currentOriR, 
                              int16_t& leftMotorVoltage_mV, 
-                             int16_t& rightMotorVoltage_mV);
+                             int16_t& rightMotorVoltage_mV,
+                             bool& oriOffsetFlag);
             void execute();
             bool isFinished() const;
             void addCommandRelativeToCurrentPos(int directionToMove_deg, uint16_t numberOfCellsToMove);
 
             void parseRouteForSpeedRun(std::string route);
+
+            void printActiveCommand() const;
         private:
             enum MovementPrimitives
             {
                 FORWARD_MOVEMENT_BY_CELL_NUMBER = 1,
                 FORWARD_MOVEMENT_FOR_ALIGNMENT = 2,
                 ROTATING = 3,
-                ROTATING_ON_GRID = 4 // need to be fixed!!!
+                ROTATING_ON_GRID = 4, // need to be fixed!!!
+
+
+                BACKWARD_MOVEMENT = 7,
+                UPD_ORI_OFFSET = 8,
+                UPD_CELL_POS_IF_AT_BACK_WALL = 9,
+                MOVEMENT_TO_CENTER_OF_CELL = 10
             };
             // first pair value is the movement type, second one is the specific magnitude (eg.: distance or angle)
             using CommandToExecute = std::pair< MovementPrimitives, int >;
@@ -40,6 +49,7 @@ namespace MM
             void _actualizeCurrentCommand();
             bool _isFrontBlocked();
             std::unique_ptr<MotionCommandIF> _createCommand(CommandToExecute commandParams);
+            float _getOffsetInCellRespectedToCurrDir();
             
             std::unique_ptr<MotionCommandIF> mCurrCommandToExecute;
             std::queue< CommandToExecute > mCommandsToExecute;
@@ -58,5 +68,6 @@ namespace MM
             // controlled units
             int16_t& mLeftMotorVoltageR_mV;
             int16_t& mRightMotorVoltageR_mV;
+            bool& mOriOffsetFlag;
     };
 }

@@ -3,10 +3,13 @@
 #include "wall_centering_command.h"
 #include "collision_avoidance_command.h"
 #include "rotation_command_pid.h"
-#include "utils/logging.h"
+#include "stuck_avoidance_command.h"
+#include "ori_offset_update_command.h"
 #include "movement_stabilizers/two_wall_stabilizer.h"
 #include "movement_stabilizers/one_wall_stabilizer.h"
 #include "movement_stabilizers/orientation_stabilizer.h"
+
+#include "utils/logging.h"
 
 MM::CommandExecuter::CommandExecuter( MM::CellPosition& cellPositionR, 
                                       uint16_t const& dist_left, 
@@ -17,7 +20,8 @@ MM::CommandExecuter::CommandExecuter( MM::CellPosition& cellPositionR,
                                       int64_t const& encoderValueRight, 
                                       float const& currentOriR, 
                                       int16_t& leftMotorVoltage_mV, 
-                                      int16_t& rightMotorVoltage_mV):
+                                      int16_t& rightMotorVoltage_mV,
+                                      bool& oriOffsetFlag):
 mCurrentCellPositionR(cellPositionR),
 mDistLeftR_mm(dist_left),
 mDistRightR_mm(dist_right),
@@ -27,7 +31,8 @@ encoderValueLeftR_rev(encoderValueLeft),
 encoderValueRightR_rev(encoderValueRight),
 myCurrentOriR_deg(currentOriR),
 mLeftMotorVoltageR_mV(leftMotorVoltage_mV),
-mRightMotorVoltageR_mV(rightMotorVoltage_mV)
+mRightMotorVoltageR_mV(rightMotorVoltage_mV),
+mOriOffsetFlag(oriOffsetFlag)
 {
 
 }
@@ -55,6 +60,14 @@ void MM::CommandExecuter::addCommandRelativeToCurrentPos(int directionToMove_deg
     {
         mCommandsToExecute.push( CommandToExecute(FORWARD_MOVEMENT_FOR_ALIGNMENT, 0) );
         mCommandsToExecute.push( CommandToExecute(ROTATING, directionToMove_deg) );
+        if( directionToMove_deg > 179.99 || directionToMove_deg < -179.99 )
+        {
+            // we use the U turn to recenter the mouse!
+            mCommandsToExecute.push( CommandToExecute(BACKWARD_MOVEMENT, CONSTS::HALF_CELL_DISTANCE_MM * 2) );
+            mCommandsToExecute.push( CommandToExecute(UPD_CELL_POS_IF_AT_BACK_WALL, 0) );
+            mCommandsToExecute.push( CommandToExecute(UPD_ORI_OFFSET, 0) );
+            mCommandsToExecute.push( CommandToExecute(MOVEMENT_TO_CENTER_OF_CELL, 0) );
+        }
     }
     if( numberOfCellsToMove != 0)
     {
@@ -71,6 +84,14 @@ bool MM::CommandExecuter::isFinished() const
     else
     {
         return mCommandsToExecute.empty();
+    }
+}
+
+void MM::CommandExecuter::printActiveCommand() const
+{
+    if( mCurrCommandToExecute )
+    {
+        return mCurrCommandToExecute->print();
     }
 }
 
@@ -142,6 +163,7 @@ void  MM::CommandExecuter::parseRouteForSpeedRun(std::string route)
 
 std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommand(CommandToExecute commandParams)
 {
+    LOG_INFO("\n");
     std::unique_ptr<MM::MotionCommandIF> cmdToReturnP;
     switch ( commandParams.first )
     {
@@ -152,30 +174,8 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommand(Command
         if( commandParams.first == FORWARD_MOVEMENT_BY_CELL_NUMBER )
         {
             distanceToMove_mm = commandParams.second * CONSTS::HALF_CELL_DISTANCE_MM * 2;
-            CONSTS::Direction currentDirectionInCell = mCurrentCellPositionR.getCurrentDirection();
-
-            if( currentDirectionInCell == CONSTS::Direction::NORTH || currentDirectionInCell == CONSTS::Direction::SOUTH )
-            {
-                if( currentDirectionInCell == CONSTS::Direction::NORTH )
-                {
-                    distanceToMove_mm -= mCurrentCellPositionR.getXPositionInCell();
-                }
-                else
-                {
-                    distanceToMove_mm += mCurrentCellPositionR.getXPositionInCell();
-                }
-            }
-            else if( currentDirectionInCell == CONSTS::Direction::EAST || currentDirectionInCell == CONSTS::Direction::WEST )
-            {
-                if( currentDirectionInCell == CONSTS::Direction::EAST )
-                {
-                    distanceToMove_mm -= mCurrentCellPositionR.getYPositionInCell();
-                }
-                else
-                {
-                    distanceToMove_mm += mCurrentCellPositionR.getYPositionInCell();
-                }
-            }
+            float currentOffsetInCell = _getOffsetInCellRespectedToCurrDir();
+            distanceToMove_mm -= currentOffsetInCell;
         }
         else if ( commandParams.first == FORWARD_MOVEMENT_FOR_ALIGNMENT )
         {
@@ -214,7 +214,7 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommand(Command
     case ROTATING:
     {
         cmdToReturnP = std::make_unique<MM::RotationCommandPid>( commandParams.second, myCurrentOriR_deg, mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV);
-        //LOG_INFO("NEW ROTATION CMD: deg= %d \n", static_cast<int>(commandParams.second) );
+        LOG_INFO("NEW ROTATION CMD: deg= %d \n", static_cast<int>(commandParams.second) );
         break;
     }
     case ROTATING_ON_GRID:
@@ -232,9 +232,96 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommand(Command
         // LOG_INFO("NEW AL_ROTATION CMD: rawdeg= %d curr_ori= %d al_deg= %d \n", static_cast<int>(rawAngleToTurn_deg), static_cast<int>(myCurrentOriR_deg), static_cast<int>(alignedAngleToTurn_deg) );
         break;
     }
+    case BACKWARD_MOVEMENT:
+    {
+        std::vector<std::unique_ptr<MM::MovementStabilizerIF>> stabilizers;
+        //stabilizers.push_back(std::make_unique<TwoWallStabilizer>(mDistFrontLeftR_mm, mDistFrontRightR_mm));
+        //stabilizers.push_back(std::make_unique<OneWallStabilizer>(mDistFrontLeftR_mm, mDistFrontRightR_mm));
+        stabilizers.push_back(std::make_unique<OrientationStabilizer>(myCurrentOriR_deg));
+
+        cmdToReturnP = std::make_unique<MM::StuckAvoidanceCommand>
+                ( 
+                    std::make_unique<MM::WallCenteringCommand>
+                    ( 
+                        std::make_unique<MM::LinearTravelCommand>
+                        (
+                            (-1 * commandParams.second), 100, 250, 250,
+                            encoderValueLeftR_rev, encoderValueRightR_rev, mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV
+                        ), 
+                        std::move( stabilizers ), mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV 
+                    ),
+                    encoderValueLeftR_rev, encoderValueLeftR_rev, mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV
+                );
+        LOG_INFO("NEW BACKWARD_MOVEMENT CMD: dist= %d \n", static_cast<int>(commandParams.second) );
+        break;
+    }
+    case MOVEMENT_TO_CENTER_OF_CELL:
+    {
+        float currentOffsetInCell = _getOffsetInCellRespectedToCurrDir();
+        std::vector<std::unique_ptr<MM::MovementStabilizerIF>> stabilizers;
+        if( currentOffsetInCell < 0.0 )
+        {
+            stabilizers.push_back(std::make_unique<TwoWallStabilizer>(mDistFrontLeftR_mm, mDistFrontRightR_mm));
+            stabilizers.push_back(std::make_unique<OneWallStabilizer>(mDistFrontLeftR_mm, mDistFrontRightR_mm));
+        }
+        stabilizers.push_back(std::make_unique<OrientationStabilizer>(myCurrentOriR_deg));
+
+        cmdToReturnP = std::make_unique<MM::CollisionAvoidanceCommand>
+                ( 
+                    std::make_unique<MM::WallCenteringCommand>
+                    ( 
+                        std::make_unique<MM::LinearTravelCommand>
+                        (
+                            -currentOffsetInCell, 100, 250, 250,
+                            encoderValueLeftR_rev, encoderValueRightR_rev, mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV
+                        ), 
+                        std::move( stabilizers ), mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV 
+                    ),
+                    mDistLeftR_mm, mDistRightR_mm, mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV
+                );
+
+        LOG_INFO("NEW MOVEMENT_TO_CENTER_OF_CELL CMD: dist= %d \n", static_cast<int>( -currentOffsetInCell ) );
+        break;
+    }
+    case UPD_CELL_POS_IF_AT_BACK_WALL:
+    {
+        // very ugly, because no command here just the cell position update
+        mCurrentCellPositionR.updatePositionInCellIfBackwardTouched();
+        LOG_INFO("NEW UPD_CELL_POS_IF_AT_BACK_WALL CMD \n");
+        break;
+    }
+    case UPD_ORI_OFFSET:
+    {
+        cmdToReturnP = std::make_unique<MM::OriOffsetUpdater>(mOriOffsetFlag);
+        mCurrentCellPositionR.updatePositionInCellIfBackwardTouched();
+        LOG_INFO("NEW UPD_ORI_OFFSET CMD \n");
+        break;
+    }
     default:
         break;
     }
 
     return std::move(cmdToReturnP);
+}
+
+float MM::CommandExecuter::_getOffsetInCellRespectedToCurrDir()
+{
+    float offset_mm = 0.0;
+    CONSTS::Direction currentDirectionInCell = mCurrentCellPositionR.getCurrentDirection();
+
+    if( currentDirectionInCell == CONSTS::Direction::NORTH || currentDirectionInCell == CONSTS::Direction::SOUTH )
+    {
+        offset_mm = mCurrentCellPositionR.getXPositionInCell();
+    }
+    else if( currentDirectionInCell == CONSTS::Direction::EAST || currentDirectionInCell == CONSTS::Direction::WEST )
+    {
+        offset_mm = mCurrentCellPositionR.getYPositionInCell();
+    }
+
+    if( currentDirectionInCell == CONSTS::Direction::SOUTH || currentDirectionInCell == CONSTS::Direction::WEST )
+    {
+        offset_mm *= -1;
+    }
+
+    return offset_mm;
 }

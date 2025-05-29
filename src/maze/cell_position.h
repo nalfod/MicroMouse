@@ -17,6 +17,7 @@ class CellPosition
 
         // Setters
         void updatePosition(CommandResult movementResult);
+        void updatePositionInCellIfBackwardTouched();
 
         // For debug
         void printMyself();
@@ -24,6 +25,7 @@ class CellPosition
         void _updateDirection(float rotDeg);
         void _increasePositionInCell(float traveled_distance_magnitude);
         void _setCurrentDirection(CONSTS::Direction direction);
+        
 
         
         CONSTS::Direction mCurrentDirection{CONSTS::Direction::NORTH};

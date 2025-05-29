@@ -19,13 +19,16 @@ void MM::StuckAvoidanceCommand::execute()
             myEncIntegrator2.startIntegration();
         }
 
-        if( myEncIntegrator1.getTraveledDistanceSinceLastInvoke_mm() < CONSTS::EPSILON && 
-            myEncIntegrator2.getTraveledDistanceSinceLastInvoke_mm() < CONSTS::EPSILON )
+        myWrappedCommandP->execute();
+
+        if( std::abs( myEncIntegrator1.getTraveledDistanceSinceLastInvoke_mm() ) < CONSTS::EPSILON && 
+            std::abs( myEncIntegrator2.getTraveledDistanceSinceLastInvoke_mm() ) < CONSTS::EPSILON )
         {
             stuck_counter++;
             if( stuck_counter >= 100 )
             {
                 // If 5 ms the cycle time, it will kill the command if it is stucked for 0,5 sec
+                LOG_INFO("StuckAvoidanceCommand - I AM STUCKED!!");
                 mFinished = true;
                 mLeftMotorVoltageR_mV = 0;
                 mRightMotorVoltageR_mV = 0;
@@ -34,7 +37,6 @@ void MM::StuckAvoidanceCommand::execute()
         else
         {
             stuck_counter = 0;
-            myWrappedCommandP->execute();
         }
     }
     else

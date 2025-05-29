@@ -15,9 +15,15 @@ void MM::read_sensors()
     {
         // mouse.accelerometer.serialPrint();
         // mouse.accelerometer.myAngRotMeter.refresh();
+        if( g.isOrientationOffsetUpdatable )
+        {
+            mouse.accelerometer.refreshYawOffset();
+            g.isOrientationOffsetUpdatable = false;
+        }
+
         g.currentOrientation = mouse.accelerometer.getCurrentYawValue();
-        Serial.print(" Current orientation: ");
-        Serial.println(g.currentOrientation);
+        //Serial.print(" Current orientation: ");
+        //Serial.println(g.currentOrientation);
     }
     else
     {

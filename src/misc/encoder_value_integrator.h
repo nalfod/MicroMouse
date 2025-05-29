@@ -1,3 +1,4 @@
+#pragma once
 #include <cstdint>
 #include "constants.h"
 
@@ -12,7 +13,7 @@ namespace MM {
     
         float getTraveledDistanceSinceLastInvoke_mm()
         {
-            float traveledDistance_mm = static_cast<float>( (currentEncoderValueR - previousEncoderValue) ) / CONSTS::ENCODER_RESOULTION * CONSTS::WHEEL_DIAMETER_MM * 3.1415;
+            float traveledDistance_mm = static_cast<float>( (currentEncoderValueR - previousEncoderValue) ) / static_cast<float>( CONSTS::ENCODER_RESOULTION ) * CONSTS::WHEEL_DIAMETER_MM * 3.1415;
             previousEncoderValue = currentEncoderValueR;
             return traveledDistance_mm;
         }

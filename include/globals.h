@@ -33,16 +33,21 @@ struct Globals {
     int16_t leftMotorVoltage{0};
     int16_t rightMotorVoltage{0};
 
+// Flags =================================================
+    bool isOrientationOffsetUpdatable{false};
+
 // Position and location control
     CellPosition currentCellPosition{-35.0, 0.0, CONSTS::Direction::NORTH};
     LocationController locController{8, currentCellPosition, dist_left_mm, dist_right_mm, dist_frontleft_mm, dist_frontright_mm};
 
 // Mode selector =================================================
-    ModeSelector mode_selector{ir_left, ir_frontleft, ir_frontright, ir_right, CONSTS::MODES::DISCOVERY};
+    ModeSelector mode_selector{ir_left, ir_frontleft, ir_frontright, ir_right, CONSTS::MODES::SPEED_RUN};
 
 // Commands =================================================
     CommandExecuter commandExecuter{currentCellPosition, dist_left_mm, dist_right_mm, dist_frontleft_mm, dist_frontright_mm, 
-                                    leftEncoderValue, rightEncoderValue, currentOrientation, leftMotorVoltage, rightMotorVoltage};
+                                    leftEncoderValue, rightEncoderValue, currentOrientation, 
+                                    leftMotorVoltage, rightMotorVoltage, isOrientationOffsetUpdatable};
+
 };
 
 } // namespace MM

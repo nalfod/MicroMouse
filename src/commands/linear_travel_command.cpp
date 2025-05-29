@@ -79,7 +79,7 @@ void MM::LinearTravelCommand::execute()
         
         // Real values
         float traveledDistance_mm = ( myEncIntegrator1.getTraveledDistanceSinceLastInvoke_mm() + myEncIntegrator2.getTraveledDistanceSinceLastInvoke_mm() ) / 2;
-        mRealCurrentPosition_mm += traveledDistance_mm;
+        mRealCurrentPosition_mm += direction * traveledDistance_mm;
         
         // PID controlling
         myMovementCtrl.setTarget( static_cast<double>( mDesiredCurrentPosition_mm ) );

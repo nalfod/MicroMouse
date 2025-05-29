@@ -53,7 +53,8 @@ void debug()
   {
     // MM::log_current_mm_values();
     // MM::log_mode_selector();
-    // MM::log_active_command();
+    MM::log_active_command();
+    MM::log_current_motor_voltages_and_revs();
   }
   else
   {
@@ -107,10 +108,10 @@ void setup()
 
   if( g.mode_selector.get_current_mode() == CONSTS::MODES::SPEED_RUN )
   {
-      g.commandExecuter.addCommandRelativeToCurrentPos(0, 2);
-      g.commandExecuter.addCommandRelativeToCurrentPos(90, 1);
-      g.commandExecuter.addCommandRelativeToCurrentPos(90, 2);
-      g.commandExecuter.addCommandRelativeToCurrentPos(90, 1);
+      g.commandExecuter.addCommandRelativeToCurrentPos(0, 1);
+      g.commandExecuter.addCommandRelativeToCurrentPos(180, 1);
+      //g.commandExecuter.addCommandRelativeToCurrentPos(90, 2);
+      //g.commandExecuter.addCommandRelativeToCurrentPos(90, 1);
   }
   //mouse.accelerometer.myAngRotMeter.startMeasurement();
   LOG_INFO("Setup Done\n");
@@ -121,9 +122,9 @@ void loop()
   if( MM::Accelerometer::MPUInterrupt )
   {
       // for debugging the cycle time
-      Serial.print("Current time: ");
-      Serial.print(millis());
-      Serial.print("\t");
+      //Serial.print("Current time: ");
+      //Serial.print(millis());
+      //Serial.print("\t");
       task_read_sensors();
       task_measure_distances();
       task_update_battery();
