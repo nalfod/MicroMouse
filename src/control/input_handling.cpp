@@ -21,7 +21,7 @@ void MM::read_sensors()
             g.isOrientationOffsetUpdatable = false;
         }
 
-        g.currentOrientation = mouse.accelerometer.getCurrentYawValue();
+        g.currentOrientation = mouse.accelerometer.getCurrentOrientation();
         //Serial.print(" Current orientation: ");
         //Serial.println(g.currentOrientation);
     }

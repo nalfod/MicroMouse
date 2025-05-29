@@ -29,7 +29,7 @@ void log_current_mm_values()
 
 void log_current_orientation()
 {
-    LOG_INFO("ORI: %d\n",static_cast<int>(g.currentOrientation));
+    LOG_INFO("ORI: %d OFFSET: %d\n",static_cast<int>(g.currentOrientation) ,static_cast<int>(mouse.accelerometer.getYawOffsetValue()));
 }
 
 void log_current_battery_voltage()

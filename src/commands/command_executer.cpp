@@ -206,8 +206,8 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommandUsingCur
                         ),
                         mDistLeftR_mm, mDistRightR_mm, mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV
                       );
-        /*LOG_INFO("NEW LINEAR MOVEMENT CMD: dist= %d dir= %d \n", static_cast<int>(distanceToMove_mm), 
-                                                                 static_cast<int>(mCurrentCellPositionR.getCurrentDirection()) );*/
+        LOG_INFO("NEW LINEAR MOVEMENT CMD: dist= %d dir= %d \n", static_cast<int>(distanceToMove_mm), 
+                                                                 static_cast<int>(mCurrentCellPositionR.getCurrentDirection()) );
         break;
     }
     case ROTATING:
@@ -243,7 +243,7 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommandUsingCur
         float alignedAngleToTurn_deg = rawAngleToTurn_deg - ( rawDestOrientation_deg - alignedDestOrientation_deg);
 
         cmdToReturnP = std::make_unique<MM::RotationCommandPid>( alignedAngleToTurn_deg, myCurrentOriR_deg, mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV);
-        // LOG_INFO("NEW AL_ROTATION CMD: rawdeg= %d curr_ori= %d al_deg= %d \n", static_cast<int>(rawAngleToTurn_deg), static_cast<int>(myCurrentOriR_deg), static_cast<int>(alignedAngleToTurn_deg) );
+        LOG_INFO("NEW AL_ROTATION CMD: rawdeg= %d curr_ori= %d al_deg= %d \n", static_cast<int>(rawAngleToTurn_deg), static_cast<int>(myCurrentOriR_deg), static_cast<int>(alignedAngleToTurn_deg) );
         break;
     }
     case BACKWARD_MOVEMENT_FOR_ALIGNMENT:
@@ -259,7 +259,7 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommandUsingCur
                     ( 
                         std::make_unique<MM::LinearTravelCommand>
                         (
-                            (-1 * commandParams.second), 100, 250, 250,
+                            (-1 * commandParams.second), 100, 100, 100,
                             encoderValueLeftR_rev, encoderValueRightR_rev, mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV
                         ), 
                         std::move( stabilizers ), mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV 
