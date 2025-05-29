@@ -64,8 +64,8 @@ void MM::CommandExecuter::addCommandRelativeToCurrentPos(int directionToMove_deg
         {
             // we use the U turn to recenter the mouse!
             mCommandsToExecute.push( CommandToExecute(BACKWARD_MOVEMENT_FOR_ALIGNMENT, CONSTS::HALF_CELL_DISTANCE_MM * 2) );
-            mCommandsToExecute.push( CommandToExecute(UPD_ORI_OFFSET_AND_CELL_POS_AT_BACKWALL, 1) );
-            mCommandsToExecute.push( CommandToExecute(MOVEMENT_TO_CENTER_OF_CELL, 1) );
+            mCommandsToExecute.push( CommandToExecute(UPD_ORI_OFFSET_AND_CELL_POS_AT_BACKWALL, 0) );
+            mCommandsToExecute.push( CommandToExecute(MOVEMENT_TO_CENTER_OF_CELL, 0) );
         }
     }
     if( numberOfCellsToMove != 0)
@@ -214,10 +214,17 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommandUsingCur
     {
         if( commandParams.second > 179.99 || commandParams.second < -179.99 )
         {
-            if( !mCommandsToExecute.empty() && mCommandsToExecute.front().first == BACKWARD_MOVEMENT_FOR_ALIGNMENT && !_isFrontBlocked() )
+            if( mCommandsToExecute.size() >= 3 && !_isFrontBlocked() )
             {
-                // if the front way is not blocked, we dont want to do the reorg!
-                mCommandsToExecute.front().second = 0;
+                for( int i = 0; i < 3; i++)
+                {
+                    if( mCommandsToExecute.front().first == BACKWARD_MOVEMENT_FOR_ALIGNMENT ||
+                        mCommandsToExecute.front().first == UPD_ORI_OFFSET_AND_CELL_POS_AT_BACKWALL ||
+                        mCommandsToExecute.front().first == MOVEMENT_TO_CENTER_OF_CELL )
+                    {
+                        mCommandsToExecute.pop();
+                    }
+                }
             }
         }
         cmdToReturnP = std::make_unique<MM::RotationCommandPid>( commandParams.second, myCurrentOriR_deg, mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV);
@@ -241,80 +248,61 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommandUsingCur
     }
     case BACKWARD_MOVEMENT_FOR_ALIGNMENT:
     {
-        if( commandParams.second != 0 )
-        {
-            std::vector<std::unique_ptr<MM::MovementStabilizerIF>> stabilizers;
-            //stabilizers.push_back(std::make_unique<TwoWallStabilizer>(mDistFrontLeftR_mm, mDistFrontRightR_mm));
-            //stabilizers.push_back(std::make_unique<OneWallStabilizer>(mDistFrontLeftR_mm, mDistFrontRightR_mm));
-            stabilizers.push_back(std::make_unique<OrientationStabilizer>(myCurrentOriR_deg));
+        std::vector<std::unique_ptr<MM::MovementStabilizerIF>> stabilizers;
+        //stabilizers.push_back(std::make_unique<TwoWallStabilizer>(mDistFrontLeftR_mm, mDistFrontRightR_mm));
+        //stabilizers.push_back(std::make_unique<OneWallStabilizer>(mDistFrontLeftR_mm, mDistFrontRightR_mm));
+        stabilizers.push_back(std::make_unique<OrientationStabilizer>(myCurrentOriR_deg));
 
-            cmdToReturnP = std::make_unique<MM::StuckAvoidanceCommand>
+        cmdToReturnP = std::make_unique<MM::StuckAvoidanceCommand>
+                ( 
+                    std::make_unique<MM::WallCenteringCommand>
                     ( 
-                        std::make_unique<MM::WallCenteringCommand>
-                        ( 
-                            std::make_unique<MM::LinearTravelCommand>
-                            (
-                                (-1 * commandParams.second), 100, 250, 250,
-                                encoderValueLeftR_rev, encoderValueRightR_rev, mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV
-                            ), 
-                            std::move( stabilizers ), mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV 
-                        ),
-                        encoderValueLeftR_rev, encoderValueLeftR_rev, mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV
-                    );
-            LOG_INFO("NEW BACKWARD_MOVEMENT_FOR_ALIGNMENT CMD: dist= %d \n", static_cast<int>(commandParams.second) );
-        }
-        else if( !mCommandsToExecute.empty() && mCommandsToExecute.front().first == UPD_ORI_OFFSET_AND_CELL_POS_AT_BACKWALL )
-        {
-            // if we skip this part, we dont want to do the reorg!
-            mCommandsToExecute.front().second = 0;
-        }
+                        std::make_unique<MM::LinearTravelCommand>
+                        (
+                            (-1 * commandParams.second), 100, 250, 250,
+                            encoderValueLeftR_rev, encoderValueRightR_rev, mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV
+                        ), 
+                        std::move( stabilizers ), mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV 
+                    ),
+                    encoderValueLeftR_rev, encoderValueLeftR_rev, mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV
+                );
+        LOG_INFO("NEW BACKWARD_MOVEMENT_FOR_ALIGNMENT CMD: dist= %d \n", static_cast<int>(commandParams.second) );
 
         break;
     }
     case UPD_ORI_OFFSET_AND_CELL_POS_AT_BACKWALL:
     {
-        if( commandParams.second != 0 )
-        {
-            cmdToReturnP = std::make_unique<MM::OriOffsetUpdater>(mOriOffsetFlag);
-            mCurrentCellPositionR.updatePositionInCellIfBackwardTouched();
-            LOG_INFO("NEW UPD_ORI_OFFSET_AND_CELL_POS_AT_BACKWALL CMD \n");
-        }
-        else if( !mCommandsToExecute.empty() && mCommandsToExecute.front().first == MOVEMENT_TO_CENTER_OF_CELL )
-        {
-            // if we skip this part, we dont want to do the reorg!
-            mCommandsToExecute.front().second = 0;
-        }
+        cmdToReturnP = std::make_unique<MM::OriOffsetUpdater>(mOriOffsetFlag);
+        mCurrentCellPositionR.updatePositionInCellIfBackwardTouched();
+        LOG_INFO("NEW UPD_ORI_OFFSET_AND_CELL_POS_AT_BACKWALL CMD \n");
         break;
     }
     case MOVEMENT_TO_CENTER_OF_CELL:
     {
-        if( commandParams.second != 0 )
+        float currentOffsetInCell = _getOffsetInCellRespectedToCurrDir();
+        std::vector<std::unique_ptr<MM::MovementStabilizerIF>> stabilizers;
+        if( currentOffsetInCell < 0.0 )
         {
-            float currentOffsetInCell = _getOffsetInCellRespectedToCurrDir();
-            std::vector<std::unique_ptr<MM::MovementStabilizerIF>> stabilizers;
-            if( currentOffsetInCell < 0.0 )
-            {
-                stabilizers.push_back(std::make_unique<TwoWallStabilizer>(mDistFrontLeftR_mm, mDistFrontRightR_mm));
-                stabilizers.push_back(std::make_unique<OneWallStabilizer>(mDistFrontLeftR_mm, mDistFrontRightR_mm));
-            }
-            stabilizers.push_back(std::make_unique<OrientationStabilizer>(myCurrentOriR_deg));
-
-            cmdToReturnP = std::make_unique<MM::CollisionAvoidanceCommand>
-                    ( 
-                        std::make_unique<MM::WallCenteringCommand>
-                        ( 
-                            std::make_unique<MM::LinearTravelCommand>
-                            (
-                                -currentOffsetInCell, 100, 250, 250,
-                                encoderValueLeftR_rev, encoderValueRightR_rev, mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV
-                            ), 
-                            std::move( stabilizers ), mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV 
-                        ),
-                        mDistLeftR_mm, mDistRightR_mm, mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV
-                    );
-
-            LOG_INFO("NEW MOVEMENT_TO_CENTER_OF_CELL CMD: dist= %d \n", static_cast<int>( -currentOffsetInCell ) );
+            stabilizers.push_back(std::make_unique<TwoWallStabilizer>(mDistFrontLeftR_mm, mDistFrontRightR_mm));
+            stabilizers.push_back(std::make_unique<OneWallStabilizer>(mDistFrontLeftR_mm, mDistFrontRightR_mm));
         }
+        stabilizers.push_back(std::make_unique<OrientationStabilizer>(myCurrentOriR_deg));
+
+        cmdToReturnP = std::make_unique<MM::CollisionAvoidanceCommand>
+                ( 
+                    std::make_unique<MM::WallCenteringCommand>
+                    ( 
+                        std::make_unique<MM::LinearTravelCommand>
+                        (
+                            -currentOffsetInCell, 100, 250, 250,
+                            encoderValueLeftR_rev, encoderValueRightR_rev, mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV
+                        ), 
+                        std::move( stabilizers ), mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV 
+                    ),
+                    mDistLeftR_mm, mDistRightR_mm, mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV
+                );
+
+        LOG_INFO("NEW MOVEMENT_TO_CENTER_OF_CELL CMD: dist= %d \n", static_cast<int>( -currentOffsetInCell ) );
         break;
     }
     default:
