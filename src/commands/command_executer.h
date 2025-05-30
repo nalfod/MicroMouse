@@ -26,6 +26,7 @@ namespace MM
             bool isFinished() const;
             // TODO: refactor this, very ugly!
             void addTravelCommandRelativeToActualPos(int directionToMove_deg, uint16_t numberOfCellsToMove);
+            void printCurrentCommand() const;
 
             void addHalfCellTravelCommand();
             void addArcTravelCommand( float angleToTurn_deg );
@@ -37,7 +38,7 @@ namespace MM
             enum MovementPrimitives
             {
                 FORWARD_MOVEMENT_BY_CELL_NUMBER = 1,
-                FORWARD_MOVEMENT_FOR_ALIGNMENT = 2,
+                FORWARD_MOVEMENT_FOR_ROT_ALIGNMENT = 2,
                 ROTATING = 3,
                 ROTATING_ON_GRID = 4, // need to be fixed!!!,
                 ARC_MOVEMENT = 5,
@@ -74,6 +75,6 @@ namespace MM
             int16_t& mRightMotorVoltageR_mV;
             bool& mOriOffsetFlag;
 
-            float lastMovementEndSpeed_mm_per_s{0.0};
+            float mLastMovementEndSpeed_mm_per_s{0.0};
     };
 }

@@ -134,12 +134,13 @@ int16_t MM::LinearTravelCommand::calcVoltageFromSpeed_mV( float setSpeed_mm_per_
 
 void MM::LinearTravelCommand::print() const
 {
-    LOG_INFO("LIN_TRAV_CMD: TOT_T: %d ELAPS_T: %d DDIST: %d RDIST: %d PID_OUT: %d \n",
+    LOG_INFO("LIN_TRAV_CMD: TOT_T: %d ELAPS_T: %d DDIST: %d RDIST: %d PID_OUT: %d CURR_SPEED: %d \n",
         mTotalTimeOfTravel_ms,
         mElapsedTime_ms, 
         static_cast<int> ( mDesiredCurrentPosition_mm ),
         static_cast<int> ( mRealCurrentPosition_mm ),
-        static_cast<int> ( myMovementCtrl.getOuput() )
+        static_cast<int> ( myMovementCtrl.getOuput() ),
+        static_cast<int> ( myTargetSpeedCalculator.calcCurrentTargetSpeed_mmPerS( mElapsedTime_ms ) )
       );
 }
 
