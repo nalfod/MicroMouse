@@ -59,12 +59,12 @@ mEndSpeed_mm_per_s(end_speed_mm_per_s)
         }
     }
 
-    LOG_INFO("TargetSpeedCalculator (ctor)-> Total distance(mm): %d Set speed(mm/s): %d Acc time(ms): %d Uni time(ms): %d Dec time(ms): %d\n ",
+    /*LOG_INFO("TargetSpeedCalculator (ctor)-> Total distance(mm): %d Set speed(mm/s): %d Acc time(ms): %d Uni time(ms): %d Dec time(ms): %d\n ",
         static_cast<int>( totalDist_mm ),
         static_cast<int>( mSetSpeed_mm_per_s ),
         static_cast<int>( mAccelerationTime_ms ),
         static_cast<int>( mUniformTravelTime_ms) ,
-        static_cast<int>( mDecelerationTime_ms ) );
+        static_cast<int>( mDecelerationTime_ms ) );*/
 }
 
 float MM::TargetSpeedCalculator::calcCurrentTargetSpeed_mmPerS(unsigned long elapsedTime_ms) const
