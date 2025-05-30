@@ -59,6 +59,7 @@ void debug()
   }
   else
   {
+    MM::log_current_mm_values();
     static bool new_snapshot = false;
     if( g.mode_selector.get_current_mode() == CONSTS::MODES::MEASUREMENT_SNAPSHOT )
     {
