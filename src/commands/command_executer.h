@@ -34,6 +34,7 @@ namespace MM
             void parseRouteForSpeedRun(std::string route);
 
             void printActiveCommand() const;
+            void parseRouteForSpeedRunWithDiagonals(std::string route);
         private:
             enum MovementPrimitives
             {
