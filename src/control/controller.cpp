@@ -44,7 +44,8 @@ void MM::control()
     }
     else
     {
-      g.commandExecuter.parseRouteForSpeedRun(g.locController.findRouteForSpeedRun());
+      //g.commandExecuter.parseRouteForSpeedRun(g.locController.findRouteForSpeedRun());
+      g.commandExecuter.parseRouteForSpeedRunWithDiagonals(g.locController.findRouteForSpeedRun());
       delay(2000);
     }
   }
