@@ -41,7 +41,7 @@ void MM::CommandExecuter::execute()
         if( mCurrCommandToExecute->isFinished() )
         {
             mCurrentCellPositionR.updatePosition( mCurrCommandToExecute->getResult() );
-            lastMovementEndSpeed_mm_per_s = mCurrCommandToExecute->getResult().end_speed_mm_per_s;
+            mLastMovementEndSpeed_mm_per_s = mCurrCommandToExecute->getResult().end_speed_mm_per_s;
             _actualizeCurrentCommand();
         }
     }
@@ -55,7 +55,7 @@ void MM::CommandExecuter::addTravelCommandRelativeToActualPos(int directionToMov
 {
     if( directionToMove_deg != 0 )
     {
-        mCommandsToExecute.push( CommandToExecute(FORWARD_MOVEMENT_FOR_ALIGNMENT, 0) );
+        mCommandsToExecute.push( CommandToExecute(FORWARD_MOVEMENT_FOR_ROT_ALIGNMENT, 0) );
         mCommandsToExecute.push( CommandToExecute(ROTATING, directionToMove_deg) );
     }
     if( numberOfCellsToMove != 0)
@@ -83,6 +83,14 @@ bool MM::CommandExecuter::isFinished() const
     else
     {
         return mCommandsToExecute.empty();
+    }
+}
+
+void MM::CommandExecuter::printCurrentCommand() const
+{
+    if( mCurrCommandToExecute )
+    {
+        return mCurrCommandToExecute->print();
     }
 }
 
@@ -156,22 +164,27 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommand(Command
     LOG_INFO("\n");
     float startSpeed_mm_per_s = 0.0;
     float endSpeed_mm_per_s = 0.0;
+    float setSpeed_mm_per_s = 500.0;
+    float acceleration_mm_per_s = 250.0;
+    float decceleration_mm_per_s = 500.0;
 
-    if( lastMovementEndSpeed_mm_per_s > 0.0  && _isAbleToStartWithSpeed( commandParams.first ) )
+    if( mLastMovementEndSpeed_mm_per_s > 0.0  && _isAbleToStartWithSpeed( commandParams.first ) )
     {
-        startSpeed_mm_per_s = lastMovementEndSpeed_mm_per_s;
+        startSpeed_mm_per_s = mLastMovementEndSpeed_mm_per_s;
     }
 
     if( !mCommandsToExecute.empty() && _isAbleToStartWithSpeed( mCommandsToExecute.front().first ) )
     {
-        endSpeed_mm_per_s = 50.0;
+        LOG_INFO("Current command= %d next command= %d --> end speed is set\n", static_cast<int>(commandParams.first), static_cast<int>(mCommandsToExecute.front().first));
+        endSpeed_mm_per_s = 480.0;
+        //decceleration_mm_per_s = 250.0;
     }
 
     std::unique_ptr<MM::MotionCommandIF> cmdToReturnP;
     switch ( commandParams.first )
     {
     case FORWARD_MOVEMENT_BY_CELL_NUMBER:
-    case FORWARD_MOVEMENT_FOR_ALIGNMENT:
+    case FORWARD_MOVEMENT_FOR_ROT_ALIGNMENT:
     {
         float distanceToMove_mm = 0.0;
         if( commandParams.first == FORWARD_MOVEMENT_BY_CELL_NUMBER )
@@ -202,7 +215,7 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommand(Command
                 }
             }
         }
-        else if ( commandParams.first == FORWARD_MOVEMENT_FOR_ALIGNMENT )
+        else if ( commandParams.first == FORWARD_MOVEMENT_FOR_ROT_ALIGNMENT )
         {
             if(_isFrontBlocked())
             {
@@ -226,21 +239,23 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommand(Command
                         ( 
                             std::make_unique<MM::LinearTravelCommand>
                             (
-                                distanceToMove_mm, 500, 250, 500, startSpeed_mm_per_s, endSpeed_mm_per_s,
+                                distanceToMove_mm, setSpeed_mm_per_s, acceleration_mm_per_s, decceleration_mm_per_s, startSpeed_mm_per_s, endSpeed_mm_per_s,
                                 encoderValueLeftR_rev, encoderValueRightR_rev, mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV
                             ), 
                             std::move( stabilizers ), mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV 
                         ),
                         mDistLeftR_mm, mDistRightR_mm, mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV
                       );
-        /*LOG_INFO("NEW LINEAR MOVEMENT CMD: dist= %d dir= %d \n", static_cast<int>(distanceToMove_mm), 
-                                                                 static_cast<int>(mCurrentCellPositionR.getCurrentDirection()) );*/
+        LOG_INFO("NEW LINEAR MOVEMENT CMD: dist= %d dir= %d start_speed= %d end_speed= %d\n", static_cast<int>(distanceToMove_mm), 
+                                                                                              static_cast<int>(mCurrentCellPositionR.getCurrentDirection()),
+                                                                                              static_cast<int>(startSpeed_mm_per_s),
+                                                                                              static_cast<int>(endSpeed_mm_per_s) );
         break;
     }
     case ROTATING:
     {
         cmdToReturnP = std::make_unique<MM::RotationCommandPid>( commandParams.second, myCurrentOriR_deg, mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV);
-        //LOG_INFO("NEW ROTATION CMD: deg= %d \n", static_cast<int>(commandParams.second) );
+        LOG_INFO("NEW ROTATION CMD: deg= %d \n", static_cast<int>(commandParams.second) );
         break;
     }
     case ROTATING_ON_GRID:
@@ -261,7 +276,9 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommand(Command
     case ARC_MOVEMENT:
     {
         cmdToReturnP = std::make_unique<MM::ArcTravelCommand>( 90.0, commandParams.second, 500, 250, 500, startSpeed_mm_per_s, endSpeed_mm_per_s, encoderValueLeftR_rev, encoderValueRightR_rev, mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV);
-        LOG_INFO("NEW ARC_MOVEMENT CMD: deg= %d \n", static_cast<int>(commandParams.second) );
+        LOG_INFO("NEW ARC_MOVEMENT CMD: deg= %d start_speed= %d end_speed= %d \n", static_cast<int>(commandParams.second),
+                                                                                   static_cast<int>(startSpeed_mm_per_s),
+                                                                                   static_cast<int>(endSpeed_mm_per_s) );
         break;
     }
     case FORWARD_MOVEMENT_RAW:
@@ -277,16 +294,16 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommand(Command
                 ( 
                     std::make_unique<MM::LinearTravelCommand>
                     (
-                        commandParams.second, 500, 250, 500, startSpeed_mm_per_s, endSpeed_mm_per_s,
+                        commandParams.second, setSpeed_mm_per_s, acceleration_mm_per_s, decceleration_mm_per_s, startSpeed_mm_per_s, endSpeed_mm_per_s,
                         encoderValueLeftR_rev, encoderValueRightR_rev, mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV
                     ), 
                     std::move( stabilizers ), mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV 
                 ),
                 mDistLeftR_mm, mDistRightR_mm, mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV
                 );
-        LOG_INFO("NEW FORWARD_MOVEMENT_RAW CMD: dist= %d start= %d end= %d \n", static_cast<int>(commandParams.second), 
-                                                                                static_cast<int>(startSpeed_mm_per_s), 
-                                                                                static_cast<int>(endSpeed_mm_per_s) );
+        LOG_INFO("NEW FORWARD_MOVEMENT_RAW CMD: dist= %d start_speed= %d end_speed= %d \n", static_cast<int>(commandParams.second), 
+                                                                                            static_cast<int>(startSpeed_mm_per_s), 
+                                                                                            static_cast<int>(endSpeed_mm_per_s) );
         break;
     }
     default:
@@ -301,7 +318,7 @@ bool MM::CommandExecuter::_isAbleToStartWithSpeed( MovementPrimitives movementTy
     switch (movementType)
     {
         case FORWARD_MOVEMENT_BY_CELL_NUMBER:
-        case FORWARD_MOVEMENT_FOR_ALIGNMENT:
+        case FORWARD_MOVEMENT_FOR_ROT_ALIGNMENT:
         case ARC_MOVEMENT:
         case FORWARD_MOVEMENT_RAW:
             return true;
