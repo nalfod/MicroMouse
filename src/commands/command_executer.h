@@ -31,6 +31,7 @@ namespace MM
             void addArcTravelCommand( float angleToTurn_deg );
 
             void parseRouteForSpeedRun(std::string route);
+            void parseRouteForSpeedRunWithDiagonals(std::string route);
         private:
             enum MovementPrimitives
             {
