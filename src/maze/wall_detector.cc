@@ -73,8 +73,10 @@ int MM::WallDetector::getWallMaskOfCurrentCellBayesian( CellPosition const& curr
         (mProbWallFront2 > wallProbabilityThreshold || mProbWallFront2 < noWallProbabilityThreshold) &&
         (mProbWallFront1 == mProbWallFront2);
 
-    /*LOG_INFO("UPD_WALLS_B: L= %d ---  R= %d, --- F1= %d, ---  F2= %d\n", static_cast<int>( 100 * mProbWallOnLeft ), static_cast<int>( 100 * mProbWallOnRight ), 
-                                                                         static_cast<int>( 100 * mProbWallFront1 ), static_cast<int>( 100 * mProbWallFront2 ) );*/
+    LOG_INFO("UPD_WALLS_B: Lmm= %d ---  Rmm= %d, --- F1mm= %d, ---  F2mm= %d\n", static_cast<int>( mDistFrLeft ), static_cast<int>( mDistFrRight ), 
+                                                                                 static_cast<int>( mDistLeft ), static_cast<int>( mDistRight ) );
+    LOG_INFO("UPD_WALLS_B: L%= %d ---  R%= %d, --- F1%= %d, ---  F2%= %d\n", static_cast<int>( 100 * mProbWallOnLeft ), static_cast<int>( 100 * mProbWallOnRight ), 
+                                                                             static_cast<int>( 100 * mProbWallFront1 ), static_cast<int>( 100 * mProbWallFront2 ) );
     if (allWallsConfident) 
     {
         int wallMask = 0;

@@ -251,7 +251,7 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommandUsingCur
         std::vector<std::unique_ptr<MM::MovementStabilizerIF>> stabilizers;
         //stabilizers.push_back(std::make_unique<TwoWallStabilizer>(mDistFrontLeftR_mm, mDistFrontRightR_mm));
         //stabilizers.push_back(std::make_unique<OneWallStabilizer>(mDistFrontLeftR_mm, mDistFrontRightR_mm));
-        stabilizers.push_back(std::make_unique<OrientationStabilizer>(myCurrentOriR_deg));
+        //stabilizers.push_back(std::make_unique<OrientationStabilizer>(myCurrentOriR_deg));
 
         cmdToReturnP = std::make_unique<MM::StuckAvoidanceCommand>
                 ( 
@@ -285,8 +285,8 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommandUsingCur
         {
             stabilizers.push_back(std::make_unique<TwoWallStabilizer>(mDistFrontLeftR_mm, mDistFrontRightR_mm));
             stabilizers.push_back(std::make_unique<OneWallStabilizer>(mDistFrontLeftR_mm, mDistFrontRightR_mm));
+            stabilizers.push_back(std::make_unique<OrientationStabilizer>(myCurrentOriR_deg));
         }
-        stabilizers.push_back(std::make_unique<OrientationStabilizer>(myCurrentOriR_deg));
 
         cmdToReturnP = std::make_unique<MM::CollisionAvoidanceCommand>
                 ( 
