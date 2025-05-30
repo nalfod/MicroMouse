@@ -134,6 +134,7 @@ void  MM::CommandExecuter::parseRouteForSpeedRun(std::string route)
         {
             moveCellNo = 0;
         }
+        
         addCommandRelativeToCurrentPos( CONSTS::getRotationAngle( currentDir, toDirection ), moveCellNo);
         currentDir = toDirection;
     }

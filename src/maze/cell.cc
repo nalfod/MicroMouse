@@ -1,40 +1,53 @@
 #include "cell.h"
-
-Cell::Cell(int x, int y, int wall, int val) {
-    mX = x;
-    mY = y;
-    wallMask = wall;
-    value = val;
-}
+#include "utils/logging.h"
+Cell::Cell(int x, int y, int wall, float weight):
+    mX(x),
+    mY(y),
+    mWallMask(wall),
+    mWeight(weight),
+    mWasCellVisited(false)
+    {}
 
 Cell::Cell(const Cell& cell) {
     mX = cell.mX;
     mY = cell.mY;
-    value = cell.value;
-    wallMask = cell.wallMask;
+    mWeight = cell.mWeight;
+    mWallMask = cell.mWallMask;
+    mWasCellVisited = cell.mWasCellVisited;
 }
 
-int Cell::getValue() const
+float Cell::getWeight() const
 {
-    return value;
+    return mWeight;
 }
 
-void Cell::setValue(int newValue)
+void Cell::setWeight(float newWeight)
 {
-    value = newValue;
+    mWeight = newWeight;
+    LOG_INFO("WEIGHT OF %d  %d to %F\n", mX, mY, mWeight);
 }
 
 int Cell::getWallMask()
 {
-    return wallMask;
+    return mWallMask;
 }
 
 void Cell::setWallMask(int newMask)
 {
-    wallMask = newMask;
+    mWallMask = newMask;
 }
 
 bool Cell::isAccessible(CONSTS::Direction direction) const
 {
-    return !(wallMask & direction);
+    return !(mWallMask & direction);
+}
+
+void Cell::isVisited(bool isVisited)
+{
+    mWasCellVisited = isVisited;
+}
+
+bool Cell::getWasCellVisited()
+{
+    return mWasCellVisited;
 }
