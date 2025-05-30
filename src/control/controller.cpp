@@ -13,7 +13,7 @@
 
 void MM::control()
 {
-  check_mode_selector();
+  // check_mode_selector();
   if( g.mode_selector.get_current_mode() == CONSTS::MODES::DISCOVERY )
   {
     if( !g.commandExecuter.isFinished() )

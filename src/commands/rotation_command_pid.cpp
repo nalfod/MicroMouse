@@ -20,6 +20,8 @@ void MM::RotationCommandPid::execute()
 
     if( !mStarted )
     {
+        mLeftMotorVoltageR_mV = 0;
+        mRightMotorVoltageR_mV = 0;
         myTargetOrientation_deg = myCurrentOriR_deg + myTargetMagnitude_deg;
         myTargetOrientation_deg = shiftOrientationValue(myTargetOrientation_deg);
         mStarted = true;
