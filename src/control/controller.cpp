@@ -45,7 +45,8 @@ void MM::control()
     else
     {
       LOG_INFO("SPEEDRUN_PARSE_START\n");
-      g.commandExecuter.parseRouteForSpeedRun(g.locController.findRouteForSpeedRun());
+      //g.commandExecuter.parseRouteForSpeedRun(g.locController.findRouteForSpeedRun());
+      g.commandExecuter.parseRouteForSpeedRunWithDiagonals(g.locController.findRouteForSpeedRun());
       LOG_INFO("SPEEDRUN_PARSE_END\n");
       //delay(2000);
     }

@@ -191,39 +191,37 @@ void MM::CommandExecuter::parseRouteForSpeedRunWithDiagonals(std::string route)
         char currChar = route[i];
         CONSTS::Direction currDir = charToDir(currChar);
 
-        // Count how many cells to move in the current direction
+        // Check for diagonal: single cell in current direction, then single cell in new direction
+        if (i + 1 < route.size() && route[i] != route[i + 1]) {
+            bool currIsSingle = (i == 0 || route[i - 1] != currChar);
+            bool nextIsSingle = (i + 2 >= route.size() || route[i + 2] != route[i + 1]);
+            // Fixed: only use diagonal if the next cell is not followed by ANOTHER turn
+            // If i+2 is in bounds AND the character at i+2 is different from i+1, it means
+            // there's another direction change right after this one (chained turn)
+            bool notChainedTurn = (i + 2 >= route.size() || 
+                                  (route[i + 2] == route[i + 1]));
+            
+            if (currIsSingle && nextIsSingle && notChainedTurn) {
+                CONSTS::Direction nextDir = charToDir(route[i + 1]);
+                int angle = CONSTS::getRotationAngle(currDir, nextDir);
+                if (angle == 90 || angle == -90) {
+                    // Diagonal move: half cell in current, arc, half cell in new direction
+                    LOG_INFO("DIAGONAL MOVE: deg= %d \n", static_cast<int>(CONSTS::getRotationAngle(currentDir, nextDir)) );
+                    addHalfCellTravelCommand();
+                    addArcTravelCommand(CONSTS::getRotationAngle(currentDir, nextDir));
+                    addHalfCellTravelCommand();
+                    currentDir = nextDir;
+                    i += 2;
+                    continue;
+                }
+            }
+        }
+
+        // Otherwise, count how many cells to move in the current direction
         int runLength = 1;
         while (i + runLength < route.size() && route[i + runLength] == currChar) {
             runLength++;
         }
-
-        // Check for a single turn followed by at least one cell in the new direction
-        if (i + runLength < route.size()) {
-            char nextChar = route[i + runLength];
-            CONSTS::Direction nextDir = charToDir(nextChar);
-            int angle = CONSTS::getRotationAngle(currDir, nextDir);
-
-            // Check if only one turn and after that at least one cell in new direction (not another turn)
-            if ((angle == 90 || angle == -90) &&
-                (i + runLength + 1 < route.size() || route[i + runLength + 1] == nextChar)) {
-                // Move straight for runLength - 1 cells (if any)
-                if (runLength > 1) {
-                    addTravelCommandRelativeToActualPos(CONSTS::getRotationAngle(currentDir, currDir), runLength - 1);
-                    LOG_INFO("REGULAR MOVE: deg= %d length= %d \n", static_cast<int>(CONSTS::getRotationAngle(currentDir, currDir)), runLength - 1 );
-                    currentDir = currDir;
-                }
-                // Diagonal move: half cell in current, arc, half cell in new direction
-                addHalfCellTravelCommand();
-                addArcTravelCommand(CONSTS::getRotationAngle(currentDir, nextDir));
-                addHalfCellTravelCommand();
-                LOG_INFO("DIAGONAL MOVE: deg= %d \n", static_cast<int>(CONSTS::getRotationAngle(currentDir, nextDir)) );
-                currentDir = nextDir;
-                i += runLength + 1;
-                continue;
-            }
-        }
-
-        // Otherwise, do regular moves
         addTravelCommandRelativeToActualPos(CONSTS::getRotationAngle(currentDir, currDir), runLength);
         LOG_INFO("REGULAR MOVE: deg= %d length= %d \n", static_cast<int>(CONSTS::getRotationAngle(currentDir, currDir)), runLength );
         currentDir = currDir;
