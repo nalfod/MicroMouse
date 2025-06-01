@@ -26,7 +26,7 @@ int MM::WallDetector::getWallMaskOfCurrentCell( CellPosition const& currentPosit
     {
         newWallMask = (newWallMask | CONSTS::getDirectionAfterRotation(currentPositionR.getCurrentDirection(), 90.0f) );
     }
-    if( (mDistLeft < 80 ) || (mDistRight < 80 ) )
+    if( (mDistLeft < 80 - CONSTS::HOME_POSITION_IN_CELL_MM ) || (mDistRight < 80 - CONSTS::HOME_POSITION_IN_CELL_MM ) )
     {
         newWallMask = (newWallMask | currentPositionR.getCurrentDirection());
     }
@@ -45,27 +45,29 @@ int MM::WallDetector::getWallMaskOfCurrentCellBayesian( CellPosition const& curr
     constexpr float noWallProbabilityThreshold = 0.1f; // Below this, we are confident there is no wall
 
     // --- Sensor model: expected distances for wall detection ---
-    constexpr float expectedWallDistanceSide = 90.0f;
-    constexpr float expectedWallDistanceFront = 80.0f;
+    constexpr float expectedWallDistanceSide_mm = 90.0f;
+    constexpr float expectedWallDistanceFront_mm = 80.0f - CONSTS::HOME_POSITION_IN_CELL_MM;
 
     // --- Bayesian update for each wall direction ---
     // Left wall
-    bool detectedOnLeft = (mDistFrLeft < expectedWallDistanceSide);
+    bool detectedOnLeft = (mDistFrLeft < expectedWallDistanceSide_mm);
     mProbWallOnLeft = _bayesianWallUpdate(mProbWallOnLeft, detectedOnLeft, pDetectGivenWall, pDetectGivenNoWall);
 
     // Right wall
-    bool detectedOnRight = (mDistFrRight < expectedWallDistanceSide);
+    bool detectedOnRight = (mDistFrRight < expectedWallDistanceSide_mm);
     mProbWallOnRight = _bayesianWallUpdate(mProbWallOnRight, detectedOnRight, pDetectGivenWall, pDetectGivenNoWall);
 
     // Front wall 1 (relative to current direction)
-    bool detectedFront1 = (mDistLeft < expectedWallDistanceFront);
+    bool detectedFront1 = (mDistLeft < expectedWallDistanceFront_mm);
     mProbWallFront1 = _bayesianWallUpdate(mProbWallFront1, detectedFront1, pDetectGivenWall, pDetectGivenNoWall);
 
     // Right wall (relative to current direction)
-    bool detectedFront2 = (mDistRight < expectedWallDistanceFront);
+    bool detectedFront2 = (mDistRight < expectedWallDistanceFront_mm);
     mProbWallFront2 = _bayesianWallUpdate(mProbWallFront2, detectedFront2, pDetectGivenWall, pDetectGivenNoWall);
 
     // --- Only update the maze when all probabilities are confident ---
+    // TODO: A BIG ONE!!! The former method required only one of the front looking sensor to be below the limit
+    //                    this method requires both of them. Which one should we choose????????????????????????
     bool allWallsConfident =
         (mProbWallOnLeft > wallProbabilityThreshold || mProbWallOnLeft < noWallProbabilityThreshold) &&
         (mProbWallOnRight > wallProbabilityThreshold || mProbWallOnRight < noWallProbabilityThreshold) &&
@@ -73,10 +75,10 @@ int MM::WallDetector::getWallMaskOfCurrentCellBayesian( CellPosition const& curr
         (mProbWallFront2 > wallProbabilityThreshold || mProbWallFront2 < noWallProbabilityThreshold) &&
         (mProbWallFront1 == mProbWallFront2);
 
-    LOG_INFO("UPD_WALLS_B: Lmm= %d ---  Rmm= %d, --- F1mm= %d, ---  F2mm= %d\n", static_cast<int>( mDistFrLeft ), static_cast<int>( mDistFrRight ), 
+    /*LOG_INFO("UPD_WALLS_B: Lmm= %d ---  Rmm= %d, --- F1mm= %d, ---  F2mm= %d\n", static_cast<int>( mDistFrLeft ), static_cast<int>( mDistFrRight ), 
                                                                                  static_cast<int>( mDistLeft ), static_cast<int>( mDistRight ) );
     LOG_INFO("UPD_WALLS_B: L%= %d ---  R%= %d, --- F1%= %d, ---  F2%= %d\n", static_cast<int>( 100 * mProbWallOnLeft ), static_cast<int>( 100 * mProbWallOnRight ), 
-                                                                             static_cast<int>( 100 * mProbWallFront1 ), static_cast<int>( 100 * mProbWallFront2 ) );
+                                                                             static_cast<int>( 100 * mProbWallFront1 ), static_cast<int>( 100 * mProbWallFront2 ) );*/
     if (allWallsConfident) 
     {
         int wallMask = 0;
@@ -93,11 +95,11 @@ int MM::WallDetector::getWallMaskOfCurrentCellBayesian( CellPosition const& curr
         }
         
         // Commit the wall mask to the maze
-        LOG_INFO("UPD_WALLS_B DONE: X= %d ---  Y= %d, --- WM= %d ---", static_cast<int>(currentPositionR.getPosX()), 
+        /*LOG_INFO("UPD_WALLS_B DONE: X= %d ---  Y= %d, --- WM= %d ---", static_cast<int>(currentPositionR.getPosX()), 
                                                                        static_cast<int>(currentPositionR.getPosY()),
                                                                        static_cast<int>(wallMask) );
         LOG_INFO(" L= %d ---  R= %d, --- F1= %d, ---  F2= %d\n", static_cast<int>( 100 * mProbWallOnLeft ), static_cast<int>( 100 * mProbWallOnRight ), 
-                                                                 static_cast<int>( 100 * mProbWallFront1 ), static_cast<int>( 100 * mProbWallFront2 ) );
+                                                                 static_cast<int>( 100 * mProbWallFront1 ), static_cast<int>( 100 * mProbWallFront2 ) );*/
         
         retVal = wallMask;
         

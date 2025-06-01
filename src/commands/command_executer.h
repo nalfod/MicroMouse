@@ -40,7 +40,7 @@ namespace MM
 
                 BACKWARD_MOVEMENT_FOR_ALIGNMENT = 7,
                 UPD_ORI_OFFSET_AND_CELL_POS_AT_BACKWALL = 8,
-                MOVEMENT_TO_CENTER_OF_CELL = 9
+                MOVEMENT_TO_HOME_IN_CELL = 9
             };
             // first pair value is the movement type, second one is the specific magnitude (eg.: distance or angle)
             using CommandToExecute = std::pair< MovementPrimitives, int >;
@@ -48,7 +48,7 @@ namespace MM
             void _actualizeCurrentCommand();
             bool _isFrontBlocked();
             std::unique_ptr<MotionCommandIF> _createCommandUsingCurrentPosition(CommandToExecute commandParams);
-            float _getOffsetInCellRespectedToCurrDir();
+            float _getOffsetFromHomeInCellInCurrDir();
             
             std::unique_ptr<MotionCommandIF> mCurrCommandToExecute;
             std::queue< CommandToExecute > mCommandsToExecute;

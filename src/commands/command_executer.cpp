@@ -65,7 +65,7 @@ void MM::CommandExecuter::addCommandRelativeToCurrentPos(int directionToMove_deg
             // we use the U turn to recenter the mouse!
             mCommandsToExecute.push( CommandToExecute(BACKWARD_MOVEMENT_FOR_ALIGNMENT, CONSTS::HALF_CELL_DISTANCE_MM * 2) );
             mCommandsToExecute.push( CommandToExecute(UPD_ORI_OFFSET_AND_CELL_POS_AT_BACKWALL, 0) );
-            mCommandsToExecute.push( CommandToExecute(MOVEMENT_TO_CENTER_OF_CELL, 0) );
+            mCommandsToExecute.push( CommandToExecute(MOVEMENT_TO_HOME_IN_CELL, 0) );
         }
     }
     if( numberOfCellsToMove != 0)
@@ -113,7 +113,7 @@ void MM::CommandExecuter::_actualizeCurrentCommand()
 
 bool MM::CommandExecuter::_isFrontBlocked()
 {
-    return (mDistLeftR_mm < 80 ) || (mDistRightR_mm < 80 );
+    return (mDistLeftR_mm < 80 - CONSTS::HOME_POSITION_IN_CELL_MM ) || (mDistRightR_mm < 80 - CONSTS::HOME_POSITION_IN_CELL_MM );
 }
 
 void  MM::CommandExecuter::parseRouteForSpeedRun(std::string route)
@@ -170,11 +170,10 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommandUsingCur
     case FORWARD_MOVEMENT_FOR_ALIGNMENT:
     {
         float distanceToMove_mm = 0.0;
+        float currentOffsetInCell = _getOffsetFromHomeInCellInCurrDir();
         if( commandParams.first == FORWARD_MOVEMENT_BY_CELL_NUMBER )
         {
-            distanceToMove_mm = commandParams.second * CONSTS::HALF_CELL_DISTANCE_MM * 2;
-            float currentOffsetInCell = _getOffsetInCellRespectedToCurrDir();
-            distanceToMove_mm -= currentOffsetInCell;
+            distanceToMove_mm = commandParams.second * ( 2 * CONSTS::HALF_CELL_DISTANCE_MM ) - currentOffsetInCell;
         }
         else if ( commandParams.first == FORWARD_MOVEMENT_FOR_ALIGNMENT )
         {
@@ -185,7 +184,7 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommandUsingCur
             }
             else
             {
-                distanceToMove_mm = 30; // TODO: measure it!
+                distanceToMove_mm = 61.5 - currentOffsetInCell; // TODO: measure it!
             }
         }
 
@@ -220,7 +219,7 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommandUsingCur
                 {
                     if( mCommandsToExecute.front().first == BACKWARD_MOVEMENT_FOR_ALIGNMENT ||
                         mCommandsToExecute.front().first == UPD_ORI_OFFSET_AND_CELL_POS_AT_BACKWALL ||
-                        mCommandsToExecute.front().first == MOVEMENT_TO_CENTER_OF_CELL )
+                        mCommandsToExecute.front().first == MOVEMENT_TO_HOME_IN_CELL )
                     {
                         mCommandsToExecute.pop();
                     }
@@ -277,9 +276,9 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommandUsingCur
         LOG_INFO("NEW UPD_ORI_OFFSET_AND_CELL_POS_AT_BACKWALL CMD \n");
         break;
     }
-    case MOVEMENT_TO_CENTER_OF_CELL:
+    case MOVEMENT_TO_HOME_IN_CELL:
     {
-        float currentOffsetInCell = _getOffsetInCellRespectedToCurrDir();
+        float currentOffsetInCell = _getOffsetFromHomeInCellInCurrDir();
         std::vector<std::unique_ptr<MM::MovementStabilizerIF>> stabilizers;
         if( currentOffsetInCell < 0.0 )
         {
@@ -302,7 +301,7 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommandUsingCur
                     mDistLeftR_mm, mDistRightR_mm, mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV
                 );
 
-        LOG_INFO("NEW MOVEMENT_TO_CENTER_OF_CELL CMD: dist= %d \n", static_cast<int>( -currentOffsetInCell ) );
+        LOG_INFO("NEW MOVEMENT_TO_HOME_IN_CELL CMD: dist= %d \n", static_cast<int>( -currentOffsetInCell ) );
         break;
     }
     default:
@@ -312,18 +311,18 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommandUsingCur
     return std::move(cmdToReturnP);
 }
 
-float MM::CommandExecuter::_getOffsetInCellRespectedToCurrDir()
+float MM::CommandExecuter::_getOffsetFromHomeInCellInCurrDir()
 {
     float offset_mm = 0.0;
     CONSTS::Direction currentDirectionInCell = mCurrentCellPositionR.getCurrentDirection();
 
     if( currentDirectionInCell == CONSTS::Direction::NORTH || currentDirectionInCell == CONSTS::Direction::SOUTH )
     {
-        offset_mm = mCurrentCellPositionR.getXPositionInCell();
+        offset_mm = mCurrentCellPositionR.getXPositionInCell() - CONSTS::HOME_POSITION_IN_CELL_MM;
     }
     else if( currentDirectionInCell == CONSTS::Direction::EAST || currentDirectionInCell == CONSTS::Direction::WEST )
     {
-        offset_mm = mCurrentCellPositionR.getYPositionInCell();
+        offset_mm = mCurrentCellPositionR.getYPositionInCell() - CONSTS::HOME_POSITION_IN_CELL_MM;
     }
 
     if( currentDirectionInCell == CONSTS::Direction::SOUTH || currentDirectionInCell == CONSTS::Direction::WEST )
