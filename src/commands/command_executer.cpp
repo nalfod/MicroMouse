@@ -212,8 +212,18 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommandUsingCur
     }
     case ROTATING:
     {
-        if( commandParams.second > 179.99 || commandParams.second < -179.99 )
+        float angleToTurn_deg = commandParams.second;
+        if( angleToTurn_deg > 179.99 || angleToTurn_deg < -179.99 )
         {
+            if( mDistFrontRightR_mm > mDistFrontLeftR_mm )
+            {
+                angleToTurn_deg = 180.0;
+            }
+            else
+            {
+                angleToTurn_deg = -180.0;
+            }
+
             if( mCommandsToExecute.size() >= 2 && !_isFrontBlocked() )
             {
                 for( int i = 0; i < 2; i++)
@@ -226,8 +236,8 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommandUsingCur
                 }
             }
         }
-        cmdToReturnP = std::make_unique<MM::RotationCommandPid>( commandParams.second, myCurrentOriR_deg, mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV);
-        LOG_INFO("NEW ROTATION CMD: deg= %d \n", static_cast<int>(commandParams.second) );
+        cmdToReturnP = std::make_unique<MM::RotationCommandPid>( angleToTurn_deg, myCurrentOriR_deg, mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV);
+        LOG_INFO("NEW ROTATION CMD: deg= %d \n", static_cast<int>(angleToTurn_deg) );
         break;
     }
     case ROTATING_ON_GRID:

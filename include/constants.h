@@ -79,7 +79,8 @@ Direction getDirectionAfterRotation(Direction currentDirection, float rotationAn
             case Direction::WEST: return Direction::NORTH;
             default: return Direction::UNKNOWN;
         }
-    } else if (rotationAngle > 179.9f && rotationAngle < 180.1f) {
+    } else if ( ( rotationAngle > 179.9f && rotationAngle < 180.1f ) ||
+                ( rotationAngle > -180.1f && rotationAngle < -179.9f) ) {
         switch (currentDirection) {
             case Direction::NORTH: return Direction::SOUTH;
             case Direction::EAST: return Direction::WEST;
