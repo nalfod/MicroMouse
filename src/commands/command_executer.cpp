@@ -63,7 +63,7 @@ void MM::CommandExecuter::addCommandRelativeToCurrentPos(int directionToMove_deg
         if( directionToMove_deg > 179.99 || directionToMove_deg < -179.99 )
         {
             // we use the U turn to recenter the mouse!
-            mCommandsToExecute.push( CommandToExecute(BACKWARD_MOVEMENT_FOR_ALIGNMENT, CONSTS::HALF_CELL_DISTANCE_MM * 2) );
+            mCommandsToExecute.push( CommandToExecute(BACKWARD_MOVEMENT_FOR_ALIGNMENT, CONSTS::HALF_CELL_DISTANCE_MM) );
             mCommandsToExecute.push( CommandToExecute(UPD_ORI_OFFSET_AND_CELL_POS_AT_BACKWALL, 0) );
         }
     }
