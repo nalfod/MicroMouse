@@ -59,7 +59,7 @@ void MM::CommandExecuter::addCommandRelativeToCurrentPos(int directionToMove_deg
     if( directionToMove_deg != 0 )
     {
         mCommandsToExecute.push( CommandToExecute(FORWARD_MOVEMENT_FOR_ALIGNMENT, 0) );
-        mCommandsToExecute.push( CommandToExecute(ROTATING, directionToMove_deg) );
+        mCommandsToExecute.push( CommandToExecute(ROTATING_ON_GRID, directionToMove_deg) );
         if( directionToMove_deg > 179.99 || directionToMove_deg < -179.99 )
         {
             // we use the U turn to recenter the mouse!
