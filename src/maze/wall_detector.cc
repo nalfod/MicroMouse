@@ -26,7 +26,7 @@ int MM::WallDetector::getWallMaskOfCurrentCell( CellPosition const& currentPosit
     {
         newWallMask = (newWallMask | CONSTS::getDirectionAfterRotation(currentPositionR.getCurrentDirection(), 90.0f) );
     }
-    if( (mDistLeft < 80 - CONSTS::HOME_POSITION_IN_CELL_MM ) || (mDistRight < 80 - CONSTS::HOME_POSITION_IN_CELL_MM ) )
+    if( (mDistLeft < 80 + CONSTS::HOME_POSITION_IN_CELL_MM ) || (mDistRight < 80 + CONSTS::HOME_POSITION_IN_CELL_MM ) )
     {
         newWallMask = (newWallMask | currentPositionR.getCurrentDirection());
     }
@@ -46,7 +46,7 @@ int MM::WallDetector::getWallMaskOfCurrentCellBayesian( CellPosition const& curr
 
     // --- Sensor model: expected distances for wall detection ---
     constexpr float expectedWallDistanceSide_mm = 90.0f;
-    constexpr float expectedWallDistanceFront_mm = 80.0f - CONSTS::HOME_POSITION_IN_CELL_MM;
+    constexpr float expectedWallDistanceFront_mm = 80.0f + CONSTS::HOME_POSITION_IN_CELL_MM;
 
     // --- Bayesian update for each wall direction ---
     // Left wall

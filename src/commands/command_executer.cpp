@@ -65,7 +65,6 @@ void MM::CommandExecuter::addCommandRelativeToCurrentPos(int directionToMove_deg
             // we use the U turn to recenter the mouse!
             mCommandsToExecute.push( CommandToExecute(BACKWARD_MOVEMENT_FOR_ALIGNMENT, CONSTS::HALF_CELL_DISTANCE_MM * 2) );
             mCommandsToExecute.push( CommandToExecute(UPD_ORI_OFFSET_AND_CELL_POS_AT_BACKWALL, 0) );
-            mCommandsToExecute.push( CommandToExecute(MOVEMENT_TO_HOME_IN_CELL, 0) );
         }
     }
     if( numberOfCellsToMove != 0)
@@ -113,7 +112,9 @@ void MM::CommandExecuter::_actualizeCurrentCommand()
 
 bool MM::CommandExecuter::_isFrontBlocked()
 {
-    return (mDistLeftR_mm < 80 - CONSTS::HOME_POSITION_IN_CELL_MM ) || (mDistRightR_mm < 80 - CONSTS::HOME_POSITION_IN_CELL_MM );
+    // FIXME: would be much nicer to use the current position, but it is not reliable
+    // This assumes now, that this function only used when the mouse is at home position
+    return (mDistLeftR_mm < 80 + CONSTS::HOME_POSITION_IN_CELL_MM ) || (mDistRightR_mm < 80 + CONSTS::HOME_POSITION_IN_CELL_MM );
 }
 
 void  MM::CommandExecuter::parseRouteForSpeedRun(std::string route)
@@ -170,10 +171,10 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommandUsingCur
     case FORWARD_MOVEMENT_FOR_ALIGNMENT:
     {
         float distanceToMove_mm = 0.0;
-        float currentOffsetInCell = _getOffsetFromHomeInCellInCurrDir();
+        float currentOffsetInCellInDir = _getOffsetFromHomeInCellInCurrDir();
         if( commandParams.first == FORWARD_MOVEMENT_BY_CELL_NUMBER )
         {
-            distanceToMove_mm = commandParams.second * ( 2 * CONSTS::HALF_CELL_DISTANCE_MM ) - currentOffsetInCell;
+            distanceToMove_mm = commandParams.second * ( 2 * CONSTS::HALF_CELL_DISTANCE_MM ) - currentOffsetInCellInDir;
         }
         else if ( commandParams.first == FORWARD_MOVEMENT_FOR_ALIGNMENT )
         {
@@ -184,7 +185,7 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommandUsingCur
             }
             else
             {
-                distanceToMove_mm = 61.5 - currentOffsetInCell; // TODO: measure it!
+                distanceToMove_mm = 40 - currentOffsetInCellInDir; // TODO: measure it!
             }
         }
 
@@ -213,13 +214,12 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommandUsingCur
     {
         if( commandParams.second > 179.99 || commandParams.second < -179.99 )
         {
-            if( mCommandsToExecute.size() >= 3 && !_isFrontBlocked() )
+            if( mCommandsToExecute.size() >= 2 && !_isFrontBlocked() )
             {
-                for( int i = 0; i < 3; i++)
+                for( int i = 0; i < 2; i++)
                 {
                     if( mCommandsToExecute.front().first == BACKWARD_MOVEMENT_FOR_ALIGNMENT ||
-                        mCommandsToExecute.front().first == UPD_ORI_OFFSET_AND_CELL_POS_AT_BACKWALL ||
-                        mCommandsToExecute.front().first == MOVEMENT_TO_HOME_IN_CELL )
+                        mCommandsToExecute.front().first == UPD_ORI_OFFSET_AND_CELL_POS_AT_BACKWALL )
                     {
                         mCommandsToExecute.pop();
                     }
@@ -276,34 +276,6 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommandUsingCur
         LOG_INFO("NEW UPD_ORI_OFFSET_AND_CELL_POS_AT_BACKWALL CMD \n");
         break;
     }
-    case MOVEMENT_TO_HOME_IN_CELL:
-    {
-        float currentOffsetInCell = _getOffsetFromHomeInCellInCurrDir();
-        std::vector<std::unique_ptr<MM::MovementStabilizerIF>> stabilizers;
-        if( currentOffsetInCell < 0.0 )
-        {
-            stabilizers.push_back(std::make_unique<TwoWallStabilizer>(mDistFrontLeftR_mm, mDistFrontRightR_mm));
-            stabilizers.push_back(std::make_unique<OneWallStabilizer>(mDistFrontLeftR_mm, mDistFrontRightR_mm));
-            stabilizers.push_back(std::make_unique<OrientationStabilizer>(myCurrentOriR_deg));
-        }
-
-        cmdToReturnP = std::make_unique<MM::CollisionAvoidanceCommand>
-                ( 
-                    std::make_unique<MM::WallCenteringCommand>
-                    ( 
-                        std::make_unique<MM::LinearTravelCommand>
-                        (
-                            -currentOffsetInCell, 100, 250, 250,
-                            encoderValueLeftR_rev, encoderValueRightR_rev, mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV
-                        ), 
-                        std::move( stabilizers ), mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV 
-                    ),
-                    mDistLeftR_mm, mDistRightR_mm, mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV
-                );
-
-        LOG_INFO("NEW MOVEMENT_TO_HOME_IN_CELL CMD: dist= %d \n", static_cast<int>( -currentOffsetInCell ) );
-        break;
-    }
     default:
         break;
     }
@@ -314,20 +286,29 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommandUsingCur
 float MM::CommandExecuter::_getOffsetFromHomeInCellInCurrDir()
 {
     float offset_mm = 0.0;
+    float homePosition_mm = 0.0;
     CONSTS::Direction currentDirectionInCell = mCurrentCellPositionR.getCurrentDirection();
 
-    if( currentDirectionInCell == CONSTS::Direction::NORTH || currentDirectionInCell == CONSTS::Direction::SOUTH )
+    // Set the home position based on direction
+    if (currentDirectionInCell == CONSTS::Direction::NORTH)
     {
-        offset_mm = mCurrentCellPositionR.getXPositionInCell() - CONSTS::HOME_POSITION_IN_CELL_MM;
+        homePosition_mm = - CONSTS::HOME_POSITION_IN_CELL_MM;
+        offset_mm = mCurrentCellPositionR.getXPositionInCell() - homePosition_mm;
     }
-    else if( currentDirectionInCell == CONSTS::Direction::EAST || currentDirectionInCell == CONSTS::Direction::WEST )
+    else if (currentDirectionInCell == CONSTS::Direction::SOUTH)
     {
-        offset_mm = mCurrentCellPositionR.getYPositionInCell() - CONSTS::HOME_POSITION_IN_CELL_MM;
+        homePosition_mm = CONSTS::HOME_POSITION_IN_CELL_MM;
+        offset_mm = homePosition_mm - mCurrentCellPositionR.getXPositionInCell();
     }
-
-    if( currentDirectionInCell == CONSTS::Direction::SOUTH || currentDirectionInCell == CONSTS::Direction::WEST )
+    else if (currentDirectionInCell == CONSTS::Direction::EAST)
     {
-        offset_mm *= -1;
+        homePosition_mm = - CONSTS::HOME_POSITION_IN_CELL_MM;
+        offset_mm = mCurrentCellPositionR.getYPositionInCell() - homePosition_mm;
+    }
+    else if (currentDirectionInCell == CONSTS::Direction::WEST)
+    {
+        homePosition_mm = CONSTS::HOME_POSITION_IN_CELL_MM;
+        offset_mm = homePosition_mm - mCurrentCellPositionR.getYPositionInCell();
     }
 
     return offset_mm;

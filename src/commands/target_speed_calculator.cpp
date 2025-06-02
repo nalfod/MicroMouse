@@ -29,6 +29,13 @@ mDeceleration_mm_per_s2(dec_mm_per_s2)
         else
         {
             mSetSpeed_mm_per_s *= 0.9;
+            if( mSetSpeed_mm_per_s <= 10.0)
+            {
+                mAccelerationTime_ms = 0.0;
+                mDecelerationTime_ms = 0.0;
+                mUniformTravelTime_ms = 0.0;
+                break;
+            }
         }
     }
 

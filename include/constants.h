@@ -37,7 +37,7 @@ constexpr uint16_t WALL_DISTANCE_LIMIT_FOR_CENTERING_MM = 90;
 constexpr uint16_t WALL_DISTANCE_MID_FOR_CENTERING_MM = 67;
 
 constexpr float HALF_CELL_DISTANCE_MM = 90.00;
-constexpr float HOME_POSITION_IN_CELL_MM = -31.5;
+constexpr float HOME_POSITION_IN_CELL_MM = 31.5; // an absolute value, the sign is orientation dependent
 
 // MODE SELECTION
 enum MODES

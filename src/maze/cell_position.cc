@@ -44,20 +44,20 @@ void MM::CellPosition::_setCurrentDirection(CONSTS::Direction direction)
         switch (mCurrentDirection)
         {
             case CONSTS::Direction::NORTH:
-                mXPositionInCell_mm = 42.00;
+                mXPositionInCell_mm = 30.00;
                 mYPositionInCell_mm = 0;
                 break;
             case CONSTS::Direction::SOUTH:
-                mXPositionInCell_mm = -42.00;
+                mXPositionInCell_mm = -30.00;
                 mYPositionInCell_mm = 0;
                 break;
             case CONSTS::Direction::EAST:
                 mXPositionInCell_mm = 0;
-                mYPositionInCell_mm = 42.00;
+                mYPositionInCell_mm = 30.00;
                 break;
             case CONSTS::Direction::WEST:
                 mXPositionInCell_mm = 0;
-                mYPositionInCell_mm = -42.00;
+                mYPositionInCell_mm = -30.00;
                 break;
             default:
                 // Nope
@@ -130,7 +130,7 @@ void MM::CellPosition::updatePositionInCellIfBackwardTouched()
             break;
         case CONSTS::Direction::EAST:
             mXPositionInCell_mm = 0;
-            mYPositionInCell_mm = -CONSTS::HOME_POSITION_IN_CELL_MM;
+            mYPositionInCell_mm = - CONSTS::HOME_POSITION_IN_CELL_MM;
             break;
         case CONSTS::Direction::WEST:
             mXPositionInCell_mm = 0;

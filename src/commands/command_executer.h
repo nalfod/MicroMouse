@@ -39,8 +39,7 @@ namespace MM
 
 
                 BACKWARD_MOVEMENT_FOR_ALIGNMENT = 7,
-                UPD_ORI_OFFSET_AND_CELL_POS_AT_BACKWALL = 8,
-                MOVEMENT_TO_HOME_IN_CELL = 9
+                UPD_ORI_OFFSET_AND_CELL_POS_AT_BACKWALL = 8
             };
             // first pair value is the movement type, second one is the specific magnitude (eg.: distance or angle)
             using CommandToExecute = std::pair< MovementPrimitives, int >;
