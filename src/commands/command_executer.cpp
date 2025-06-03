@@ -363,6 +363,7 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommandUsingCur
     case FORWARD_MOVEMENT_BY_CELL_NUMBER:
     case FORWARD_MOVEMENT_FOR_ROT_ALIGNMENT:
     case FORWARD_MOVEMENT_TO_EDGE_OF_CELL:
+    case FORWARD_MOVEMENT_TO_HOME_IN_CELL:
     {
         float distanceToMove_mm = 0.0;
         float currentOffsetInCellInDir = _getOffsetFromHomeInCellInCurrDir();
@@ -384,13 +385,19 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommandUsingCur
         }
         else if ( commandParams.first == FORWARD_MOVEMENT_TO_EDGE_OF_CELL )
         {
-            distanceToMove_mm = 2 * CONSTS::HALF_CELL_DISTANCE_MM - ( CONSTS::HOME_POSITION_IN_CELL_MM + currentOffsetInCellInDir );
+            distanceToMove_mm = CONSTS::HALF_CELL_DISTANCE_MM + ( CONSTS::HOME_POSITION_IN_CELL_MM - currentOffsetInCellInDir );
         }
         else if ( commandParams.first == FORWARD_MOVEMENT_TO_HOME_IN_CELL )
         {
             if( currentOffsetInCellInDir < 0.0 )
             {
+                // we are already in the cell where we want to move home
                 distanceToMove_mm = std::abs( currentOffsetInCellInDir );
+            }
+            else
+            {
+                // we are in the previous cell
+                distanceToMove_mm = ( 2 * CONSTS::HALF_CELL_DISTANCE_MM ) - currentOffsetInCellInDir;
             }
         }
 
