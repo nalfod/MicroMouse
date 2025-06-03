@@ -177,6 +177,110 @@ void  MM::CommandExecuter::parseRouteForSpeedRun(std::string route)
 void MM::CommandExecuter::parseRouteForSpeedRunWithDiagonals(std::string route)
 {
     int i = 0;
+    int16_t moveCellNo = 0;
+    CONSTS::Direction currentDir = mCurrentCellPositionR.getCurrentDirection();
+    while(i < route.size())
+    {
+        CONSTS::Direction toDirection;
+        switch (route[i])
+        {
+            case 'N':
+                toDirection = CONSTS::Direction::NORTH;
+                break;
+            case 'E':
+                toDirection = CONSTS::Direction::EAST;
+                break;
+            case 'S':
+                toDirection = CONSTS::Direction::SOUTH;
+                break;
+            case 'W':
+                toDirection = CONSTS::Direction::WEST;
+                break;
+            default:
+                break;
+        }
+        if(toDirection == currentDir)
+        {
+            while( i+1 < route.size() && route[i] == route[i+1] )
+            {
+                i++;
+                moveCellNo++;
+            }
+            if( i + 1 == route.size())
+            {
+                moveCellNo++;
+                addTravelCommandRelativeToActualPos( 0, moveCellNo );
+            }
+            i++;
+        }
+        else
+        {
+            int firstRotAngle = CONSTS::getRotationAngle( currentDir, toDirection );
+            if(firstRotAngle != 180)
+            {
+                //check next step
+                if(i+1 < route.size())
+                {
+                    CONSTS::Direction tmpDir = toDirection;
+
+                    CONSTS::Direction secondDir;
+                    switch (route[i+1])
+                    {
+                        case 'N':
+                            secondDir = CONSTS::Direction::NORTH;
+                            break;
+                        case 'E':
+                            secondDir = CONSTS::Direction::EAST;
+                            break;
+                        case 'S':
+                            secondDir = CONSTS::Direction::SOUTH;
+                            break;
+                        case 'W':
+                            secondDir = CONSTS::Direction::WEST;
+                            break;
+                        default:
+                            break;
+                    }
+                    if(tmpDir == secondDir)
+                    {
+                        i++;
+                        addTravelCommandRelativeToActualPos( 0, moveCellNo );
+                        addArcTravelCommand(firstRotAngle);
+                        moveCellNo = 0;
+                        currentDir = tmpDir;
+                    }
+                    else
+                    {
+                        moveCellNo++;
+                        addTravelCommandRelativeToActualPos( 0, moveCellNo );
+                        addTravelCommandRelativeToActualPos( firstRotAngle, 0 );
+                        currentDir = toDirection;
+                        moveCellNo = 0;
+                    }
+                }
+                else
+                {
+                    i++;
+                    addTravelCommandRelativeToActualPos( 0, moveCellNo );
+                    addArcTravelCommand(firstRotAngle);
+                }
+            }
+            else
+            {
+                addTravelCommandRelativeToActualPos( 0, moveCellNo );
+                addTravelCommandRelativeToActualPos( 0, 1 );
+                addTravelCommandRelativeToActualPos( firstRotAngle, 0 );
+                moveCellNo = 0;
+                currentDir = toDirection;
+            }
+        }
+    }
+}
+
+/*
+void MM::CommandExecuter::parseRouteForSpeedRunWithDiagonals(std::string route)
+{
+    int i = 0;
     CONSTS::Direction currentDir = mCurrentCellPositionR.getCurrentDirection();
 
     auto charToDir = [](char c) -> CONSTS::Direction {
@@ -232,7 +336,7 @@ void MM::CommandExecuter::parseRouteForSpeedRunWithDiagonals(std::string route)
         i += runLength;
     }
 }
-
+*/
 std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommandUsingCurrentPosition(CommandToExecute commandParams)
 {
     LOG_INFO("\n");
