@@ -277,66 +277,6 @@ void MM::CommandExecuter::parseRouteForSpeedRunWithDiagonals(std::string route)
     }
 }
 
-/*
-void MM::CommandExecuter::parseRouteForSpeedRunWithDiagonals(std::string route)
-{
-    int i = 0;
-    CONSTS::Direction currentDir = mCurrentCellPositionR.getCurrentDirection();
-
-    auto charToDir = [](char c) -> CONSTS::Direction {
-        switch (c) {
-            case 'N': return CONSTS::Direction::NORTH;
-            case 'E': return CONSTS::Direction::EAST;
-            case 'S': return CONSTS::Direction::SOUTH;
-            case 'W': return CONSTS::Direction::WEST;
-            default:  return CONSTS::Direction::NORTH; // fallback
-        }
-    };
-
-    while (i < route.size()) {
-        char currChar = route[i];
-        CONSTS::Direction currDir = charToDir(currChar);
-
-        // Count how many cells to move in the current direction
-        int runLength = 1;
-        while (i + runLength < route.size() && route[i + runLength] == currChar) {
-            runLength++;
-        }
-
-        // Check for a single turn followed by at least one cell in the new direction
-        if (i + runLength < route.size()) {
-            char nextChar = route[i + runLength];
-            CONSTS::Direction nextDir = charToDir(nextChar);
-            int angle = CONSTS::getRotationAngle(currDir, nextDir);
-
-            // Check if only one turn and after that at least one cell in new direction (not another turn)
-            if ((angle == 90 || angle == -90) &&
-                (i + runLength + 1 < route.size() || route[i + runLength + 1] == nextChar)) {
-                // Move straight for runLength - 1 cells (if any)
-                if (runLength > 1) {
-                    addTravelCommandRelativeToActualPos(CONSTS::getRotationAngle(currentDir, currDir), runLength - 1);
-                    LOG_INFO("REGULAR MOVE: deg= %d length= %d \n", static_cast<int>(CONSTS::getRotationAngle(currentDir, currDir)), runLength - 1 );
-                    currentDir = currDir;
-                }
-                // Diagonal move: half cell in current, arc, half cell in new direction
-                addHalfCellTravelCommand();
-                addArcTravelCommand(CONSTS::getRotationAngle(currentDir, nextDir));
-                addHalfCellTravelCommand();
-                LOG_INFO("DIAGONAL MOVE: deg= %d \n", static_cast<int>(CONSTS::getRotationAngle(currentDir, nextDir)) );
-                currentDir = nextDir;
-                i += runLength + 1;
-                continue;
-            }
-        }
-
-        // Otherwise, do regular moves
-        addTravelCommandRelativeToActualPos(CONSTS::getRotationAngle(currentDir, currDir), runLength);
-        LOG_INFO("REGULAR MOVE: deg= %d length= %d \n", static_cast<int>(CONSTS::getRotationAngle(currentDir, currDir)), runLength );
-        currentDir = currDir;
-        i += runLength;
-    }
-}
-*/
 std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommandUsingCurrentPosition(CommandToExecute commandParams)
 {
     LOG_INFO("\n");
@@ -354,7 +294,7 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommandUsingCur
     if( !mCommandsToExecute.empty() && _isAbleToStartWithSpeed( mCommandsToExecute.front().first ) )
     {
         // LOG_INFO("Current command= %d next command= %d --> end speed is set\n", static_cast<int>(commandParams.first), static_cast<int>(mCommandsToExecute.front().first));
-        endSpeed_mm_per_s = 0.0;
+        endSpeed_mm_per_s = 100.0;
     }
 
     std::unique_ptr<MM::MotionCommandIF> cmdToReturnP;

@@ -41,7 +41,7 @@ struct Globals {
     LocationController locController{8, currentCellPosition, dist_left_mm, dist_right_mm, dist_frontleft_mm, dist_frontright_mm};
 
 // Mode selector =================================================
-    ModeSelector mode_selector{ir_left, ir_frontleft, ir_frontright, ir_right, CONSTS::MODES::TESTING};
+    ModeSelector mode_selector{ir_left, ir_frontleft, ir_frontright, ir_right, CONSTS::MODES::DISCOVERY};
 
 // Commands =================================================
     CommandExecuter commandExecuter{currentCellPosition, dist_left_mm, dist_right_mm, dist_frontleft_mm, dist_frontright_mm, 
