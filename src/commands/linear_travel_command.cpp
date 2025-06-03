@@ -60,7 +60,8 @@ myTargetSpeedCalculator(dist_mm, set_speed_mm_per_s, acc_mm_per_s2, dec_mm_per_s
 myEncIntegrator1(encoderValue1R),
 myEncIntegrator2(encoderValue2R),
 mLeftMotorVoltageR_mV(leftMotorVoltageR_mV),
-mRightMotorVoltageR_mV(rightMotorVoltageR_mV)
+mRightMotorVoltageR_mV(rightMotorVoltageR_mV),
+direction( dist_mm >= 0.0 ? 1 : -1)
 {
     mTotalTimeOfTravel_ms = myTargetSpeedCalculator.getTotalTimeOfTravel_Ms();
     myMovementCtrl.init(1, AUTOMATIC, -1000, 1000); // QUESTION: should the min and the max value be bounded to the current voltage somehow??

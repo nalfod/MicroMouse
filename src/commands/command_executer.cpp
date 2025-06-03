@@ -191,63 +191,6 @@ void MM::CommandExecuter::parseRouteForSpeedRunWithDiagonals(std::string route)
         char currChar = route[i];
         CONSTS::Direction currDir = charToDir(currChar);
 
-        // Check for diagonal: single cell in current direction, then single cell in new direction
-        if (i + 1 < route.size() && route[i] != route[i + 1]) {
-            bool currIsSingle = (i == 0 || route[i - 1] != currChar);
-            bool nextIsSingle = (i + 2 >= route.size() || route[i + 2] != route[i + 1]);
-            // Fixed: only use diagonal if the next cell is not followed by ANOTHER turn
-            // If i+2 is in bounds AND the character at i+2 is different from i+1, it means
-            // there's another direction change right after this one (chained turn)
-            bool notChainedTurn = (i + 2 >= route.size() || 
-                                  (route[i + 2] == route[i + 1]));
-            
-            if (currIsSingle && nextIsSingle && notChainedTurn) {
-                CONSTS::Direction nextDir = charToDir(route[i + 1]);
-                int angle = CONSTS::getRotationAngle(currDir, nextDir);
-                if (angle == 90 || angle == -90) {
-                    // Diagonal move: half cell in current, arc, half cell in new direction
-                    LOG_INFO("DIAGONAL MOVE: deg= %d \n", static_cast<int>(CONSTS::getRotationAngle(currentDir, nextDir)) );
-                    addHalfCellTravelCommand();
-                    addArcTravelCommand(CONSTS::getRotationAngle(currentDir, nextDir));
-                    addHalfCellTravelCommand();
-                    currentDir = nextDir;
-                    i += 2;
-                    continue;
-                }
-            }
-        }
-
-        // Otherwise, count how many cells to move in the current direction
-        int runLength = 1;
-        while (i + runLength < route.size() && route[i + runLength] == currChar) {
-            runLength++;
-        }
-        addTravelCommandRelativeToActualPos(CONSTS::getRotationAngle(currentDir, currDir), runLength);
-        LOG_INFO("REGULAR MOVE: deg= %d length= %d \n", static_cast<int>(CONSTS::getRotationAngle(currentDir, currDir)), runLength );
-        currentDir = currDir;
-        i += runLength;
-    }
-}
-
-void MM::CommandExecuter::parseRouteForSpeedRunWithDiagonals(std::string route)
-{
-    int i = 0;
-    CONSTS::Direction currentDir = mCurrentCellPositionR.getCurrentDirection();
-
-    auto charToDir = [](char c) -> CONSTS::Direction {
-        switch (c) {
-            case 'N': return CONSTS::Direction::NORTH;
-            case 'E': return CONSTS::Direction::EAST;
-            case 'S': return CONSTS::Direction::SOUTH;
-            case 'W': return CONSTS::Direction::WEST;
-            default:  return CONSTS::Direction::NORTH; // fallback
-        }
-    };
-
-    while (i < route.size()) {
-        char currChar = route[i];
-        CONSTS::Direction currDir = charToDir(currChar);
-
         // Count how many cells to move in the current direction
         int runLength = 1;
         while (i + runLength < route.size() && route[i + runLength] == currChar) {
