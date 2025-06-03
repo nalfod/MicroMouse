@@ -368,10 +368,7 @@ std::string Maze::findShortestRoute(int x, int y)
 {
     std::string route = "";
 
-    int offSetX = 0;
-    int offSetY = 0;
     Cell* currentCell = &cells[x][y];
-    int step = 0;
     while(currentCell->getWeight() != 0)
     {
         CONSTS::Direction toDirection = simpleMove(x,y);
@@ -396,7 +393,6 @@ std::string Maze::findShortestRoute(int x, int y)
         default:
             break;
         }
-        step++;
         currentCell = &cells[x][y];
     }
     return route;

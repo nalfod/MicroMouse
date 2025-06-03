@@ -41,7 +41,29 @@ std::string LocationController::findRouteForSpeedRun()
 {
     toMid = !toMid;
     maze.calcForSpeedRun(toMid);
-    return maze.findShortestRoute(mCurrentPositionR.getPosX(),mCurrentPositionR.getPosY());
+    std::string route = maze.findShortestRoute(mCurrentPositionR.getPosX(),mCurrentPositionR.getPosY());
+    if(!toMid)
+    {
+        switch (mCurrentPositionR.getCurrentDirection())
+        {
+            case CONSTS::Direction::NORTH:
+                route = "NS" + route;
+                break;
+            case CONSTS::Direction::EAST:
+                route = "EW" + route;
+            break;
+            case CONSTS::Direction::SOUTH:
+                route = "SN" + route;
+                break;        
+            case CONSTS::Direction::WEST:
+                route = "WE" + route;
+            break;
+            default:
+                break;
+        }
+    }
+
+    return route;
 
     //maze.reCalcMaze(toMid);
     //return maze.getShortestRoute2(mCurrentPositionR.getPosX(),mCurrentPositionR.getPosY());
