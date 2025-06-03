@@ -3,6 +3,7 @@
 #include <cstdint>
 #include "drv/pid/pidWrapper.h"
 #include <memory>
+#include <vector>
 #include "movement_stabilizers/movement_stabilizer_if.h"
 
 namespace MM {
