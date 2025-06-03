@@ -233,15 +233,15 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommandUsingCur
             angleToTurn_deg = alignedAngleToTurn_deg;
         }
 
-        if( angleToTurn_deg > 179.99 || angleToTurn_deg < -179.99 )
+        if( commandParams.second > 179.99 || commandParams.second < -179.99 )
         {
             if( mDistFrontRightR_mm > mDistFrontLeftR_mm )
             {
-                angleToTurn_deg = 180.0;
+                angleToTurn_deg = std::abs(angleToTurn_deg);
             }
             else
             {
-                angleToTurn_deg = -180.0;
+                angleToTurn_deg = -std::abs(angleToTurn_deg);
             }
 
             if( mCommandsToExecute.size() >= 2 && !_isFrontBlocked() )
