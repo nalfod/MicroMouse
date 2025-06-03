@@ -211,8 +211,28 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommandUsingCur
         break;
     }
     case ROTATING:
+    case ROTATING_ON_GRID:
     {
-        float angleToTurn_deg = commandParams.second;
+        float angleToTurn_deg = 0.0;
+        if( commandParams.first == ROTATING )
+        {
+            angleToTurn_deg = commandParams.second;
+        }
+        else if( commandParams.first == ROTATING_ON_GRID )
+        {
+            ///// ATTENTION!! this command assumes that current orientation is updated and eg.: 0 deg means North. But based on experiences, this is not the case
+            ///// if the IMU zero point is not updated frequently. Otherwise the etalone orientation will slip eventually, and this command will not rotate to grid directions
+            ///// but will cause error. Remark this if you want to use this.
+
+            float rawAngleToTurn_deg = commandParams.second;
+            float rawDestOrientation_deg = CONSTS::modifyAngleIfCircleOverflow( myCurrentOriR_deg + rawAngleToTurn_deg );
+            float alignedDestOrientation_deg = CONSTS::adjustAngleToAlignGridDirection( rawDestOrientation_deg );
+            float alignedAngleToTurn_deg = rawAngleToTurn_deg - ( rawDestOrientation_deg - alignedDestOrientation_deg);
+            LOG_INFO("  AL_ROTATION data: rawdeg= %d curr_ori= %d al_deg= %d \n", static_cast<int>(rawAngleToTurn_deg), static_cast<int>(myCurrentOriR_deg), static_cast<int>(alignedAngleToTurn_deg) );
+
+            angleToTurn_deg = alignedAngleToTurn_deg;
+        }
+
         if( angleToTurn_deg > 179.99 || angleToTurn_deg < -179.99 )
         {
             if( mDistFrontRightR_mm > mDistFrontLeftR_mm )
@@ -238,21 +258,6 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommandUsingCur
         }
         cmdToReturnP = std::make_unique<MM::RotationCommandPid>( angleToTurn_deg, myCurrentOriR_deg, mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV);
         LOG_INFO("NEW ROTATION CMD: deg= %d \n", static_cast<int>(angleToTurn_deg) );
-        break;
-    }
-    case ROTATING_ON_GRID:
-    {
-        ///// ATTENTION!! this command assumes that current orientation is updated and eg.: 0 deg means North. But based on experiences, this is not the case
-        ///// if the IMU zero point is not updated frequently. Otherwise the etalone orientation will slip eventually, and this command will not rotate to grid directions
-        ///// but will cause error. Fix this if you want to use this.
-
-        float rawAngleToTurn_deg = commandParams.second;
-        float rawDestOrientation_deg = CONSTS::modifyAngleIfCircleOverflow( myCurrentOriR_deg + rawAngleToTurn_deg );
-        float alignedDestOrientation_deg = CONSTS::adjustAngleToAlignGridDirection( rawDestOrientation_deg );
-        float alignedAngleToTurn_deg = rawAngleToTurn_deg - ( rawDestOrientation_deg - alignedDestOrientation_deg);
-
-        cmdToReturnP = std::make_unique<MM::RotationCommandPid>( alignedAngleToTurn_deg, myCurrentOriR_deg, mLeftMotorVoltageR_mV, mRightMotorVoltageR_mV);
-        LOG_INFO("NEW AL_ROTATION CMD: rawdeg= %d curr_ori= %d al_deg= %d \n", static_cast<int>(rawAngleToTurn_deg), static_cast<int>(myCurrentOriR_deg), static_cast<int>(alignedAngleToTurn_deg) );
         break;
     }
     case BACKWARD_MOVEMENT_FOR_ALIGNMENT:
