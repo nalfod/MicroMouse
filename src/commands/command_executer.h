@@ -45,7 +45,9 @@ namespace MM
                 ARC_MOVEMENT = 5,
                 FORWARD_MOVEMENT_RAW = 6,
                 BACKWARD_MOVEMENT_FOR_ALIGNMENT = 7,
-                UPD_ORI_OFFSET_AND_CELL_POS_AT_BACKWALL = 8
+                UPD_ORI_OFFSET_AND_CELL_POS_AT_BACKWALL = 8,
+                FORWARD_MOVEMENT_TO_EDGE_OF_CELL = 9,
+                FORWARD_MOVEMENT_TO_HOME_IN_CELL = 10
             };
             // first pair value is the movement type, second one is the specific magnitude (eg.: distance or angle)
             using CommandToExecute = std::pair< MovementPrimitives, int >;

@@ -82,7 +82,9 @@ void MM::CommandExecuter::addHalfCellTravelCommand()
 
 void MM::CommandExecuter::addArcTravelCommand( float angleToTurn_deg )
 {
+    mCommandsToExecute.push( CommandToExecute(FORWARD_MOVEMENT_TO_EDGE_OF_CELL, 0) );
     mCommandsToExecute.push( CommandToExecute(ARC_MOVEMENT, angleToTurn_deg) );
+    mCommandsToExecute.push( CommandToExecute(FORWARD_MOVEMENT_TO_HOME_IN_CELL, 0) );
 }
 
 bool MM::CommandExecuter::isFinished() const
@@ -256,6 +258,7 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommandUsingCur
     {
     case FORWARD_MOVEMENT_BY_CELL_NUMBER:
     case FORWARD_MOVEMENT_FOR_ROT_ALIGNMENT:
+    case FORWARD_MOVEMENT_TO_EDGE_OF_CELL:
     {
         float distanceToMove_mm = 0.0;
         float currentOffsetInCellInDir = _getOffsetFromHomeInCellInCurrDir();
@@ -273,6 +276,17 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommandUsingCur
             else
             {
                 distanceToMove_mm = 40 - currentOffsetInCellInDir; // TODO: measure it!
+            }
+        }
+        else if ( commandParams.first == FORWARD_MOVEMENT_TO_EDGE_OF_CELL )
+        {
+            distanceToMove_mm = 2 * CONSTS::HALF_CELL_DISTANCE_MM - ( CONSTS::HOME_POSITION_IN_CELL_MM + currentOffsetInCellInDir );
+        }
+        else if ( commandParams.first == FORWARD_MOVEMENT_TO_HOME_IN_CELL )
+        {
+            if( currentOffsetInCellInDir < 0.0 )
+            {
+                distanceToMove_mm = std::abs( currentOffsetInCellInDir );
             }
         }
 
@@ -460,6 +474,8 @@ bool MM::CommandExecuter::_isAbleToStartWithSpeed( MovementPrimitives movementTy
         case FORWARD_MOVEMENT_FOR_ROT_ALIGNMENT:
         case ARC_MOVEMENT:
         case FORWARD_MOVEMENT_RAW:
+        case FORWARD_MOVEMENT_TO_EDGE_OF_CELL:
+        case FORWARD_MOVEMENT_TO_HOME_IN_CELL:
             return true;
             break;
         case ROTATING:
