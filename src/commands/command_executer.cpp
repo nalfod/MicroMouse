@@ -42,13 +42,13 @@ void MM::CommandExecuter::execute()
 {
     if( mCurrCommandToExecute )
     {
+        mCurrCommandToExecute->execute();
         if( mCurrCommandToExecute->isFinished() )
         {
             mCurrentCellPositionR.updatePosition( mCurrCommandToExecute->getResult() );
             mLastMovementEndSpeed_mm_per_s = mCurrCommandToExecute->getResult().end_speed_mm_per_s;
             _actualizeCurrentCommand();
         }
-        mCurrCommandToExecute->execute();
     }
     else
     {
