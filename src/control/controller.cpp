@@ -38,6 +38,7 @@ void MM::control()
   }
   else if( g.mode_selector.get_current_mode() == CONSTS::MODES::SPEED_RUN )
   {
+    static bool isSafeSpeedRunDone = false;
     if( !g.commandExecuter.isFinished() )
     {
       g.commandExecuter.execute();
@@ -45,8 +46,15 @@ void MM::control()
     else
     {
       LOG_INFO("SPEEDRUN_PARSE_START\n");
-      //g.commandExecuter.parseRouteForSpeedRun(g.locController.findRouteForSpeedRun());
-      g.commandExecuter.parseRouteForSpeedRunWithDiagonals(g.locController.findRouteForSpeedRun());
+      if( !isSafeSpeedRunDone )
+      {
+        g.commandExecuter.parseRouteForSpeedRun(g.locController.findRouteForSpeedRun());
+        isSafeSpeedRunDone = true;
+      }
+      else
+      {
+        g.commandExecuter.parseRouteForSpeedRunWithDiagonals(g.locController.findRouteForSpeedRun());
+      }
       LOG_INFO("SPEEDRUN_PARSE_END\n");
       //delay(2000);
     }
