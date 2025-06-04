@@ -2,6 +2,7 @@
 #include <iostream>
 #include "constants.h"
 #include <cmath>
+#include <iterator>
 
 #include "utils/logging.h"
 
@@ -226,7 +227,156 @@ void Maze::reCalcMaze(bool toMid)
             }
         }
     }
-    floodMaze(posx,posy,0);
+    //floodMaze(posx,posy,0,0);
+    Cell* currCellP = &cells[posx][posy];
+    updatelist.push_back(std::make_pair(currCellP,0));
+    while(!updatelist.empty()) {
+        floodMazeQueue();
+    }
+}
+
+void Maze::floodMazeQueue()
+{
+    std::pair<Cell*,int>& currCell = updatelist.front();
+
+    if(currCell.first->getWeight() <= currCell.second)
+    {
+        updatelist.pop_front();
+        return;
+    }
+    currCell.first->setWeight(currCell.second);
+
+    int x = currCell.first->getX();
+    int y = currCell.first->getY();
+    if( currCell.first->isAccessible(CONSTS::Direction::NORTH) && isValidPos(x+1) 
+            && cells[x+1][y].getWeight() > currCell.second+1 )
+    {
+        auto it = updatelist.begin();
+        bool insertIt = false;
+        while(it != updatelist.end())
+        {
+            if((*it).first->getX() == (x+1) &&
+                (*it).first->getY() == y)
+                {
+                    if((*it).second <= currCell.second+1)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        it = updatelist.erase(it);
+                        insertIt = true;
+                        break;
+                    }
+                }
+                else
+                {
+                    it++;
+                }
+        }
+        if(it == updatelist.end() || insertIt)
+        {
+            updatelist.push_back(std::make_pair(&cells[x+1][y],currCell.second+1));
+        }
+    }
+
+    if( currCell.first->isAccessible(CONSTS::Direction::EAST) && isValidPos(y+1) 
+            && cells[x][y+1].getWeight() > currCell.second+1 )
+    {
+        auto it = updatelist.begin();
+        bool insertIt = false;
+        while(it != updatelist.end())
+        {
+            if((*it).first->getX() == (x) &&
+                (*it).first->getY() == y+1)
+                {
+                    if((*it).second <= currCell.second+1)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        it = updatelist.erase(it);
+                        insertIt = true;
+                        break;
+                    }
+                }
+                else
+                {
+                    it++;
+                }
+        }
+        if(it == updatelist.end() || insertIt)
+        {
+            updatelist.push_back(std::make_pair(&cells[x][y+1],currCell.second+1));
+        }
+    }
+
+    if( currCell.first->isAccessible(CONSTS::Direction::SOUTH) && isValidPos(x-1) 
+            && cells[x-1][y].getWeight() > currCell.second+1 )
+    {
+        auto it = updatelist.begin();
+        bool insertIt = false;
+        while(it != updatelist.end())
+        {
+            if((*it).first->getX() == (x-1) &&
+                (*it).first->getY() == y)
+                {
+                    if((*it).second <= currCell.second+1)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        it = updatelist.erase(it);
+                        insertIt = true;
+                        break;
+                    }
+                }
+                else
+                {
+                    it++;
+                }
+        }
+        if(it == updatelist.end() || insertIt)
+        {
+            updatelist.push_back(std::make_pair(&cells[x-1][y],currCell.second+1));
+        }
+    }
+
+    if( currCell.first->isAccessible(CONSTS::Direction::WEST) && isValidPos(y-1) 
+            && cells[x][y-1].getWeight() > currCell.second+1 )
+    {
+        auto it = updatelist.begin();
+        bool insertIt = false;
+        while(it != updatelist.end())
+        {
+            if((*it).first->getX() == (x) &&
+                (*it).first->getY() == y-1)
+                {
+                    if((*it).second <= currCell.second+1)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        it = updatelist.erase(it);
+                        insertIt = true;
+                        break;
+                    }
+                }
+                else
+                {
+                    it++;
+                }
+        }
+        if(it == updatelist.end() || insertIt)
+        {
+            updatelist.push_back(std::make_pair(&cells[x][y-1],currCell.second+1));
+        }
+    }
+
+    updatelist.pop_front();
 }
 
 void Maze::closeMidCells(int x, int y)
@@ -252,8 +402,10 @@ void Maze::closeMidCells(int x, int y)
     }
 }
 
-void Maze::floodMaze(int x, int y, int stepCount)
+void Maze::floodMaze(int x, int y, int stepCount, int d)
 {   
+    LOG_INFO("IN DEPTH: %d\n", d);
+    d++;
     if( cells[x][y].getWeight() <= stepCount)
     {
         return;
@@ -263,22 +415,22 @@ void Maze::floodMaze(int x, int y, int stepCount)
     if( cells[x][y].isAccessible(CONSTS::Direction::NORTH) && isValidPos(x+1) 
             && cells[x+1][y].getWeight() > stepCount+1 )
     {
-        floodMaze(x+1,y,stepCount+1);
+        floodMaze(x+1,y,stepCount+1,d);
     }
     if( cells[x][y].isAccessible(CONSTS::Direction::EAST) && isValidPos(y+1) 
             && cells[x][y+1].getWeight() > stepCount+1 )
     {
-        floodMaze(x,y+1,stepCount+1);
+        floodMaze(x,y+1,stepCount+1,d);
     }
     if( cells[x][y].isAccessible(CONSTS::Direction::SOUTH) && isValidPos(x-1) 
             && cells[x-1][y].getWeight() > stepCount+1 )
     {
-        floodMaze(x-1,y,stepCount+1);
+        floodMaze(x-1,y,stepCount+1,d);
     }
     if( cells[x][y].isAccessible(CONSTS::Direction::WEST) && isValidPos(y-1) 
             && cells[x][y-1].getWeight() > stepCount+1 )
     {
-        floodMaze(x,y-1,stepCount+1);
+        floodMaze(x,y-1,stepCount+1,d);
     }
 }
 
@@ -427,10 +579,12 @@ void Maze::calcForSpeedRun(bool toMid)
         }
     }
     CONSTS::Direction startDir = (CONSTS::Direction)(cells[posx][posy].getWallMask()^15);
-    floodMazeSpeedRun(posx,posy,0,0,startDir);
+    int depth = 1;
+    floodMazeSpeedRun(posx,posy,0,0,startDir, depth);
+    LOG_INFO("FINISHED AF\n");
 }
 
-void Maze::floodDirectionSpeedRun(CONSTS::Direction checkDirection, int x, int y, CONSTS::Direction currentDir, int sameInRow, float weight)
+void Maze::floodDirectionSpeedRun(CONSTS::Direction checkDirection, int x, int y, CONSTS::Direction currentDir, int sameInRow, float weight, int depth)
 {
     if( cells[x][y].isAccessible(checkDirection) )
     {
@@ -470,21 +624,23 @@ void Maze::floodDirectionSpeedRun(CONSTS::Direction checkDirection, int x, int y
                 newSameInRow++;
                 newWeight += std::pow(0.5,newSameInRow);
             }
-            floodMazeSpeedRun(x,y,newWeight,newSameInRow,newDir);
+            floodMazeSpeedRun(x,y,newWeight,newSameInRow,newDir,depth);
         }
     }
 }
 
-void Maze::floodMazeSpeedRun(int x, int y, float weight, int sameInRow, CONSTS::Direction currentDir)
+void Maze::floodMazeSpeedRun(int x, int y, float weight, int sameInRow, CONSTS::Direction currentDir, int depth)
 {   
     if( cells[x][y].getWeight() <= weight)
     {
         return;
     }
     cells[x][y].setWeight(weight);
+    LOG_INFO("IN DEPTH: %d\n", depth);
+    depth++;
 
-    floodDirectionSpeedRun(CONSTS::Direction::NORTH, x, y, currentDir, sameInRow, weight);
-    floodDirectionSpeedRun(CONSTS::Direction::EAST, x, y, currentDir, sameInRow, weight);
-    floodDirectionSpeedRun(CONSTS::Direction::SOUTH, x, y, currentDir, sameInRow, weight);
-    floodDirectionSpeedRun(CONSTS::Direction::WEST, x, y, currentDir, sameInRow, weight);
+    floodDirectionSpeedRun(CONSTS::Direction::NORTH, x, y, currentDir, sameInRow, weight, depth);
+    floodDirectionSpeedRun(CONSTS::Direction::EAST, x, y, currentDir, sameInRow, weight, depth);
+    floodDirectionSpeedRun(CONSTS::Direction::SOUTH, x, y, currentDir, sameInRow, weight, depth);
+    floodDirectionSpeedRun(CONSTS::Direction::WEST, x, y, currentDir, sameInRow, weight, depth);
 }
