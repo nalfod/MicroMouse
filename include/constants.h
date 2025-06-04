@@ -40,6 +40,14 @@ constexpr uint16_t WALL_DISTANCE_MID_FOR_CENTERING_MM = 67;
 constexpr float HALF_CELL_DISTANCE_MM = 90.00;
 constexpr float HOME_POSITION_IN_CELL_MM = 31.5; // an absolute value, the sign is orientation dependent
 
+constexpr uint16_t COLLISION_AVOIDANCE_DIST_MM = 50;
+
+// Kinematic properties
+constexpr float MAX_SPEED_MM_PER_S = 500.0;
+constexpr float END_SPEED_MM_PER_S = 100.0;
+constexpr float ACCELERATION_MM_PER_S2 = 250.0;
+constexpr float DECELERATION_MM_PER_S2 = 500.0;
+
 // MODE SELECTION
 enum MODES
 {
@@ -52,12 +60,8 @@ enum MODES
 };
 
 constexpr uint16_t MODE_SPEED_RUN_ACTIVATION_LIMIT = 1;
-
 constexpr uint16_t MODE_SIGNAL_THRESHOLD_MV = 3900;
 constexpr uint16_t MODE_SIGNAL_HOLD_TIME_MS = 2000;
-
-constexpr uint16_t COLLISION_AVOIDANCE_DIST_MM = 50;
-
 
 /////////////////////////
 // DIRECTION MANIPULATION
