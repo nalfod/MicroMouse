@@ -17,50 +17,90 @@ mDeceleration_mm_per_s2(dec_mm_per_s2),
 mStartSpeed_mm_per_s(start_speed_mm_per_s),
 mEndSpeed_mm_per_s(end_speed_mm_per_s)
 {
+    if( mStartSpeed_mm_per_s > mSetSpeed_mm_per_s )
+    {
+        mSetSpeed_mm_per_s = mStartSpeed_mm_per_s;
+    }
+
+    float totalTravelDist_mm = 0.0;
     while( true )
     {
-        mAccelerationTime_ms = ( ( mSetSpeed_mm_per_s - mStartSpeed_mm_per_s ) / mAcceleration_mm_per_s2 ) * 1000;
-        mDecelerationTime_ms = ( ( mSetSpeed_mm_per_s - mEndSpeed_mm_per_s ) / mDeceleration_mm_per_s2 ) * 1000;
+        float tmpAccelTime_s = ( ( mSetSpeed_mm_per_s - mStartSpeed_mm_per_s ) / mAcceleration_mm_per_s2 );
+        float tmpDecelTime_s = ( ( mSetSpeed_mm_per_s - mEndSpeed_mm_per_s ) / mDeceleration_mm_per_s2 );
+        float tmpAccelDist_mm = mStartSpeed_mm_per_s * tmpAccelTime_s + 0.5 * mAcceleration_mm_per_s2 * tmpAccelTime_s * tmpAccelTime_s;
+        float tmpDecelDist_mm = mSetSpeed_mm_per_s * tmpDecelTime_s - 0.5 * mDeceleration_mm_per_s2 * tmpDecelTime_s * tmpDecelTime_s;
 
-        float accelTime_s = static_cast<float>(mAccelerationTime_ms) / 1000;
-        float decelTime_s = static_cast<float>(mDecelerationTime_ms) / 1000;
-        float accelDist_mm = mStartSpeed_mm_per_s * accelTime_s + 0.5 * mAcceleration_mm_per_s2 * accelTime_s * accelTime_s;
-        float decelDist_mm = mEndSpeed_mm_per_s * decelTime_s + 0.5 * mDeceleration_mm_per_s2 * decelTime_s * decelTime_s;
-        long tmpUniformTravelTime_ms =  ( (totalDist_mm - accelDist_mm - decelDist_mm ) / (mSetSpeed_mm_per_s) ) * 1000;
+        float tmpUniformTravelTime_s =  ( (totalDist_mm - tmpAccelDist_mm - tmpDecelDist_mm ) / (mSetSpeed_mm_per_s) );
+        totalTravelDist_mm = tmpAccelDist_mm + tmpDecelDist_mm + (tmpUniformTravelTime_s * mSetSpeed_mm_per_s);
 
-        if( tmpUniformTravelTime_ms > 0 )
+        if( tmpUniformTravelTime_s > 0 )
         {
-            mUniformTravelTime_ms = tmpUniformTravelTime_ms;
+            mUniformTravelTime_ms = tmpUniformTravelTime_s * 1000;
+            mAccelerationTime_ms = tmpAccelTime_s * 1000;
+            mDecelerationTime_ms = tmpDecelTime_s * 1000;
             break;
         }
         else
         {
-            mSetSpeed_mm_per_s *= 0.9;
-            if( mEndSpeed_mm_per_s > mSetSpeed_mm_per_s )
+            // 1 . reduce the set speed down until the start speed
+            if( mSetSpeed_mm_per_s > mStartSpeed_mm_per_s )
             {
-                // end speed shall be less than set speed!
-                mEndSpeed_mm_per_s = mSetSpeed_mm_per_s * 0.95;
-            }
-            
-            if( mSetSpeed_mm_per_s <= mStartSpeed_mm_per_s || mSetSpeed_mm_per_s < 1.0 )
-            {
-                //command params are basically wrongs! --> full decelaration
-                mSetSpeed_mm_per_s = mStartSpeed_mm_per_s;
-                mAccelerationTime_ms = 0.0;
-                mUniformTravelTime_ms = 0.0;
-
-                mDecelerationTime_ms = ((mStartSpeed_mm_per_s - mEndSpeed_mm_per_s) / mDeceleration_mm_per_s2) * 1000;
-                if( mDecelerationTime_ms < 0.0 )
+                //LOG_INFO("  TargetSpeedCalculator (ctor)-> 1 . reduce the set speed down until the start speed");
+                if( 0.9 * mSetSpeed_mm_per_s >= mStartSpeed_mm_per_s )
                 {
-                    mDecelerationTime_ms = 0.0;
+                    // setspeed cannot be smaller, than start speed
+                    mSetSpeed_mm_per_s *= 0.9;
                 }
-                break;
+                else
+                {
+                    mSetSpeed_mm_per_s = mStartSpeed_mm_per_s;
+                }
+
+                if( mEndSpeed_mm_per_s > mSetSpeed_mm_per_s )
+                {
+                    // end speed shall be less than set speed!
+                    mEndSpeed_mm_per_s = mSetSpeed_mm_per_s * 0.99;
+                }
+                continue;
+            }
+
+
+            // 2. reduce end speed
+            if( mEndSpeed_mm_per_s > 0.0 )
+            {
+                //LOG_INFO("  TargetSpeedCalculator (ctor)-> 2. reduce end speed");
+                mEndSpeed_mm_per_s *= 0.9;
+                if( mEndSpeed_mm_per_s < 1 )
+                {
+                    mEndSpeed_mm_per_s = 0.0;
+                }
+                continue;
+            }
+            else
+            {
+                // 3. increase deceleration
+                //LOG_INFO("  TargetSpeedCalculator (ctor)-> 3. increase deceleration");
+                mDeceleration_mm_per_s2 *= 1.1;
+                if( mDeceleration_mm_per_s2 > 5000 )
+                {
+                    
+                    mAccelerationTime_ms = 0.0;
+                    mUniformTravelTime_ms = 0.0;
+
+                    mDecelerationTime_ms = (mStartSpeed_mm_per_s / mDeceleration_mm_per_s2) * 1000;
+                    if( mDecelerationTime_ms < 0.0 )
+                    {
+                        mDecelerationTime_ms = 0.0;
+                    }
+                    break;
+                }
             }
         }
     }
 
-    /*LOG_INFO("TargetSpeedCalculator (ctor)-> Total distance(mm): %d Set speed(mm/s): %d Acc time(ms): %d Uni time(ms): %d Dec time(ms): %d\n ",
+    /*LOG_INFO("TargetSpeedCalculator (ctor)-> set dist(mm): %d calc dist(mm): %d mSetSpeed_mm_per_s(mm/s): %d Acc time(ms): %d Uni time(ms): %d Dec time(ms): %d\n ",
         static_cast<int>( totalDist_mm ),
+        static_cast<int>( totalTravelDist_mm ),
         static_cast<int>( mSetSpeed_mm_per_s ),
         static_cast<int>( mAccelerationTime_ms ),
         static_cast<int>( mUniformTravelTime_ms) ,
