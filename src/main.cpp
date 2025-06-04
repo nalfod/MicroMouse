@@ -110,8 +110,8 @@ void setup()
 
   if( g.mode_selector.get_current_mode() == CONSTS::MODES::TESTING )
   {
-      //g.commandExecuter.parseRouteForSpeedRun("NNEESEN");
-      g.commandExecuter.parseRouteForSpeedRunWithDiagonals("NNEEENWNNSEESWWWSS");
+      g.commandExecuter.parseRouteForSpeedRun("NNNNNNEEEENEESWSSESWSSESWWNNN");
+      // g.commandExecuter.parseRouteForSpeedRunWithDiagonals("NNNNNNEEEENEESWSSESWSSESWWNNN");
   }
   //mouse.accelerometer.myAngRotMeter.startMeasurement();
   LOG_INFO("Setup Done\n");
