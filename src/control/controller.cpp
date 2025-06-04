@@ -38,7 +38,7 @@ void MM::control()
   }
   else if( g.mode_selector.get_current_mode() == CONSTS::MODES::SPEED_RUN )
   {
-    static bool isSafeSpeedRunDone = false;
+    static int safeSpeedRunCounter = 0;
     if( !g.commandExecuter.isFinished() )
     {
       g.commandExecuter.execute();
@@ -46,10 +46,10 @@ void MM::control()
     else
     {
       LOG_INFO("SPEEDRUN_PARSE_START\n");
-      if( !isSafeSpeedRunDone )
+      if( safeSpeedRunCounter < 2 )
       {
         g.commandExecuter.parseRouteForSpeedRun(g.locController.findRouteForSpeedRun());
-        isSafeSpeedRunDone = true;
+        safeSpeedRunCounter++;
       }
       else
       {

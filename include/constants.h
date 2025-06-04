@@ -44,7 +44,7 @@ constexpr uint16_t COLLISION_AVOIDANCE_DIST_MM = 50;
 
 // Kinematic properties
 constexpr float MAX_SPEED_MM_PER_S = 500.0;
-constexpr float END_SPEED_MM_PER_S = 250.0;
+constexpr float END_SPEED_MM_PER_S = 150.0;
 constexpr float ACCELERATION_MM_PER_S2 = 250.0;
 constexpr float DECELERATION_MM_PER_S2 = 500.0;
 
