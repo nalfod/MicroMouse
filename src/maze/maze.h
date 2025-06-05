@@ -34,13 +34,32 @@ class Maze {
         std::string getShortestRoute2(int x, int y);
 
         void calcForSpeedRun(bool toMid);
-        void floodDirectionSpeedRun(CONSTS::Direction checkDirection, int x, int y, CONSTS::Direction currentDir, int sameInRow, float weight, int depth);
+        void floodDirectionSpeedRun(CONSTS::Direction checkDirection, int x, int y, CONSTS::Direction currentDir, int sameInRow, float weight);
     private:
         void initMaze();
 
-        void floodMaze(int x, int y, int stepCount, int d);
-        void floodMazeQueue();
-        void floodMazeSpeedRun(int x, int y, float weight, int sameInRow, CONSTS::Direction currentDir, int depth);
+        void floodMaze(int x, int y, int stepCount);
+        void floodMazeList();
+        void floodMazeSpeedRun(int x, int y, float weight, int sameInRow, CONSTS::Direction currentDir);
+
+        void floodMazeListSpeedrun();
+
+        struct speedRunCalcItem
+        {
+            Cell* cellP;
+            
+            float weight;
+            int sameInRow;
+            CONSTS::Direction currentDir;
+
+            speedRunCalcItem(Cell& cell, float weightp, int sameInRowP, CONSTS::Direction currentDirP)
+            {
+                cellP = &cell;
+                weight = weightp;
+                sameInRow = sameInRowP;
+                currentDir = currentDirP;
+            }
+        };
 
         int calcBaseVal(int x, int y);
 
@@ -49,6 +68,7 @@ class Maze {
 
         std::queue<Cell*> updateQueue;
         std::list<std::pair<Cell*,int>> updatelist;
+        std::list<speedRunCalcItem> updatelistSpeedRun;
 
         std::vector<std::vector<Cell>> cells;
 

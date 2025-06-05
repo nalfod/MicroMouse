@@ -90,13 +90,7 @@ int LocationController::calcNextMovement()
             toMid = !toMid;
             return -2;
         }
-        LOG_INFO("RECALC maze START\n");
         maze.reCalcMaze(toMid);
-        LOG_INFO("RECALC maze END\n");
-        LOG_INFO("RECALC maze END\n");
-        LOG_INFO("RECALC maze END\n");
-        LOG_INFO("RECALC maze END\n");
-        LOG_INFO("RECALC maze END\n");
     }
     CONSTS::Direction moveDir = maze.simpleMove(mCurrentPositionR.getPosX(), mCurrentPositionR.getPosY());
 
