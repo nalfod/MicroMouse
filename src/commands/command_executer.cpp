@@ -56,6 +56,11 @@ void MM::CommandExecuter::execute()
     }
 }
 
+void MM::CommandExecuter::addShortMoveInGoal()
+{
+    mCommandsToExecute.push( CommandToExecute(FORWARD_MOVEMENT_RAW, 33 ));
+}
+
 void MM::CommandExecuter::addTravelCommandRelativeToActualPos(int directionToMove_deg, uint16_t numberOfCellsToMove)
 {
     if( directionToMove_deg != 0 )

@@ -91,6 +91,7 @@ int LocationController::calcNextMovement()
             return -2;
         }
         maze.reCalcMaze(toMid);
+        return -3;
     }
     CONSTS::Direction moveDir = maze.simpleMove(mCurrentPositionR.getPosX(), mCurrentPositionR.getPosY());
 

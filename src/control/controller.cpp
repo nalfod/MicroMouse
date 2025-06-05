@@ -13,6 +13,7 @@
 
 void MM::control()
 {
+  static bool inDestCell = false;
   // check_mode_selector();
   if( g.mode_selector.get_current_mode() == CONSTS::MODES::DISCOVERY )
   {
@@ -22,17 +23,39 @@ void MM::control()
     }
     else
     {
+      if(inDestCell)
+      {
+        inDestCell = false;
+        delay(3000);
+      }
       if( g.locController.updateWalls() )
       {
         int nextMovement = g.locController.calcNextMovement();
-        if( nextMovement != -2)
+        if( nextMovement == -2 )
+        {
+          inDestCell = false;
+          g.mode_selector.set_current_mode(CONSTS::MODES::SPEED_RUN);
+        }
+        else if( nextMovement == -3)
+        {
+          
+          LOG_INFO("MOVE BIT FRONT 1\n");
+          g.commandExecuter.addShortMoveInGoal();
+          inDestCell = true;
+        }
+        else
+        {
+          inDestCell = false;
+          g.commandExecuter.addTravelCommandRelativeToActualPos( nextMovement , 1);
+        }
+        /*if( nextMovement != -2)
         {
           g.commandExecuter.addTravelCommandRelativeToActualPos( nextMovement , 1);
         }
         else
         {
           g.mode_selector.set_current_mode(CONSTS::MODES::SPEED_RUN);
-        }
+        }*/
       }
     }
   }
@@ -45,18 +68,29 @@ void MM::control()
     }
     else
     {
-      LOG_INFO("SPEEDRUN_PARSE_START\n");
-      if( safeSpeedRunCounter < 2 )
+      if(!inDestCell)
       {
-        g.commandExecuter.parseRouteForSpeedRun(g.locController.findRouteForSpeedRun());
-        safeSpeedRunCounter++;
+        inDestCell = true;
+        LOG_INFO("MOVE BIT FRONT 2\n");
+        g.commandExecuter.addShortMoveInGoal();
       }
       else
       {
-        g.commandExecuter.parseRouteForSpeedRunWithDiagonals(g.locController.findRouteForSpeedRun());
+        delay(3000);
+        inDestCell = false;
+        LOG_INFO("SPEEDRUN_PARSE_START\n");
+        if( safeSpeedRunCounter < 2 )
+        {
+          g.commandExecuter.parseRouteForSpeedRun(g.locController.findRouteForSpeedRun());
+          safeSpeedRunCounter++;
+        }
+        else
+        {
+          g.commandExecuter.parseRouteForSpeedRunWithDiagonals(g.locController.findRouteForSpeedRun());
+        }
+        LOG_INFO("SPEEDRUN_PARSE_END\n");
+        //delay(2000);
       }
-      LOG_INFO("SPEEDRUN_PARSE_END\n");
-      //delay(2000);
     }
   }
   else if( g.mode_selector.get_current_mode() == CONSTS::MODES::TESTING )

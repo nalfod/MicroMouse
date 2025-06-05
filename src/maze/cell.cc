@@ -24,7 +24,7 @@ float Cell::getWeight() const
 void Cell::setWeight(float newWeight)
 {
     mWeight = newWeight;
-    LOG_INFO("WEIGHT OF %d  %d to %F\n", mX, mY, mWeight);
+    //LOG_INFO("WEIGHT OF %d  %d to %F\n", mX, mY, mWeight);
 }
 
 int Cell::getWallMask()
