@@ -512,7 +512,6 @@ bool MM::CommandExecuter::_isAbleToStartWithSpeed( MovementPrimitives movementTy
     switch (movementType)
     {
         case FORWARD_MOVEMENT_BY_CELL_NUMBER:
-        case FORWARD_MOVEMENT_FOR_ROT_ALIGNMENT:
         case ARC_MOVEMENT:
         case FORWARD_MOVEMENT_RAW:
         case FORWARD_MOVEMENT_TO_EDGE_OF_CELL:
@@ -521,6 +520,7 @@ bool MM::CommandExecuter::_isAbleToStartWithSpeed( MovementPrimitives movementTy
             break;
         case ROTATING:
         case ROTATING_ON_GRID:
+        case FORWARD_MOVEMENT_FOR_ROT_ALIGNMENT:
             return false;
             break;
         
