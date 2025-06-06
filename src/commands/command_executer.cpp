@@ -33,7 +33,8 @@ encoderValueRightR_rev(encoderValueRight),
 myCurrentOriR_deg(currentOriR),
 mLeftMotorVoltageR_mV(leftMotorVoltage_mV),
 mRightMotorVoltageR_mV(rightMotorVoltage_mV),
-mOriOffsetFlag(oriOffsetFlag)
+mOriOffsetFlag(oriOffsetFlag),
+mLastOriRefresherTime_ms(millis())
 {
 
 }
@@ -319,12 +320,12 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommandUsingCur
         float currentOffsetInCellInDir = _getOffsetFromHomeInCellInCurrDir();
         if( commandParams.first == FORWARD_MOVEMENT_BY_CELL_NUMBER )
         {
-            LOG_INFO("FORWARD_MOVEMENT_BY_CELL_NUMBER");
+            LOG_INFO("FORWARD_MOVEMENT_BY_CELL_NUMBER\n");
             distanceToMove_mm = commandParams.second * ( 2 * CONSTS::HALF_CELL_DISTANCE_MM ) - currentOffsetInCellInDir;
         }
         else if ( commandParams.first == FORWARD_MOVEMENT_FOR_ROT_ALIGNMENT )
         {
-            LOG_INFO("FORWARD_MOVEMENT_FOR_ROT_ALIGNMENT");
+            LOG_INFO("FORWARD_MOVEMENT_FOR_ROT_ALIGNMENT\n");
             if(_isFrontBlocked())
             {
                 // front is blocked so it is okay to go one cell, the command will be terminated by the collision avoidance anyway
@@ -337,12 +338,12 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommandUsingCur
         }
         else if ( commandParams.first == FORWARD_MOVEMENT_TO_EDGE_OF_CELL )
         {
-            LOG_INFO("FORWARD_MOVEMENT_TO_EDGE_OF_CELL");
+            LOG_INFO("FORWARD_MOVEMENT_TO_EDGE_OF_CELL\n");
             distanceToMove_mm = CONSTS::HALF_CELL_DISTANCE_MM + ( CONSTS::HOME_POSITION_IN_CELL_MM - currentOffsetInCellInDir );
         }
         else if ( commandParams.first == FORWARD_MOVEMENT_TO_HOME_IN_CELL )
         {
-            LOG_INFO("FORWARD_MOVEMENT_TO_HOME_IN_CELL");
+            LOG_INFO("FORWARD_MOVEMENT_TO_HOME_IN_CELL\n");
             if( currentOffsetInCellInDir < 0.0 )
             {
                 // we are already in the cell where we want to move home
@@ -356,12 +357,12 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommandUsingCur
         }
         else if( commandParams.first == FORWARD_MOVEMENT_TO_CENTER_OF_CELL )
         {
-            LOG_INFO("FORWARD_MOVEMENT_TO_CENTER_OF_CELL");
+            LOG_INFO("FORWARD_MOVEMENT_TO_CENTER_OF_CELL\n");
             distanceToMove_mm = CONSTS::HOME_POSITION_IN_CELL_MM - currentOffsetInCellInDir;
         }
         else if ( commandParams.first == FORWARD_MOVEMENT_RAW )
         {
-            LOG_INFO("FORWARD_MOVEMENT_RAW");
+            LOG_INFO("FORWARD_MOVEMENT_RAW\n");
             distanceToMove_mm = commandParams.second;
         }
 
@@ -396,7 +397,7 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommandUsingCur
         if( commandParams.first == ROTATING || ( millis() - mLastOriRefresherTime_ms ) > CONSTS::ORI_REFRESH_DELAY_TOLERANCE_MS )
         {
             angleToTurn_deg = commandParams.second;
-            LOG_INFO("ROTATING");
+            LOG_INFO("ROTATING\n");
         }
         else if( commandParams.first == ROTATING_ON_GRID )
         {
@@ -535,6 +536,7 @@ bool MM::CommandExecuter::_isAbleToStartWithSpeed( MovementPrimitives movementTy
         case FORWARD_MOVEMENT_RAW:
         case FORWARD_MOVEMENT_TO_EDGE_OF_CELL:
         case FORWARD_MOVEMENT_TO_HOME_IN_CELL:
+        case FORWARD_MOVEMENT_TO_CENTER_OF_CELL:
             return true;
             break;
         case ROTATING:

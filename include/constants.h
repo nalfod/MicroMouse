@@ -161,9 +161,9 @@ int getRotationAngle(Direction source, Direction destination) {
 }
 
 // After a while the orientation will drift, so it is not wise to use the grid angle all the time
-// this const is used to control this time period. It is set now to 1,5 minutes but probably should
+// this const is used to control this time period. It is set now to 1 minutes but probably should
 // be controlled this behavior based on the amount of turns which was done by the mouse
-constexpr unsigned int ORI_REFRESH_DELAY_TOLERANCE_MS = 90000;
+constexpr unsigned int ORI_REFRESH_DELAY_TOLERANCE_MS = 60000;
 
 inline
 float adjustAngleToAlignGridDirection( float currentOrientation )
