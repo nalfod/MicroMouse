@@ -2,9 +2,10 @@
 #include "constants.h"
 #include "utils/logging.h"
 
-MM::OrientationStabilizer::OrientationStabilizer( float const& currentOriR ):
+MM::OrientationStabilizer::OrientationStabilizer( float const& currentOriR, bool stayOnGrid ):
 myCurrentOriR_deg( currentOriR ),
-myPid(10, 0, 0)
+myPid(10, 0, 0),
+stayOnGrid(stayOnGrid)
 {
     myPid.setTarget( 0.0 );
     myPid.init( (static_cast<int>(CONSTS::MAIN_CYCLE_TIME.count()) / 1000) , AUTOMATIC, -750.0, 750.0); // TODO: Maybe the tuning should be more sofisticated!!
@@ -28,7 +29,12 @@ void MM::OrientationStabilizer::refreshMyTarget()
 {
     if( !refreshIsLocked )
     {
-        myPid.setTarget( CONSTS::adjustAngleToAlignGridDirection( myCurrentOriR_deg ) );
+        float targetOri_deg = myCurrentOriR_deg;
+        if( stayOnGrid )
+        {
+            targetOri_deg = CONSTS::adjustAngleToAlignGridDirection( myCurrentOriR_deg );
+        }
+        myPid.setTarget( targetOri_deg );
     }
 
     refreshIsLocked = false;

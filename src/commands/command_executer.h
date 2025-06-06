@@ -83,5 +83,6 @@ namespace MM
             bool& mOriOffsetFlag;
 
             float mLastMovementEndSpeed_mm_per_s{0.0};
+            unsigned long mLastOriRefresherTime_ms{0};
     };
 }

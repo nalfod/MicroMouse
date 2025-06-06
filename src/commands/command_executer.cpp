@@ -72,6 +72,7 @@ void MM::CommandExecuter::addTravelCommandRelativeToActualPos(int directionToMov
     {
         mCommandsToExecute.push( CommandToExecute(FORWARD_MOVEMENT_FOR_ROT_ALIGNMENT, 0) );
         mCommandsToExecute.push( CommandToExecute(ROTATING_ON_GRID, directionToMove_deg) );
+        
         if( directionToMove_deg > 179.99 || directionToMove_deg < -179.99 )
         {
             // we use the U turn to recenter the mouse!
@@ -367,7 +368,7 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommandUsingCur
         std::vector<std::unique_ptr<MM::MovementStabilizerIF>> stabilizers;
         stabilizers.push_back(std::make_unique<TwoWallStabilizer>(mDistFrontLeftR_mm, mDistFrontRightR_mm));
         stabilizers.push_back(std::make_unique<OneWallStabilizer>(mDistFrontLeftR_mm, mDistFrontRightR_mm));
-        stabilizers.push_back(std::make_unique<OrientationStabilizer>(myCurrentOriR_deg));
+        stabilizers.push_back(std::make_unique<OrientationStabilizer>(myCurrentOriR_deg, ( ( millis() - mLastOriRefresherTime_ms ) < CONSTS::ORI_REFRESH_DELAY_TOLERANCE_MS ) ) );
 
         cmdToReturnP = std::make_unique<MM::CollisionAvoidanceCommand>
                       ( 
@@ -392,9 +393,10 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommandUsingCur
     case ROTATING_ON_GRID:
     {
         float angleToTurn_deg = 0.0;
-        if( commandParams.first == ROTATING )
+        if( commandParams.first == ROTATING || ( millis() - mLastOriRefresherTime_ms ) > CONSTS::ORI_REFRESH_DELAY_TOLERANCE_MS )
         {
             angleToTurn_deg = commandParams.second;
+            LOG_INFO("ROTATING");
         }
         else if( commandParams.first == ROTATING_ON_GRID )
         {
@@ -406,7 +408,7 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommandUsingCur
             float rawDestOrientation_deg = CONSTS::modifyAngleIfCircleOverflow( myCurrentOriR_deg + rawAngleToTurn_deg );
             float alignedDestOrientation_deg = CONSTS::adjustAngleToAlignGridDirection( rawDestOrientation_deg );
             float alignedAngleToTurn_deg = rawAngleToTurn_deg - ( rawDestOrientation_deg - alignedDestOrientation_deg);
-            LOG_INFO("  AL_ROTATION data: rawdeg= %d curr_ori= %d al_deg= %d \n", static_cast<int>(rawAngleToTurn_deg), static_cast<int>(myCurrentOriR_deg), static_cast<int>(alignedAngleToTurn_deg) );
+            LOG_INFO("  ROTATING_ON_GRID data: rawdeg= %d curr_ori= %d al_deg= %d \n", static_cast<int>(rawAngleToTurn_deg), static_cast<int>(myCurrentOriR_deg), static_cast<int>(alignedAngleToTurn_deg) );
 
             angleToTurn_deg = alignedAngleToTurn_deg;
         }
@@ -466,7 +468,8 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommandUsingCur
     {
         cmdToReturnP = std::make_unique<MM::OriOffsetUpdater>(mOriOffsetFlag);
         mCurrentCellPositionR.updatePositionInCellIfBackwardTouched();
-        LOG_INFO("NEW UPD_ORI_OFFSET_AND_CELL_POS_AT_BACKWALL CMD \n");
+        mLastOriRefresherTime_ms = millis();
+        LOG_INFO("NEW UPD_ORI_OFFSET_AND_CELL_POS_AT_BACKWALL CMD time= %d \n", static_cast<int>( mLastOriRefresherTime_ms ) );
         break;
     }
     case ARC_MOVEMENT:

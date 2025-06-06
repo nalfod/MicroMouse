@@ -8,7 +8,7 @@ namespace MM
 class OrientationStabilizer : public MovementStabilizerIF
 {
 public:
-    OrientationStabilizer( float const& currentOriR );
+    OrientationStabilizer( float const& currentOriR, bool stayOnGrid = false );
     int16_t executeControlling() override;
     bool isApplicable() const override;
     void refreshMyTarget() override;
@@ -21,6 +21,7 @@ private:
 
     PidWrapper myPid;
     bool refreshIsLocked{false};
+    bool stayOnGrid{false};
 };
 
 }
