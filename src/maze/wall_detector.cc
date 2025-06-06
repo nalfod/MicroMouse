@@ -72,8 +72,7 @@ int MM::WallDetector::getWallMaskOfCurrentCellBayesian( CellPosition const& curr
         (mProbWallOnLeft > wallProbabilityThreshold || mProbWallOnLeft < noWallProbabilityThreshold) &&
         (mProbWallOnRight > wallProbabilityThreshold || mProbWallOnRight < noWallProbabilityThreshold) &&
         (mProbWallFront1 > wallProbabilityThreshold || mProbWallFront1 < noWallProbabilityThreshold) &&
-        (mProbWallFront2 > wallProbabilityThreshold || mProbWallFront2 < noWallProbabilityThreshold) &&
-        (mProbWallFront1 == mProbWallFront2);
+        (mProbWallFront2 > wallProbabilityThreshold || mProbWallFront2 < noWallProbabilityThreshold);
 
     /*LOG_INFO("UPD_WALLS_B: Lmm= %d ---  Rmm= %d, --- F1mm= %d, ---  F2mm= %d\n", static_cast<int>( mDistFrLeft ), static_cast<int>( mDistFrRight ), 
                                                                                  static_cast<int>( mDistLeft ), static_cast<int>( mDistRight ) );
@@ -90,7 +89,8 @@ int MM::WallDetector::getWallMaskOfCurrentCellBayesian( CellPosition const& curr
         if (mProbWallOnRight > wallProbabilityThreshold) {
             wallMask |= CONSTS::getDirectionAfterRotation(currentPositionR.getCurrentDirection(), 90.0f);
         }
-        if (mProbWallFront1 > wallProbabilityThreshold && mProbWallFront2 > wallProbabilityThreshold) {
+        if (mProbWallFront1 > wallProbabilityThreshold || mProbWallFront2 > wallProbabilityThreshold) {
+            // NOTE: if only one sensor which looks forward detects a wall, we consider it as a wall --> avoiding endless loop
             wallMask |= currentPositionR.getCurrentDirection();
         }
         
