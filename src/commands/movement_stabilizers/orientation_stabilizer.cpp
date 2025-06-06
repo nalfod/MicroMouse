@@ -4,7 +4,7 @@
 
 MM::OrientationStabilizer::OrientationStabilizer( float const& currentOriR, bool stayOnGrid ):
 myCurrentOriR_deg( currentOriR ),
-myPid(10, 0, 0),
+myPid(20, 0, 0.1),
 stayOnGrid(stayOnGrid)
 {
     myPid.setTarget( 0.0 );

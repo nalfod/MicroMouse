@@ -5,7 +5,7 @@
 MM::TwoWallStabilizer::TwoWallStabilizer( uint16_t const& dist_frontleft, uint16_t const& dist_frontright ):
 mDistFrontLeftR_mm(dist_frontleft),
 mDistFrontRightR_mm(dist_frontright),
-myPid(8, 0, 0)
+myPid(10, 0, 0.1)
 {
     myPid.setTarget( 0.0 );
     myPid.init( (static_cast<int>(CONSTS::MAIN_CYCLE_TIME.count()) / 1000) , AUTOMATIC, -750.0, 750.0); // TODO: Maybe the tuning should be more sofisticated!!

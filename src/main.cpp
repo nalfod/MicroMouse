@@ -42,6 +42,7 @@ std::vector<MM::Task> task_signal_current_mode = {
   {[]() { mouse.dbg_green.toggle(); }, CONSTS::SPEED_RUN_BLINK_TIME},
   {[]() { mouse.dbg_green.toggle(); }, CONSTS::DISCOVERY_BLINK_TIME},
   {[]() { mouse.dbg_green.toggle(); }, CONSTS::MEASUREMENT_BLINK_TIME},
+  {[]() { mouse.dbg_green.toggle(); }, CONSTS::MEASUREMENT_BLINK_TIME},
   {[]() { mouse.dbg_green.toggle(); }, CONSTS::MEASUREMENT_BLINK_TIME}
 };
 
@@ -110,7 +111,7 @@ void setup()
 
   if( g.mode_selector.get_current_mode() == CONSTS::MODES::TESTING )
   {
-      g.commandExecuter.parseRouteForSpeedRun("NNNNNNEEEENEESWSSESWSSESWWNNN");
+      g.commandExecuter.parseRouteForSpeedRun("NEEEEEENNNNN");
       // g.commandExecuter.parseRouteForSpeedRunWithDiagonals("NNNNNNEEEENEESWSSESWSSESWWNNN");
   }
   //mouse.accelerometer.myAngRotMeter.startMeasurement();
