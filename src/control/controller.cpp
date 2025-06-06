@@ -40,7 +40,7 @@ void MM::control()
         {
           
           LOG_INFO("MOVE BIT FRONT 1\n");
-          g.commandExecuter.addShortMoveInGoal();
+          g.commandExecuter.addTravelToCenterOfCellCommand();
           inDestCell = true;
         }
         else
@@ -72,7 +72,7 @@ void MM::control()
       {
         inDestCell = true;
         LOG_INFO("MOVE BIT FRONT 2\n");
-        g.commandExecuter.addShortMoveInGoal();
+        g.commandExecuter.addTravelToCenterOfCellCommand();
       }
       else
       {
@@ -89,7 +89,6 @@ void MM::control()
           g.commandExecuter.parseRouteForSpeedRunWithDiagonals(g.locController.findRouteForSpeedRun());
         }
         LOG_INFO("SPEEDRUN_PARSE_END\n");
-        //delay(2000);
       }
     }
   }

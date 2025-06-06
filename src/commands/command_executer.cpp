@@ -61,6 +61,11 @@ void MM::CommandExecuter::addShortMoveInGoal()
     mCommandsToExecute.push( CommandToExecute(FORWARD_MOVEMENT_RAW, 33 ));
 }
 
+void MM::CommandExecuter::addTravelToCenterOfCellCommand()
+{
+    mCommandsToExecute.push( CommandToExecute(FORWARD_MOVEMENT_TO_CENTER_OF_CELL, 0 ));
+}
+
 void MM::CommandExecuter::addTravelCommandRelativeToActualPos(int directionToMove_deg, uint16_t numberOfCellsToMove)
 {
     if( directionToMove_deg != 0 )
@@ -306,6 +311,7 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommandUsingCur
     case FORWARD_MOVEMENT_FOR_ROT_ALIGNMENT:
     case FORWARD_MOVEMENT_TO_EDGE_OF_CELL:
     case FORWARD_MOVEMENT_TO_HOME_IN_CELL:
+    case FORWARD_MOVEMENT_TO_CENTER_OF_CELL:
     case FORWARD_MOVEMENT_RAW:
     {
         float distanceToMove_mm = 0.0;
@@ -346,6 +352,11 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommandUsingCur
                 // we are in the previous cell
                 distanceToMove_mm = ( 2 * CONSTS::HALF_CELL_DISTANCE_MM ) - currentOffsetInCellInDir;
             }
+        }
+        else if( commandParams.first == FORWARD_MOVEMENT_TO_CENTER_OF_CELL )
+        {
+            LOG_INFO("FORWARD_MOVEMENT_TO_CENTER_OF_CELL");
+            distanceToMove_mm = CONSTS::HOME_POSITION_IN_CELL_MM - currentOffsetInCellInDir;
         }
         else if ( commandParams.first == FORWARD_MOVEMENT_RAW )
         {

@@ -26,17 +26,18 @@ namespace MM
             bool isFinished() const;
             // TODO: refactor this, very ugly!
             void addTravelCommandRelativeToActualPos(int directionToMove_deg, uint16_t numberOfCellsToMove);
-            void printCurrentCommand() const;
 
             void addHalfCellTravelCommand();
             void addArcTravelCommand( float angleToTurn_deg );
+            void addShortMoveInGoal();
+            void addTravelToCenterOfCellCommand();
 
             void parseRouteForSpeedRun(std::string route);
 
             void printActiveCommand() const;
             void parseRouteForSpeedRunWithDiagonals(std::string route);
 
-            void addShortMoveInGoal();
+            
         private:
             enum MovementPrimitives
             {
@@ -49,7 +50,8 @@ namespace MM
                 BACKWARD_MOVEMENT_FOR_ALIGNMENT = 7,
                 UPD_ORI_OFFSET_AND_CELL_POS_AT_BACKWALL = 8,
                 FORWARD_MOVEMENT_TO_EDGE_OF_CELL = 9,
-                FORWARD_MOVEMENT_TO_HOME_IN_CELL = 10
+                FORWARD_MOVEMENT_TO_HOME_IN_CELL = 10,
+                FORWARD_MOVEMENT_TO_CENTER_OF_CELL = 11
             };
             // first pair value is the movement type, second one is the specific magnitude (eg.: distance or angle)
             using CommandToExecute = std::pair< MovementPrimitives, int >;
