@@ -30,6 +30,7 @@ namespace MM
             void addHalfCellTravelCommand();
             void addArcTravelCommand( float angleToTurn_deg );
             void addShortMoveInGoal();
+            void addRotateAndReorgInCenter();
             void addTravelToCenterOfCellCommand();
 
             void parseRouteForSpeedRun(std::string route);

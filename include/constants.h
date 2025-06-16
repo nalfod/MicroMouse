@@ -59,7 +59,8 @@ enum MODES
     TESTING = 5
 };
 
-constexpr uint16_t MODE_SPEED_RUN_ACTIVATION_LIMIT = 1;
+constexpr uint16_t MODE_SPEED_RUN_ACTIVATION_LIMIT = 2;
+constexpr uint16_t MODE_RISKY_SPEEDRUN_ACTIVATION_LIMIT = 2;
 constexpr uint16_t MODE_SIGNAL_THRESHOLD_MV = 3900;
 constexpr uint16_t MODE_SIGNAL_HOLD_TIME_MS = 2000;
 

@@ -27,6 +27,11 @@ void MM::control()
       {
         inDestCell = false;
         delay(3000);
+        if(g.locController.isFromMid())
+        {
+          LOG_INFO("MID ROTATE\n");
+          g.commandExecuter.addRotateAndReorgInCenter();
+        }
       }
       if( g.locController.updateWalls() )
       {
@@ -38,7 +43,6 @@ void MM::control()
         }
         else if( nextMovement == -3)
         {
-          
           LOG_INFO("MOVE BIT FRONT 1\n");
           g.commandExecuter.addTravelToCenterOfCellCommand();
           inDestCell = true;
@@ -79,7 +83,7 @@ void MM::control()
         delay(3000);
         inDestCell = false;
         LOG_INFO("SPEEDRUN_PARSE_START\n");
-        if( safeSpeedRunCounter < 2 )
+        if( safeSpeedRunCounter < CONSTS::MODE_RISKY_SPEEDRUN_ACTIVATION_LIMIT )
         {
           g.commandExecuter.parseRouteForSpeedRun(g.locController.findRouteForSpeedRun());
           safeSpeedRunCounter++;

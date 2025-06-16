@@ -11,6 +11,7 @@
 #include "movement_stabilizers/orientation_stabilizer.h"
 
 #include "utils/logging.h"
+#include <esp32-hal.h>
 
 MM::CommandExecuter::CommandExecuter( MM::CellPosition& cellPositionR, 
                                       uint16_t const& dist_left, 
@@ -60,6 +61,12 @@ void MM::CommandExecuter::execute()
 void MM::CommandExecuter::addShortMoveInGoal()
 {
     mCommandsToExecute.push( CommandToExecute(FORWARD_MOVEMENT_RAW, 33 ));
+}
+
+void MM::CommandExecuter::addRotateAndReorgInCenter()
+{
+    addTravelCommandRelativeToActualPos(0, 1);
+    addTravelCommandRelativeToActualPos(180, 1);
 }
 
 void MM::CommandExecuter::addTravelToCenterOfCellCommand()

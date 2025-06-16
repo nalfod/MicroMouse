@@ -38,7 +38,7 @@ struct Globals {
 
 // Position and location control
     CellPosition currentCellPosition{ -CONSTS::HOME_POSITION_IN_CELL_MM, 0.0, CONSTS::Direction::NORTH};
-    LocationController locController{14, currentCellPosition, dist_left_mm, dist_right_mm, dist_frontleft_mm, dist_frontright_mm};
+    LocationController locController{16, currentCellPosition, dist_left_mm, dist_right_mm, dist_frontleft_mm, dist_frontright_mm};
 
 // Mode selector =================================================
     ModeSelector mode_selector{ir_left, ir_frontleft, ir_frontright, ir_right, CONSTS::MODES::DISCOVERY};

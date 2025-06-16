@@ -13,6 +13,8 @@ class LocationController{
         int calcNextMovement();
 
         std::string findRouteForSpeedRun();
+
+        bool isFromMid();
     private:
         MM::CellPosition const& mCurrentPositionR;
         Maze maze;

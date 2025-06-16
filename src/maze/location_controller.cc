@@ -102,3 +102,8 @@ int LocationController::calcNextMovement()
 
     return CONSTS::getRotationAngle(mCurrentPositionR.getCurrentDirection(), moveDir);
 }
+
+bool LocationController::isFromMid()
+{
+    return !toMid;
+}
