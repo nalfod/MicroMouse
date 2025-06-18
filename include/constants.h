@@ -59,7 +59,7 @@ enum MODES
     TESTING = 5
 };
 
-constexpr uint16_t MODE_SPEED_RUN_ACTIVATION_LIMIT = 2;
+constexpr uint16_t MODE_SPEED_RUN_ACTIVATION_LIMIT = 1;
 constexpr uint16_t MODE_RISKY_SPEEDRUN_ACTIVATION_LIMIT = 2;
 constexpr uint16_t MODE_SIGNAL_THRESHOLD_MV = 3900;
 constexpr uint16_t MODE_SIGNAL_HOLD_TIME_MS = 2000;
@@ -164,7 +164,7 @@ int getRotationAngle(Direction source, Direction destination) {
 // After a while the orientation will drift, so it is not wise to use the grid angle all the time
 // this const is used to control this time period. It is set now to 1 minutes but probably should
 // be controlled this behavior based on the amount of turns which was done by the mouse
-constexpr unsigned int ORI_REFRESH_DELAY_TOLERANCE_MS = 60000;
+constexpr unsigned int ORI_REFRESH_DELAY_TOLERANCE_MS = 30000;
 
 inline
 float adjustAngleToAlignGridDirection( float currentOrientation )
