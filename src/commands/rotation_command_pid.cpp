@@ -10,7 +10,15 @@ myCurrentOriR_deg(currentOriR),
 mLeftMotorVoltageR_mV(leftMotorVoltage_mV),
 mRightMotorVoltageR_mV(rightMotorVoltage_mV)
 {
-    myMovementCtrl.init(1, AUTOMATIC, -1400 , 1400);
+    if( angleToRotate_deg < 135 && angleToRotate_deg > -135 )
+    {
+        myMovementCtrl.init(1, AUTOMATIC, -1400 , 1400);
+    }
+    else
+    {
+        myMovementCtrl.init(1, AUTOMATIC, -750 , 750);
+    }
+    
     myMovementCtrl.setTarget( 0 ); // target is the difference between the goal and the actual value
 }
 

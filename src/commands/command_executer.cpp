@@ -423,7 +423,7 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommandUsingCur
 
         if( commandParams.second > 179.99 || commandParams.second < -179.99 )
         {
-            if( mDistFrontRightR_mm > mDistFrontLeftR_mm )
+            if( mDistFrontRightR_mm < mDistFrontLeftR_mm )
             {
                 angleToTurn_deg = std::abs(angleToTurn_deg);
             }
