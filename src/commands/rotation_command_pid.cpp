@@ -38,6 +38,12 @@ void MM::RotationCommandPid::execute()
     float orientationDifference_deg = myTargetOrientation_deg - myCurrentOriR_deg;
     orientationDifference_deg = shiftOrientationValue(orientationDifference_deg);
 
+    // --- Force direction for 180 degree rotation ---
+    if (std::abs(myTargetMagnitude_deg) == 180.0f) {
+        // Use the sign of the original command to set direction
+        orientationDifference_deg = (myTargetMagnitude_deg > 0) ? std::abs(orientationDifference_deg) : -std::abs(orientationDifference_deg);
+    }
+
     if( std::abs( orientationDifference_deg ) < 0.5 )
     {
         // TODO: maybe the final motor voltage adjustment should be the responsibility of the caller

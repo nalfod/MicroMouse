@@ -333,6 +333,17 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommandUsingCur
         else if ( commandParams.first == FORWARD_MOVEMENT_FOR_ROT_ALIGNMENT )
         {
             LOG_INFO("FORWARD_MOVEMENT_FOR_ROT_ALIGNMENT\n");
+            
+            if( mDistFrontRightR_mm < mDistFrontLeftR_mm )
+            {
+                mIsRightWallCloser = true;
+            }
+            else
+            {
+                mIsRightWallCloser = false;
+            }
+            LOG_INFO("DIST_RIGHT= %d DIST_LEFT= %d bool= %d\n", static_cast<int>(mDistFrontRightR_mm), static_cast<int>(mDistFrontLeftR_mm), static_cast<int>(mIsRightWallCloser));
+
             if(_isFrontBlocked())
             {
                 // front is blocked so it is okay to go one cell, the command will be terminated by the collision avoidance anyway
@@ -423,7 +434,7 @@ std::unique_ptr<MM::MotionCommandIF> MM::CommandExecuter::_createCommandUsingCur
 
         if( commandParams.second > 179.99 || commandParams.second < -179.99 )
         {
-            if( mDistFrontRightR_mm < mDistFrontLeftR_mm )
+            if( mIsRightWallCloser )
             {
                 angleToTurn_deg = std::abs(angleToTurn_deg);
             }

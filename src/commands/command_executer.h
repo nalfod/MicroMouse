@@ -85,5 +85,6 @@ namespace MM
 
             float mLastMovementEndSpeed_mm_per_s{0.0};
             unsigned long mLastOriRefresherTime_ms{0};
+            bool mIsRightWallCloser{false};
     };
 }
