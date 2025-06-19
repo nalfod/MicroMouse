@@ -46,6 +46,7 @@ void MM::RotationCommandPid::execute()
 
     if( std::abs( orientationDifference_deg ) < 0.5 )
     {
+        // NOTE: the failure of the 2025 micromouse challange was caused by not reaching this part after rotation
         // TODO: maybe the final motor voltage adjustment should be the responsibility of the caller
         mLeftMotorVoltageR_mV = 0;
         mRightMotorVoltageR_mV = 0;
